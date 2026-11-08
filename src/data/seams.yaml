@@ -65,7 +65,7 @@ memory:
       en: The agent keeps a structured plan, can look back over earlier contexts, and can hand a subagent the whole conversation.
       zh: 代理守着一份结构化计划，能回看先前的上下文，也能把整段对话交给子代理。
     silent:
-      en: Two things that quietly erode a long task are watched for, stopping early and compacting too soon.
+      en: "Two things that quietly erode a long task are watched for: stopping early and compacting too soon."
       zh: 长任务最容易悄悄流失的两样东西被盯住：提前收工，以及过早压缩。
 
 delegation:

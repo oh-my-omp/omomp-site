@@ -487,9 +487,11 @@
   font-size: 11.5px;
   color: var(--dim);
 }
+/* Short parts stay whole; a part wider than the row breaks instead of clipping at the edge. */
 .rp-source-part {
   font-family: var(--mono);
-  white-space: nowrap;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 @media (max-width: 900px) {
   .rp {
