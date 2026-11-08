@@ -579,10 +579,8 @@ const terminal: readonly TermLine[] = [
     .seam-strip li:nth-child(-n + 2) {
       border-top: 0;
     }
-    .seam-strip li:nth-child(3n)::after {
-      display: grid;
-    }
-    .seam-strip li:nth-child(even)::after {
+    /* In two columns a chevron would pair 01 with 02 but never lead from 02 to 03; the numbers carry the order. */
+    .seam-strip li:not(:last-child)::after {
       display: none;
     }
     .term pre {

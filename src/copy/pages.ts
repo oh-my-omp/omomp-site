@@ -4,8 +4,8 @@ export const principlesPage = {
   eyebrow: { en: "Principles", zh: "设计原则" },
   title: { en: "Four rules every repository follows", zh: "四条原则，每个仓库都遵循" },
   lede: {
-    en: "Each component on this site puts one of these rules into practice. Read them first; the rest follows from them.",
-    zh: "站上每个组件，都是其中一条原则的落地。先读这四条，其余内容都由此推出。",
+    en: "Each component on this site puts one of these rules into practice. Each rule names the problem it answers and the components that carry it.",
+    zh: "站上每个组件，都是其中一条原则的落地。每条原则写明它要解决的问题，以及由哪些组件来落实。",
   },
   problem: { en: "The problem", zh: "问题" },
   practice: { en: "In practice", zh: "做法" },
@@ -61,8 +61,8 @@ export const replayPage = {
 } satisfies Record<string, Text>
 
 export const productPage = {
-  eyebrow: { en: "Product", zh: "独立产品" },
-  others: { en: "Other products", zh: "其他产品" },
+  eyebrow: { en: "Product", zh: "产品" },
+  all: { en: "All products", zh: "全部产品" },
   repo: { en: "View repository", zh: "查看仓库" },
 } satisfies Record<string, Text>
 

@@ -326,10 +326,10 @@ isolation-nudge:
   seam: delegation
   solves:
     en: Two writers do not end up in one checkout by accident.
-    zh: 两个写者不会无意间挤进同一个工作区。
+    zh: 两个改文件的子代理不会误挤进同一个工作区。
   does:
     en: Sends back a dispatch that would share a checkout between writers until isolation is stated explicitly.
-    zh: 会让多个写者共用工作区的派发被退回，直到明确写出是否隔离。
+    zh: 多个改文件的子代理要共用一个工作区时，派发被退回，直到明确写出是否隔离。
 
 task-split-check:
   name: task-split-check
@@ -479,7 +479,7 @@ thinking-translator:
       en: Per-line translation and rendering, with model fallback.
       zh: 逐行翻译与渲染，带模型回退。
     policy:
-      en: Target language and model chain. None ship; you create them on first run.
+      en: Target language and model chain. None shipped; you create them on first run.
       zh: 目标语言和模型链。不随附，首次运行时由你创建。
     customize: https://github.com/oh-my-omp/omp-thinking-translator#readme
 

@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, For, on, onCleanup, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, For, onCleanup, Show } from "solid-js";
 
 export type Actor = "user" | "assistant" | "tool" | "hook" | "subagent";
 export type Kind = "message" | "tool_call" | "tool_result" | "reminder" | "block";
@@ -72,28 +72,10 @@ export default function ReplayPlayer(props: { shots: readonly Shot[]; labels: La
     onCleanup(() => window.clearInterval(timer));
   });
 
-  let screen: HTMLDivElement | undefined;
-  /** True while transcript content remains below the visible part of the screen. */
-  const [more, setMore] = createSignal(false);
-  const measure = () => {
-    if (screen) setMore(screen.scrollHeight - screen.scrollTop - screen.clientHeight > 4);
-  };
-  /** Follow the newest event while playing; a chapter picked by hand opens at its start. */
-  createEffect(
-    on(
-      visible,
-      () => {
-        if (playing()) screen?.scrollTo({ top: screen.scrollHeight, behavior: "smooth" });
-        queueMicrotask(measure);
-      },
-    ),
-  );
-
   const pick = (i: number) => {
     setShotIndex(i);
     setStep(props.shots[i]!.events.length - 1);
     setPlaying(false);
-    screen?.scrollTo({ top: 0 });
   };
 
   return (
@@ -137,7 +119,7 @@ export default function ReplayPlayer(props: { shots: readonly Shot[]; labels: La
           </div>
         </div>
         <p class="rp-caption">{shot().caption}</p>
-        <div class="rp-screen" classList={{ more: more() }} ref={screen} aria-live="polite" onScroll={measure}>
+        <div class="rp-screen" aria-live="polite">
           <For each={visible()}>
             {({ e, i }) => (
               <div class={`rp-ev a-${e.actor} k-${e.kind}`} classList={{ fresh: i === step() }}>

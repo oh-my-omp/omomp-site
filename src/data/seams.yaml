@@ -90,7 +90,7 @@ delegation:
       zh: 干活和出主意是两种角色，权限各不相同。
     silent:
       en: "Every dispatch is read before it leaves: what it bundles, and whether two writers would collide. Advisors are handed your own words."
-      zh: 每次派发在发出前都被读一遍：捆了哪些主题，写者会不会撞车。顾问拿到的是你的原话。
+      zh: 每次派发在发出前都要过检：有没有混装多个主题，改文件的子代理会不会撞车。顾问直接拿到你的原话。
 
 execution:
   order: 5

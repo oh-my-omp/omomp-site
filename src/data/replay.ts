@@ -71,7 +71,7 @@ export const shotCopy: Readonly<Record<string, ShotCopy>> = {
     notes: {
       1: {
         en: "isolation-nudge: writers would share a checkout. Resending with the choice spelled out goes through.",
-        zh: "isolation-nudge：写者会共用一个工作区。写明是否隔离后重发即可放行。",
+        zh: "isolation-nudge：几个改文件的执行者会共用一个工作区。写明是否隔离后重发即可放行。",
       },
       3: {
         en: "task-split-check: a judge reads every brief and names the ones that mix topics.",
@@ -124,8 +124,8 @@ export const shotCopy: Readonly<Record<string, ShotCopy>> = {
   playbooks: {
     title: { en: "Driving a Playbook from the agent", zh: "代理驱动一份 Playbook" },
     caption: {
-      en: "A bounded check: the agent reads the device docs, opens a Playbook, reads its one block and starts a Run, then stops.",
-      zh: "一次有边界的检查：代理读设备文档，打开 Playbook，读出唯一的块，启动一个 Run，然后停下。",
+      en: "In a test session, the agent reads the tool docs, opens a Playbook, reads its only block and starts a Run.",
+      zh: "在一次测试会话里，代理先读工具说明，打开 Playbook，读出其中唯一的块，再启动一个 Run。",
     },
     notes: {
       2: { en: "Opening the file also opens its pane in Tern.", zh: "打开文件的同时，在 Tern 里打开它的面板。" },
@@ -147,7 +147,7 @@ export const shotCopy: Readonly<Record<string, ShotCopy>> = {
     title: { en: "A file edited locally, read in the container", zh: "本机写的文件，在容器里读到" },
     caption: {
       en: "A test run on a project opted in to remote build. The agent asks for its container, then runs a command inside it; the file it prints was written on the laptop and arrived by sync.",
-      zh: "一次测试运行，项目已接入远端构建。代理先要来自己的容器，再在里面跑一条命令；它打印的文件是在本机写的，靠同步送到容器里。",
+      zh: "在一个已接入远端构建的项目里试跑：代理先申请自己的容器，再在里面执行一条命令；它读出的文件写在本机，经同步送到容器。",
     },
     notes: {
       2: {

@@ -1,5 +1,12 @@
 import type { Text } from "../i18n";
 
+/** A box in the "where it sits" diagram; `repo` is null where no public repository exists. */
+interface Host {
+  readonly name: string;
+  readonly repo: string | null;
+  readonly role: Text;
+}
+
 export const home = {
   meta: {
     title: { en: "oh-my-omp — your intent survives every handoff", zh: "oh-my-omp — 你的意图，转手多少次都不走样" },
@@ -20,21 +27,23 @@ export const home = {
   },
   hosts: {
     eyebrow: { en: "Where it sits", zh: "所处位置" },
-    title: { en: "omomp sits on two hosts you already run", zh: "omomp 叠在你已有的两个宿主之上" },
+    title: { en: "omomp sits on two hosts you already run", zh: "omomp 叠在你已在用的代理和终端之上" },
     body: {
       en: "It replaces neither the agent nor the terminal. It adds governance, panels and workflows on top of both.",
       zh: "不替换代理，也不替换终端；只在两者之上叠加治理、面板和工作流。",
     },
     top: {
       name: "oh-my-omp (omomp)",
+      repo: "https://github.com/oh-my-omp",
       role: {
         en: "Governance config, plugins and standalone products.",
         zh: "治理配置、插件和独立产品。",
       },
-    } satisfies { name: string; role: Text },
+    } satisfies Host,
     hosts: [
       {
         name: "Oh My Pi (omp)",
+        repo: "https://github.com/can1357/oh-my-pi",
         role: {
           en: "Terminal coding agent. Sessions, tools, subagents, extensions and plugins.",
           zh: "终端编码代理，提供会话、工具、子代理、扩展与插件机制。",
@@ -42,12 +51,13 @@ export const home = {
       },
       {
         name: "Tern",
+        repo: null,
         role: {
           en: "Graphical terminal. Draws the plugins' panels: todo, terminals, decisions, playbooks.",
           zh: "图形化终端，绘制插件的面板：待办、终端、决策、Playbook。",
         },
       },
-    ] satisfies ReadonlyArray<{ name: string; role: Text }>,
+    ] satisfies ReadonlyArray<Host>,
   },
   modular: {
     eyebrow: { en: "Take what you need", zh: "按需取用" },
@@ -63,7 +73,7 @@ export const home = {
     title: { en: "One problem per repository", zh: "一个仓库，解决一个问题" },
     runtime: { en: "Runtime", zh: "运行时" },
     plugins: { en: "Plugins", zh: "插件" },
-    products: { en: "Products", zh: "独立产品" },
+    products: { en: "Products", zh: "产品" },
     productsBody: {
       en: "Workflows with their own model of the work. Each has its own page.",
       zh: "自成体系的工作流，各有独立的心智模型和专页。",
@@ -98,7 +108,7 @@ export const home = {
       },
       {
         q: { en: "What runs as its own product?", zh: "哪些是独立产品？" },
-        a: { en: "Products", zh: "独立产品" },
+        a: { en: "Products", zh: "产品" },
         route: "/products/playbooks/",
       },
       {

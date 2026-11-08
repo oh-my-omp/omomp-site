@@ -11,19 +11,25 @@ const hostTones = ["var(--agent)", "var(--human)"];
 ---
 
 <div class="hd">
-  <div class="hd-box hd-top" style="--tone:var(--accent)">
-    <span class="hd-name">{top.name}</span>
+  <a class="hd-box hd-top" style="--tone:var(--accent)" href={top.repo}>
+    <span class="hd-name">{top.name}<span class="hd-out" aria-hidden="true">↗</span></span>
     <span class="hd-role">{top.role[lang]}</span>
-  </div>
+  </a>
   <div class="hd-links" aria-hidden="true"><span></span><span></span></div>
   <div class="hd-hosts">
     {
-      hosts.map((row, i) => (
-        <div class="hd-box" style={`--tone:${hostTones[i]}`}>
-          <span class="hd-name">{row.name}</span>
-          <span class="hd-role">{row.role[lang]}</span>
-        </div>
-      ))
+      hosts.map((row, i) => {
+        const Box = row.repo === null ? "div" : "a";
+        return (
+          <Box class="hd-box" style={`--tone:${hostTones[i]}`} href={row.repo ?? undefined}>
+            <span class="hd-name">
+              {row.name}
+              {row.repo !== null && <span class="hd-out" aria-hidden="true">↗</span>}
+            </span>
+            <span class="hd-role">{row.role[lang]}</span>
+          </Box>
+        );
+      })
     }
   </div>
 </div>
@@ -45,6 +51,19 @@ const hostTones = ["var(--agent)", "var(--human)"];
   }
   .hd-top {
     box-shadow: 0 0 60px -20px color-mix(in srgb, var(--tone) 60%, transparent);
+  }
+  a.hd-box {
+    color: inherit;
+    text-decoration: none;
+    transition: border-color 0.15s;
+  }
+  a.hd-box:hover {
+    border-color: color-mix(in srgb, var(--tone) 70%, transparent);
+  }
+  .hd-out {
+    margin-left: 6px;
+    font-weight: 400;
+    color: var(--dim);
   }
   .hd-hosts {
     display: grid;

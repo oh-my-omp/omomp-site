@@ -4,7 +4,7 @@ import Base from "../layouts/Base.astro";
 import PageHead from "../components/PageHead.astro";
 import Pager from "../components/Pager.astro";
 import LifelineMap from "../islands/LifelineMap";
-import { lifelinePage as copy } from "../copy/pages";
+import { lifelinePage as copy, seamPage } from "../copy/pages";
 import { href, t, type Lang } from "../i18n";
 import { ui } from "../ui";
 
@@ -51,6 +51,7 @@ const layers = ["human", "agent", "silent"] as const;
         layers: { human: t(ui.layers.human, lang), agent: t(ui.layers.agent, lang), silent: t(ui.layers.silent, lang) },
         all: t(copy.all, lang),
         open: t(copy.open, lang),
+        seam: t(seamPage.eyebrow, lang),
         hint: t(copy.mapHint, lang),
       }}
     />

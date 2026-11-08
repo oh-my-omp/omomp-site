@@ -21,6 +21,8 @@ export interface MapLabels {
   readonly layers: Readonly<Record<Layer, string>>;
   readonly all: string;
   readonly open: string;
+  /** Word before the seam number in the detail panel's link to the seam page. */
+  readonly seam: string;
   readonly hint: string;
 }
 
@@ -35,6 +37,7 @@ export default function LifelineMap(props: {
   // The first chip of the first seam, in layer order, so the detail panel starts filled.
   const first = LAYERS.flatMap((l) => props.components.filter((c) => c.seam === props.seams[0]!.id && c.layer === l))[0]!;
   const [focus, setFocus] = createSignal<MapComponent>(first);
+  const focusSeam = createMemo(() => props.seams.find((s) => s.id === focus().seam)!);
   const [seam, setSeam] = createSignal(props.seams[0]!.id);
 
   const cells = createMemo(() => {
@@ -146,7 +149,12 @@ export default function LifelineMap(props: {
         </span>
         <code class="lm-detail-name">{focus().name}</code>
         <p>{focus().solves}</p>
-        <a href={focus().repo}>{props.labels.open} →</a>
+        <span class="lm-detail-links">
+          <a href={focusSeam().href}>
+            {props.labels.seam} {String(focusSeam().order).padStart(2, "0")} · {focusSeam().name} →
+          </a>
+          <a href={focus().repo}>{props.labels.open} →</a>
+        </span>
       </div>
     </div>
   );

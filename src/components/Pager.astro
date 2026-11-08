@@ -5,31 +5,23 @@ interface Link {
   title: string;
 }
 interface Props {
-  prev?: Link | undefined;
-  next?: Link | undefined;
+  prev: Link;
+  next: Link;
 }
 const { prev, next } = Astro.props;
+/** A link that leaves the site gets the outward arrow, so it is not mistaken for the next page. */
+const arrow = (l: Link) => (/^https?:\/\//.test(l.href) ? "↗" : "→");
 ---
 
 <nav class="pager wrap" aria-label="Pagination">
-  {
-    prev ? (
-      <a class="p prev" href={prev.href}>
-        <span class="k">← {prev.label}</span>
-        <span class="t">{prev.title}</span>
-      </a>
-    ) : (
-      <span />
-    )
-  }
-  {
-    next && (
-      <a class="p next" href={next.href}>
-        <span class="k">{next.label} →</span>
-        <span class="t">{next.title}</span>
-      </a>
-    )
-  }
+  <a class="p prev" href={prev.href}>
+    <span class="k">← {prev.label}</span>
+    <span class="t">{prev.title}</span>
+  </a>
+  <a class="p next" href={next.href}>
+    <span class="k">{next.label} {arrow(next)}</span>
+    <span class="t">{next.title}</span>
+  </a>
 </nav>
 
 <style>

@@ -97,7 +97,7 @@ dispatch:
         zh: 每个席位都是新的
       points:
         - en: The work on a ticket is done by a one-shot session in its own checkout. It pushes a branch and submits.
-          zh: 每张工单由一次性会话在独立检出里完成，推送分支后提交。
+          zh: 每张工单由一次性会话在独立工作树里完成，推送分支后提交。
         - en: A judge is always a fresh session, pinned to the exact PR head or merge commit it rules on.
           zh: 判定者永远是新会话，钉在它所裁决的那个 PR head 或合并提交上。
         - en: A new push drops every approval given to the old one.

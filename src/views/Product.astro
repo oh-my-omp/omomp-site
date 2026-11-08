@@ -4,7 +4,7 @@ import Base from "../layouts/Base.astro";
 import PageHead from "../components/PageHead.astro";
 import Pager from "../components/Pager.astro";
 import ReplayPlayer from "../islands/ReplayPlayer";
-import { productPage as copy, replayPage } from "../copy/pages";
+import { productPage as copy, replayPage, seamPage } from "../copy/pages";
 import { replayLabels, shotsFor } from "../data/replay";
 import { href, t, type Lang } from "../i18n";
 import { ui } from "../ui";
@@ -27,6 +27,13 @@ const tones = ["var(--human)", "var(--accent)", "var(--agent)", "var(--silent)"]
     <div class="ctas">
       <a class="btn" href={product.data.repo}>{t(copy.repo, lang)} →</a>
     </div>
+    <nav class="switch" aria-label={t(copy.all, lang)}>
+      {all.map((p) => (
+        <a href={href(`/products/${p.id}/`, lang)} aria-current={p.id === product.id ? "page" : undefined}>
+          {p.data.name}
+        </a>
+      ))}
+    </nav>
   </PageHead>
 
   <section class="wrap parties reveal">
@@ -58,6 +65,7 @@ const tones = ["var(--human)", "var(--accent)", "var(--agent)", "var(--silent)"]
   {
     shots.length > 0 && (
       <section class="wrap replay reveal">
+        <h2 class="replay-title">{t(seamPage.replay, lang)}</h2>
         <ReplayPlayer client:visible shots={shots} labels={replayLabels(lang)} compact />
         <p class="note">{t(replayPage.note, lang)}</p>
       </section>
@@ -77,6 +85,34 @@ const tones = ["var(--human)", "var(--accent)", "var(--agent)", "var(--silent)"]
 <style>
   .ctas {
     margin-top: 8px;
+  }
+  /* Sibling products, current one marked, the way the seam rail marks the current seam. */
+  .switch {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 20px;
+  }
+  .switch a {
+    padding: 5px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted);
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .switch a:hover {
+    color: var(--text);
+    border-color: var(--line-strong);
+  }
+  .switch a[aria-current="page"] {
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  }
+  .replay-title {
+    font-size: clamp(24px, 3vw, 32px);
+    margin-bottom: 4px;
   }
   .parties {
     display: grid;
