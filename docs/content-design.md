@@ -27,7 +27,7 @@
 ```mermaid
 flowchart TB
   Home["首页（参照 Supabase）<br/>定位 · 宿主边界 · 按需取用 · 积木卡片 · 核心差异 · 去向"]
-  Home --> Tenets["思维内核页"]
+  Home --> Tenets["设计原则页"]
   Home --> S1
   subgraph Seams["接缝页（参照 Linear，按流程首尾相接）"]
     S1["① 意图进入会话"] --> S2["② 提示词加载与防漂移"]
@@ -58,18 +58,18 @@ flowchart TB
 | 宿主边界 | 一张关系图交代 Oh My Pi、Tern、omomp 三者，见[宿主边界](#宿主边界) | — |
 | 按需取用 | 每个插件不装 omp-config 也完整可用；omp-config 把它们接成一个受治理的运行时 | “Use it as just a Postgres database”，其余产品都包含在内但可选 |
 | 积木卡片 | omp-config、各插件、独立产品各一张卡：解决什么问题、落在生命线哪个接缝，链接到对应内页；独立产品的卡片更大 | 产品逐个列出，各附一句说明 |
-| 核心差异 | 四条工程信条各一句，链接到思维内核页 | Key Differentiators |
+| 核心差异 | 四条工程信条各一句，链接到设计原则页 | Key Differentiators |
 | 去向 | 按读者目标给出入口：理解思维方式、看一个任务怎么走、看真实效果、了解某个产品、改默认策略（索引页或 `/onboard-omp`） | “What do you want to do?” 目标与去处对照 |
 
 ### 内页
 
-思维内核页、接缝页、回放页、产品页、索引页都按 Linear 产品子页（如 [linear.app/plan](https://linear.app/plan)）的结构组织：一页一个主题；标题是一句陈述；页内分几个大节，每节下有几条要点，配一块真实界面切片；页尾按流程链接相邻页面。
+设计原则页、接缝页、回放页、产品页、索引页都按 Linear 产品子页（如 [linear.app/plan](https://linear.app/plan)）的结构组织：一页一个主题；标题是一句陈述；页内分几个大节，每节下有几条要点，配一块真实界面切片；页尾按流程链接相邻页面。
 
-- **思维内核页**：每条工程信条一个大节，见[四条工程信条](#四条工程信条)。
+- **设计原则页**：每条工程信条一个大节，节末列出落实这条信条的组件，链接到它们所在的接缝页；见[四条工程信条](#四条工程信条)。
 - **接缝页**：每个接缝一页，页内按人机交互面、代理原语层、静默治理层分节；页尾链接上一个和下一个接缝，第六个接缝之后链接回放页。
 - **回放页、产品页、索引页**：内容见下文对应章节。
 
-## 一、底座与思维内核
+## 一、底座与设计原则
 
 ### 宿主边界
 
@@ -85,7 +85,7 @@ flowchart TB
 
 | 信条 | 解决的问题 | 落地方式 |
 |---|---|---|
-| 增量追加，保持提示前缀不变 | 钩子改写 system prompt 或中途增减工具，会让相邻请求的前缀不一致，击穿提示缓存；代理自己发起的轮次还会漏掉定制 | omp-config 的扩展不改写宿主 system prompt，定制以 `<system-reminder>` 增量消息追加；`repo-rules` 用相对仓库根的路径投递规则，worktree 之间前缀一致；插件在会话起点按规范顺序一次写定启用工具，中途变化只发差分消息 |
+| 增量追加，保持提示前缀不变 | 钩子改写 system prompt 或中途增减工具，会让相邻请求的前缀不一致，击穿提示缓存，已发过的上下文要重新计费 | 会话开始后宿主 system prompt 保持原样，提示词修改、规则和工具说明都以 `<system-reminder>` 增量消息追加；`repo-rules` 以相对仓库根的路径投递 AGENTS.md 与 CLAUDE.md，同一仓库的检出与各 worktree 前缀一致；插件在会话起点按规范顺序一次写定启用工具，中途变化只发差分消息 |
 | 不靠静态提示词，靠可观测信号纠偏 | 模型遇到前后矛盾的提示词会直接忽略；长会话中会逐步忽略静态 system prompt | 先消除提示词内部的重复和冲突（`SYSTEM_TEMPLATE.md`、`tool-topics`、`system-prompt-replace`），再把工具误用、未隔离的并发写入、未验证就交付、只说不做就收工当作偏离信号，在工具调用、工具结果、子代理交付和回合结束处阻断或提醒 |
 | 权威源头单一，编排、执行、顾问分离 | 主代理写派工 prompt 时会把自己的假设带给子代理；按钮或子代理自治过多会越过主代理造成状态分裂 | 执行侧只用无状态的 `task:*` 档位；顾问 `discuss:*`、`mentor:default` 由 `user-prompt-inject` 直接拿到用户原话，并以只读或无工具限权；Playbook 的按钮只是发给协调者的请求 |
 | 机制与默认策略分离 | 把个人工作流写死进扩展会变成黑盒；只靠自然语言规则又没有运行时约束力 | 扩展只提供带作用域条件的机制，仓库随附的替换规则、追加片段、回合判定、子代理定义都是可运行的示例；更新器三方合并保留本机定制；插件不装 omp-config 也完整可用 |
@@ -122,7 +122,7 @@ flowchart TB
 | 5 | 跨轮次保留的终端：代理在一个保留下来的终端里启动完整的 omp 会话，几分钟里多次向同一终端输入。人在 Tern 终端 HUD 里的按键直接写进终端，不进会话记录，所以这一帧展示代理一侧，人可以向同一终端输入作为事实写在说明里 | `omp-unified-exec` |
 | 6 | 拒绝半途而废：子代理交付时被退回，判定者对照任务和实际调用发现验证用错了模型，子代理换模型重做；另附一次主代理没做完就停下时 `turn-judge` 注入的提示 | `task-completion-judge`、`turn-judge` |
 
-产品页另有两帧：`omp-playbooks` 一次有边界的运行检查（读设备文档、打开 Playbook、读块、启动 Run）；`omp-dispatch` 协调者被唤醒后读 issue 与背后的决定、作出裁决，由状态机把工单交回负责人。`omp-remote-build` 没有内嵌帧。
+产品页另有三帧：`omp-playbooks` 一次有边界的运行检查（读设备文档、打开 Playbook、读块、启动 Run）；`omp-dispatch` 协调者被唤醒后读 issue 与背后的决定、作出裁决，由状态机把工单交回负责人；`omp-remote-build` 一次测试运行，代理取得自己的容器，在容器里读到本机写下、经同步送达的文件。
 
 呈现形式参考 Amp 首页的章节与逐字稿：回放页是一个按帧分章、可逐步播放的会话播放器，每帧附完整摘录；接缝页和产品页内嵌对应的那一帧。
 
@@ -134,7 +134,7 @@ Playbook、Dispatch、Remote Build 自成体系，各有完整的使用流程和
 |---|---|---|
 | [omp-playbooks](https://github.com/oh-my-omp/omp-playbooks) | 人机共创的可执行设计文档：设计块、执行块和编排块放在同一份 YAML 里，人在 Tern 面板中把块当卡片编辑，主会话负责编译和启动子代理 | 人、协调者、文档服务、子代理四方的职责边界，以及“按钮是请求，不是自动执行器”；内嵌一帧真实会话 |
 | [omp-dispatch](https://github.com/oh-my-omp/omp-dispatch) | GitHub issue 图交付引擎：持久票据按工作流状态机推进，每次交付由一次性 owner 会话完成，由全新的独立判定者把关 | 从 issue 里的链接或 GitHub App 事件启动协调者的端到端流程；为什么判定必须对准具体 commit、由新会话完成；内嵌一帧协调者裁决的真实会话 |
-| [omp-remote-build](https://github.com/oh-my-omp/omp-remote-build) | 按 worktree 隔离的远端构建环境：本地照常编辑，Mutagen 单向同步到远端主机，在 Komodo 管理的容器里编译、测试 | 本地 worktree、同步、远端主机与容器各方的职责；项目如何用一个配置文件选择接入 |
+| [omp-remote-build](https://github.com/oh-my-omp/omp-remote-build) | 按 worktree 隔离的远端构建环境：本地照常编辑，Mutagen 单向同步到远端主机，在 Komodo 管理的容器里编译、测试 | 本地 worktree、同步、远端主机与容器各方的职责；项目如何用一个配置文件选择接入；内嵌一帧真实会话 |
 
 `omp-codex-image-gen` 等单一功能插件放在页面末尾的工具区，一张卡片一句话。
 
@@ -162,11 +162,11 @@ Playbook、Dispatch、Remote Build 自成体系，各有完整的使用流程和
 
 | 官网 | 借鉴点 | 对应板块 |
 |---|---|---|
-| [linear.app](https://linear.app/) | 首页先给三条原则，再沿产品开发流程分屏（Intake → Planning → AI → Build）；产品子页一页一个主题，页尾按流程链接相邻页面 | 内页：思维内核页与接缝页 |
+| [linear.app](https://linear.app/) | 首页先给三条原则，再沿产品开发流程分屏（Intake → Planning → AI → Build）；产品子页一页一个主题，页尾按流程链接相邻页面 | 内页：设计原则页与接缝页 |
 | [ampcode.com](https://ampcode.com/) | 首页主体是一段按章节打时间戳、附完整逐字稿的真实工作录像 | 带批注的真实回放 |
 | [charm.land](https://charm.land/) | 一个组织下的旗舰产品各占一屏，基础库成卡片区，零散工具放末尾 | 首页积木卡片里独立产品与插件的分区 |
-| [obsidian.md](https://obsidian.md/) | 三句立场各配一行机制说明，同步、发布作为独立产品单列 | 思维内核页开头 |
-| [nixos.org](https://nixos.org/) | 三根支柱做标题，下面分出两个产品 | 思维内核与产品形态分开 |
+| [obsidian.md](https://obsidian.md/) | 三句立场各配一行机制说明，同步、发布作为独立产品单列 | 设计原则页开头 |
+| [nixos.org](https://nixos.org/) | 三根支柱做标题，下面分出两个产品 | 设计原则与产品形态分开 |
 | [temporal.io](https://temporal.io/) | 先抛痛点、给演示，再逐层拆解机制；讲的是看不见的保障 | 静默治理层的讲法 |
 | [supabase.com](https://supabase.com/) | 首页先讲每个产品可单独使用，再列产品、核心差异和按目标的去处 | 首页 |
 

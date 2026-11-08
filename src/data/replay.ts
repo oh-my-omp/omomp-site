@@ -34,7 +34,7 @@ interface ShotCopy {
 
 export const shotCopy: Readonly<Record<string, ShotCopy>> = {
   "1": {
-    title: { en: "A vague question is sent back", zh: "含糊的问题被退回" },
+    title: { en: "A question in the agent's jargon is sent back", zh: "满是行话的问题被退回" },
     caption: {
       en: "The agent asks you to choose, in terms only it understands. The question is returned before it reaches you; fourteen seconds later the plain-words version opens the panel and you answer.",
       zh: "代理请你做选择，用的却是只有它自己懂的说法。问题在到你面前之前就被退回；十四秒后，改成大白话的版本才打开面板，你作答。",
@@ -63,7 +63,7 @@ export const shotCopy: Readonly<Record<string, ShotCopy>> = {
     },
   },
   "3": {
-    title: { en: "A bundled dispatch is refused", zh: "打包的派发被拒绝" },
+    title: { en: "A bundled dispatch is refused", zh: "打包派发被拦下" },
     caption: {
       en: "The main agent sends five workers into one checkout, three of them carrying several topics each. Two refusals later, the work goes out as one topic per worker.",
       zh: "主代理把五个执行者派进同一个工作区，其中三个各揣着好几个主题。被拒两次之后，工作按一个执行者一个主题重新发出。",
@@ -143,6 +143,23 @@ export const shotCopy: Readonly<Record<string, ShotCopy>> = {
       3: { en: "The new state comes back from the state machine.", zh: "新状态由状态机返回。" },
     },
   },
+  "remote-build": {
+    title: { en: "A file edited locally, read in the container", zh: "本机写的文件，在容器里读到" },
+    caption: {
+      en: "A test run on a project opted in to remote build. The agent asks for its container, then runs a command inside it; the file it prints was written on the laptop and arrived by sync.",
+      zh: "一次测试运行，项目已接入远端构建。代理先要来自己的容器，再在里面跑一条命令；它打印的文件是在本机写的，靠同步送到容器里。",
+    },
+    notes: {
+      2: {
+        en: "One container per worktree. Sync runs one way, laptop to container.",
+        zh: "每个 worktree 一个容器；同步只有一个方向：本机到容器。",
+      },
+      4: {
+        en: "The command ran on the build host; its output streams back to the agent.",
+        zh: "命令在构建机上执行，输出流回代理。",
+      },
+    },
+  },
 };
 
 const raw = rawShots.parse(sessions).shots;
@@ -159,7 +176,7 @@ export function shotsFor(ids: readonly string[], lang: Lang): Shot[] {
         title: copy.title[lang],
         caption: copy.caption[lang],
         mechanisms: shot.mechanism,
-        source: `${shot.session.date} · ${shot.session.id.slice(0, 8)}${shot.session.model ? ` · ${shot.session.model}` : ""}`,
+        source: [shot.session.date, shot.session.id.slice(0, 8), ...(shot.session.model ? [shot.session.model] : [])],
         events: shot.events.map((e, i) => {
           const note = copy.notes?.[i]?.[lang];
           return { actor: e.actor, kind: e.kind, text: e.text, ...(e.tool ? { tool: e.tool } : {}), ...(note ? { note } : {}) };
@@ -176,7 +193,8 @@ export function replayLabels(lang: Lang): Labels {
   return {
     play: zh ? "播放" : "Play",
     pause: zh ? "暂停" : "Pause",
-    restart: zh ? "重来" : "Restart",
+    replay: zh ? "重播" : "Replay",
+    step: zh ? "步骤" : "Step",
     humanView: zh ? "你看到的" : "What you saw",
     fullView: zh ? "模型看到的" : "What the model saw",
     hidden: zh

@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, Show } from "solid-js";
+import { createMemo, createSignal, For } from "solid-js";
 
 export type Layer = "human" | "agent" | "silent";
 
@@ -32,7 +32,9 @@ export default function LifelineMap(props: {
   labels: MapLabels;
 }) {
   const [layer, setLayer] = createSignal<Layer | "all">("all");
-  const [focus, setFocus] = createSignal<MapComponent | undefined>(undefined);
+  // The first chip of the first seam, in layer order, so the detail panel starts filled.
+  const first = LAYERS.flatMap((l) => props.components.filter((c) => c.seam === props.seams[0]!.id && c.layer === l))[0]!;
+  const [focus, setFocus] = createSignal<MapComponent>(first);
   const [seam, setSeam] = createSignal(props.seams[0]!.id);
 
   const cells = createMemo(() => {
@@ -65,18 +67,32 @@ export default function LifelineMap(props: {
           )}
         </For>
       </div>
+      <p class="lm-hint">{props.labels.hint}</p>
 
       <div class="lm-tabs" role="tablist">
         <For each={props.seams}>
           {(s) => (
             <button type="button" role="tab" aria-selected={seam() === s.id} classList={{ on: seam() === s.id }} onClick={() => setSeam(s.id)}>
-              {s.order}
+              {String(s.order).padStart(2, "0")}
             </button>
           )}
         </For>
       </div>
 
       <div class="lm-grid" style={{ "--cols": props.seams.length }}>
+        <div class="lm-rowlabels" aria-hidden="true">
+          <span />
+          <For each={LAYERS}>
+            {(l) => (
+              <span class={`lm-rowlabel layer-${l}`} classList={{ dim: layer() !== "all" && layer() !== l }}>
+                <span class="lm-rowlabel-text">
+                  <span class="layer-dot" />
+                  {props.labels.layers[l]}
+                </span>
+              </span>
+            )}
+          </For>
+        </div>
         <For each={props.seams}>
           {(s) => (
             <section class="lm-col" classList={{ current: seam() === s.id }}>
@@ -98,7 +114,20 @@ export default function LifelineMap(props: {
                           onFocus={() => setFocus(c)}
                           onClick={() => setFocus(c)}
                         >
-                          {c.name}
+                          <For each={c.name.split(" · ")}>
+                            {(part, i) => {
+                              const more = i() < c.name.split(" · ").length - 1;
+                              return (
+                                <>
+                                  <span class="lm-chip-part">
+                                    {part}
+                                    {more && <span class="lm-chip-sep"> ·</span>}
+                                  </span>
+                                  {more && " "}
+                                </>
+                              );
+                            }}
+                          </For>
                         </button>
                       )}
                     </For>
@@ -111,19 +140,13 @@ export default function LifelineMap(props: {
       </div>
 
       <div class="lm-detail" aria-live="polite">
-        <Show when={focus()} fallback={<p class="lm-hint">{props.labels.hint}</p>}>
-          {(c) => (
-            <>
-              <span class={`layer-${c().layer} lm-detail-layer`}>
-                <span class="layer-dot" />
-                {props.labels.layers[c().layer]}
-              </span>
-              <code class="lm-detail-name">{c().name}</code>
-              <p>{c().solves}</p>
-              <a href={c().repo}>{props.labels.open} →</a>
-            </>
-          )}
-        </Show>
+        <span class={`layer-${focus().layer} lm-detail-layer`}>
+          <span class="layer-dot" />
+          {props.labels.layers[focus().layer]}
+        </span>
+        <code class="lm-detail-name">{focus().name}</code>
+        <p>{focus().solves}</p>
+        <a href={focus().repo}>{props.labels.open} →</a>
       </div>
     </div>
   );

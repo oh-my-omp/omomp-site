@@ -2,7 +2,7 @@ import type { Text } from "./i18n";
 
 /** `match` is the route prefix that marks the item active; it defaults to `route`. */
 export const nav: ReadonlyArray<{ route: string; match?: string; label: Text }> = [
-  { route: "/principles/", label: { en: "Principles", zh: "思维内核" } },
+  { route: "/principles/", label: { en: "Principles", zh: "设计原则" } },
   { route: "/lifeline/", label: { en: "Lifeline", zh: "生命线" } },
   { route: "/replay/", label: { en: "Replay", zh: "回放" } },
   { route: "/products/playbooks/", match: "/products/", label: { en: "Products", zh: "产品" } },

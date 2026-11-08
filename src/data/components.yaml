@@ -15,8 +15,8 @@ ask-more-panel:
       en: The structured question, the full-screen page, the readability check and the routing rule.
       zh: 结构化提问、全屏页面、可读性检查和路由规则。
     policy:
-      en: Timeout, notification and expiry behavior, and whether the readability check runs.
-      zh: 超时、通知与到期处理方式，以及是否启用可读性检查。
+      en: "Timeout, notification and expiry handling, and the readability check. Shipped: a terminal notification when a question waits too long, the model decides if it still goes unanswered, and the readability check is on."
+      zh: 超时、通知与到期处理，以及可读性检查。随附设定：问题等太久时发终端通知，仍无人回答则交给模型决定，可读性检查开启。
     customize: https://github.com/oh-my-omp/omp-ask-more#readme
 
 input-polish:
@@ -35,8 +35,8 @@ input-polish:
       en: Shortcut, helper rewrite, accept-or-discard overlay.
       zh: 快捷键、辅助改写、采用或丢弃的浮层。
     policy:
-      en: The key, and the rewrite instruction. The shipped one makes the draft sound more motivating.
-      zh: 快捷键和改写指令。随附的指令让草稿读起来更有干劲。
+      en: The key and the rewrite instruction. The shipped instruction makes the draft read with more conviction.
+      zh: 快捷键和改写指令。随附的指令让草稿读起来更有说服力。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#input-polish
 
 ask-tool:
@@ -52,7 +52,7 @@ ask-tool:
     zh: 每个问题都写明现状、要决定什么、之后会怎样，还能附上代码行、示意图和短演示。
 
 ask-readability:
-  name: ask readability check
+  name: omp-ask-more · readability
   repo: https://github.com/oh-my-omp/omp-ask-more#readme
   layer: silent
   seam: intent
@@ -60,8 +60,8 @@ ask-readability:
     en: Questions a stranger could not follow never reach you.
     zh: 外人看不懂的问题，到不了你面前。
   does:
-    en: A judge reads each question before the page opens and sends an unclear one back for a rewrite. Routing rules keep every question for you on this path.
-    zh: 页面打开前由判定者先读一遍，看不懂就退回重写。路由规则让所有给你的问题都走这条路。
+    en: Reads each question as a newcomer would see it, with no view of the project or the session, and sends back any sentence that leans on unexplained names, numbers or shorthand.
+    zh: 按新人看到的样子读每个问题，不看项目也不看会话；凡有句子依赖没解释的名称、编号或缩写，就退回重写。
 
 omp-modes:
   name: omp · omp-light
@@ -79,8 +79,8 @@ omp-modes:
       en: A per-launch config overlay; files on disk stay untouched.
       zh: 按启动叠加的配置，不改磁盘上的文件。
     policy:
-      en: Which extensions the light mode turns off.
-      zh: 轻量模式关掉哪些扩展。
+      en: "Which extensions light mode turns off. Shipped: the dispatch, handoff, advisor and reminder hooks, `fork_task`, and bash interception."
+      zh: 轻量模式关掉哪些扩展。随附设定：关掉派发、交付、顾问和提醒类钩子，以及 `fork_task` 和 bash 拦截。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/plugins-and-modes.md#full-mode-omp-vs-light-mode-omp-light
 
 tool-topics:
@@ -99,8 +99,8 @@ tool-topics:
       en: The topic scheme, description replacement and on-demand delivery.
       zh: 专题协议、说明替换和按需送达。
     policy:
-      en: Which host tools are covered and what each topic says.
-      zh: 覆盖哪些宿主工具，以及每个专题写什么。
+      en: "Which host tools are covered and what each topic says. Shipped: omp's own tools only; plugin tools keep their own docs."
+      zh: 覆盖哪些宿主工具，每个专题写什么。随附设定：只覆盖 omp 自带的工具，插件工具沿用自己的文档。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#tool-topics
 
 system-template:
@@ -176,15 +176,15 @@ todo-panel:
     en: You can see and edit the plan the agent is working from.
     zh: 你看得到、也改得了代理正在执行的计划。
   does:
-    en: Shows the goal, phases and per-item time in a Tern panel you can edit while the agent works.
-    zh: 在 Tern 面板里显示目标、阶段和每项用时，代理干活时你也能编辑。
+    en: Shows the goal, phases and time spent per item in a Tern panel. Edit it there and you edit the plan the agent is following.
+    zh: 在 Tern 面板里显示目标、阶段和每项用时；在面板里改，改的就是代理正在执行的计划。
   defaults:
     mechanism:
       en: The plan document, time budgets, reminders and commit-on-done.
       zh: 计划文档、时间预算、提醒、完成即提交。
     policy:
-      en: Whether stop reminders fire, how often, and whether a plan is requested up front.
-      zh: 是否发出停止提醒、发几次，以及是否一开始就要求列计划。
+      en: "Whether stop reminders fire, how often, and whether a plan is requested up front. Shipped: reminders on, capped per stop, no plan required at the first prompt."
+      zh: 是否发出停止提醒、发几次，以及开场是否要求列计划。随附设定：提醒开启、每次停下有上限，开场不强制列计划。
     customize: https://github.com/oh-my-omp/omp-todo-more#readme
 
 todo-tool:
@@ -212,16 +212,16 @@ fork-task:
     zh: 把调用方最近一次请求复制给子代理；同模型的分叉因此能复用已缓存的前缀。
 
 todo-reminders:
-  name: stop reminders
+  name: omp-todo-more · reminders
   repo: https://github.com/oh-my-omp/omp-todo-more
   layer: silent
   seam: memory
   solves:
-    en: Stopping with open items is noticed.
-    zh: 留着未完成项就停下，会被发现。
+    en: A turn cannot end quietly with items still open.
+    zh: 带着未完成项，回合没法悄悄结束。
   does:
-    en: When the agent ends a turn with items still open, a reminder follows.
-    zh: 代理结束回合时如果还有未完成项，会收到提醒。
+    en: Ending a turn with open items draws a reminder, and so does a long stretch of work that never touches the list.
+    zh: 带着未完成项结束回合会收到提醒；长时间干活却不碰待办，同样会被提醒。
 
 model-compaction:
   name: model-compaction
@@ -252,8 +252,8 @@ subagent-usage-cmd:
     en: The agent can weigh dispatch cost against what your quota has left.
     zh: 代理能把派发成本和剩余额度放在一起权衡。
   does:
-    en: You opt in once; the machine calibrates from its own session history, with no model calls.
-    zh: 你授权一次，本机就从自己的会话历史校准，不调用任何模型。
+    en: Calibrates from this machine's own session history, with no model calls.
+    zh: 只用本机自己的会话历史校准，不调用任何模型。
 
 worker-tiers:
   name: task:*
@@ -262,7 +262,7 @@ worker-tiers:
   seam: delegation
   solves:
     en: Work goes to the cheapest worker that can be trusted with it.
-    zh: 活交给能信得过的最便宜的执行者。
+    zh: 任务派给信得过、成本又最低的执行者。
   does:
     en: Stateless worker tiers ranked by cost and trust. Each takes a brief and returns a structured report.
     zh: 按成本和可信度排序的无状态执行档位，接一份派工单，交一份结构化报告。
@@ -347,8 +347,8 @@ task-split-check:
       en: Two judged checks on every dispatch.
       zh: 每次派发都经过的两项判定。
     policy:
-      en: Which worker definitions opt in to the topic check, and which model judges.
-      zh: 哪些执行者定义启用主题检查，以及由哪个模型判定。
+      en: "Which worker definitions opt in to the topic check, and which model judges. Shipped: `task:free`, `task:low` and `task:mid` opt in."
+      zh: 哪些执行者定义启用主题检查，由哪个模型判定。随附设定：`task:free`、`task:low`、`task:mid` 启用。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#task-split-check
 
 terminals-hud:
@@ -360,8 +360,8 @@ terminals-hud:
     en: You can watch, and step into, the terminal the agent is driving.
     zh: 你可以旁观代理正在驱动的终端，也可以直接上手。
   does:
-    en: Every long-lived session appears in Tern. Open it to see the live screen and type into it.
-    zh: 每个长驻会话都出现在 Tern 里，打开就能看到实时画面并输入。
+    en: Every long-lived session gets a Tern pane with its live screen. Your keystrokes go to the same process the agent drives.
+    zh: 每个长驻会话在 Tern 里都有一个显示实时画面的面板；你敲的键送进代理驱动的同一个进程。
 
 watchdog-cmd:
   name: /watchdog
@@ -439,8 +439,8 @@ tool-policy-nag:
       en: A blocking lane before the call, and reminder lanes after it.
       zh: 调用前的阻断通道，调用后的提醒通道。
     policy:
-      en: Which detector runs, how often reminders fire, how they read, and how risky a command chain may be.
-      zh: 用哪种检测、提醒频率和措辞，以及命令链能有多冒险。
+      en: "Which detector runs, how often reminders fire, how they read, and how risky a command chain may be. Shipped: a rule-based detector with no model calls, reminding only after repeated misuse."
+      zh: 用哪种检测、提醒频率和措辞，以及命令链能有多冒险。随附设定：基于规则的检测，不调用模型，同类问题反复出现后才提醒。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#tool-policy-nag
 
 watchdog-agent:
@@ -460,7 +460,7 @@ watchdog-agent:
       zh: 配置发现、动作计数、审查与注入。
     policy:
       en: None shipped. A watchdog exists only once you write its spec.
-      zh: 不随附任何配置，你写下配置，看门狗才存在。
+      zh: 不随附规则文件；写下 WATCHDOG 规则，看门狗才启用。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#watchdog-agent
 
 thinking-translator:
@@ -535,8 +535,8 @@ task-completion-judge:
       en: A judged verdict on every handoff, plus a todo check.
       zh: 每次交付的判定，外加待办检查。
     policy:
-      en: Which worker definitions are judged, and which model judges.
-      zh: 哪些执行者定义受判定，以及由哪个模型判定。
+      en: "Which worker definitions are judged, and which model judges. Shipped: `task:free`, `task:low` and `task:mid` are judged."
+      zh: 哪些执行者定义受判定，由哪个模型判定。随附设定：`task:free`、`task:low`、`task:mid` 受判定。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#task-completion-judge
 
 turn-judge:
@@ -553,7 +553,7 @@ turn-judge:
   defaults:
     mechanism:
       en: Session filters, yes-or-no questions, and a prompt to send when a rule holds.
-      zh: 会话过滤、是非题，以及规则成立时要发出的提示。
+      zh: 会话过滤条件、是/否判定问题，以及规则成立时发出的提示。
     policy:
       en: The shipped rule catches GPT main sessions that list remaining work and stop.
       zh: 随附规则针对 GPT 主会话：列出剩余工作却停下。
@@ -575,6 +575,6 @@ lang-nag:
       en: A language judgment and a correction on the next turn.
       zh: 语言判定，以及下一轮的纠正。
     policy:
-      en: The target language and the wording of the correction.
-      zh: 目标语言和纠正措辞。
+      en: "The target language and the wording of the correction. Shipped: Chinese, with a one-line reminder to answer in it."
+      zh: 目标语言和纠正措辞。随附设定：中文，外加一句提醒改用中文作答。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#lang-nag

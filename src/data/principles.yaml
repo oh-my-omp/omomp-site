@@ -1,61 +1,63 @@
 append:
   order: 1
   short:
-    en: Append, never rewrite.
-    zh: 只追加，不改写。
+    en: Append, never rewrite
+    zh: 只追加，不改写
   summary:
     en: Customizations arrive as added messages. The prompt prefix, and the cache built on it, stay intact.
     zh: 定制以追加消息送达，提示词前缀和建立在它上面的缓存都不受影响。
   title:
-    en: Add to the prompt. Never edit it in place.
-    zh: 往提示词后面加，从不就地改。
+    en: Add to the prompt. Never edit it in place
+    zh: 提示词只追加，不原地改写
   problem:
-    en: A hook that rewrites the system prompt, or adds and drops tools mid-session, changes the prefix of every request that follows. The prompt cache misses, and turns the agent starts on its own never see the change.
-    zh: 钩子改写 system prompt，或在会话中途增减工具，之后每个请求的前缀都会变。提示缓存因此失效，代理自己发起的回合也看不到这些改动。
+    en: When a hook rewrites the system prompt or changes the tool list mid-session, every later request starts with a different prefix. The prompt cache misses, and the session pays again for context it has already sent.
+    zh: 钩子一旦改写 system prompt，或在会话中途增减工具，之后每个请求的前缀都跟着变。提示缓存随之失效，已经发过的上下文要再付一次钱。
   practice:
-    - en: omp-config leaves the host's system prompt untouched. Every change rides in as a `<system-reminder>` message added to the conversation.
-      zh: omp-config 不碰宿主的 system prompt，所有改动都以 `<system-reminder>` 消息追加进对话。
-    - en: Path-scoped rules name files relative to the repository root, so two worktrees of one repository produce the same prefix.
-      zh: 按路径生效的规则用相对仓库根的路径指称文件，同一仓库的两个 worktree 因此得到相同的前缀。
+    - en: Once a session starts, its system prompt stays as the host built it. Prompt edits, rules and tool notes arrive as `<system-reminder>` messages added to the conversation.
+      zh: 会话开始后，system prompt 保持宿主构建时的样子；提示词修改、规则和工具说明都以 `<system-reminder>` 消息追加进对话。
+    - en: AGENTS.md and CLAUDE.md are delivered under paths relative to the repository root, so a checkout and its worktrees send the same bytes.
+      zh: AGENTS.md 和 CLAUDE.md 以相对仓库根的路径送达，同一仓库的主检出和各个 worktree 因此发出完全相同的内容。
     - en: Plugins set their whole tool list once, in a fixed order, when a session starts. Any later change goes out as a diff message.
       zh: 插件在会话开始时按固定顺序一次写定全部工具，之后的变化只以差分消息告知。
+  seen: [system-prompt-replace, repo-rules, tool-topics, append-system-model]
 
 signals:
   order: 2
   short:
-    en: Correct on signals, not prose.
-    zh: 靠信号纠偏，不靠说教。
+    en: Correct on signals, not prose
+    zh: 靠信号纠偏，不靠说教
   summary:
     en: Long sessions forget static instructions. omomp watches behavior instead and stops drift at the step where it shows.
     zh: 长会话会淡忘静态指令。omomp 改为盯行为，在偏离露头的那一步拦下。
   title:
-    en: Watch what the agent does, not what it was told.
-    zh: 看代理做了什么，而不是告诉过它什么。
+    en: Watch what the agent does, not what it was told
+    zh: 看代理做了什么，而不是告诉过它什么
   problem:
     en: A model given two instructions that disagree follows neither reliably. Over a long session it drifts from the system prompt even when the prompt is clean.
     zh: 两条指令互相冲突时，模型哪条都不会稳定遵守；即使提示词干净，长会话里它也会逐渐偏离。
   practice:
-    - en: "First, remove the conflicts: duplicated tool prose leaves the base template, tool details move behind on-demand topics, and contradicting host sentences are patched."
-      zh: 先消除冲突：重复的工具说明移出基础模板，工具细节改为按需读取的专题，与本地规则矛盾的宿主原句被修补。
-    - en: Then watch behavior. A misused tool, two writers in one checkout, an unverified handoff, or a turn that ends with work announced but not done each counts as a drift signal.
-      zh: 再盯行为。用错工具、两个写者共用一个工作区、没验证就交差、说了要做却收工，都算偏离信号。
+    - en: "First, remove the conflicts: strip duplicated tool prose from the base template, move tool details into on-demand topics, and override contradicting host sentences with appended replacements."
+      zh: 先消除冲突：从基础模板删去重复的工具说明，把工具细节移进按需读取的专题，与本地规则矛盾的宿主原句用追加的替换声明覆盖。
+    - en: Then watch behavior. A misused tool, two writers in one checkout, an unverified handoff, or a turn that announces work and stops each counts as a drift signal.
+      zh: 再盯行为：用错工具、两个代理同时写一个工作区、没验证就交付、宣布要做却结束回合，都算偏离信号。
     - en: Each signal is answered where it occurs, at the tool call, the tool result, the subagent handoff or the end of the turn, with a block or a reminder.
       zh: 每个信号在它出现的地方处理：工具调用、工具结果、子代理交付或回合结束，或阻断，或提醒。
+  seen: [tool-policy-nag, isolation-nudge, task-completion-judge, turn-judge]
 
 roles:
   order: 3
   short:
-    en: Plan, do and advise apart.
-    zh: 编排、执行、顾问分开。
+    en: Plan, do and advise apart
+    zh: 编排、执行、顾问分开
   summary:
     en: Workers stay stateless. Advisors hear your words, not the planner's summary of them.
     zh: 执行者不留状态；顾问听的是你的原话，不是主代理的转述。
   title:
-    en: One owner for each piece of state. Separate hands for planning, doing and advising.
-    zh: 每份状态只有一个主人；编排、执行、顾问各司其职。
+    en: One owner for each piece of state. Separate hands for planning, doing and advising
+    zh: 每项状态只归一方；编排、执行、顾问各司其职
   problem:
     en: A main agent writing a subagent's brief passes its own assumptions down with it. A button or a subagent that acts on its own creates a second version of the truth.
-    zh: 主代理给子代理写派工说明时，会把自己的假设一并传下去；按钮或子代理擅自行动，就会出现第二份事实。
+    zh: 主代理给子代理写派工说明时，会把自己的假设一并传下去；按钮或子代理擅自改动状态，同一件事就有了两个说法。
   practice:
     - en: Execution goes to stateless `task:*` tiers. Each receives a brief and returns a result; none keeps state between jobs.
       zh: 执行交给无状态的 `task:*` 档位：接一份派工说明，交一份结果，不在两次任务之间保留状态。
@@ -63,18 +65,19 @@ roles:
       zh: 顾问（`discuss:*`、`mentor:default`）直接拿到用户的原始请求，只能读，或者根本没有工具。
     - en: In a Playbook, pressing a button asks the coordinator to act. The button itself changes nothing.
       zh: 在 Playbook 里，按下按钮只是请协调者去做；按钮本身不改变任何东西。
+  seen: [worker-tiers, advisors, user-prompt-inject, task-split-check]
 
 policy:
   order: 4
   short:
-    en: Mechanism shipped, policy yours.
-    zh: 机制随仓库，策略归你。
+    en: Mechanism shipped, policy yours
+    zh: 机制随仓库，策略归你
   summary:
     en: Extensions provide mechanisms. The author's own choices ship beside them as examples you can replace.
     zh: 扩展只提供机制；作者自己的选择作为可替换的示例随附。
   title:
-    en: Ship mechanisms. Leave the policy to whoever runs it.
-    zh: 仓库只交付机制，策略留给使用者。
+    en: Ship mechanisms. Leave the policy to whoever runs them
+    zh: 仓库只交付机制，策略留给使用者
   problem:
     en: A personal workflow hard-coded into an extension becomes a black box. A rule written only as prose has no force at runtime.
     zh: 个人工作流写死进扩展，就成了黑盒；只写成文字的规则，运行时没有约束力。
@@ -82,6 +85,7 @@ policy:
     - en: Each extension offers a mechanism with scope conditions, such as session, model or mode.
       zh: 每个扩展提供一种机制，并带作用域条件，例如会话、模型或模式。
     - en: The replacement rules, prompt fragments, turn checks and subagent definitions in the repository are runnable examples of one author's policy.
-      zh: 仓库里的替换规则、提示词片段、回合判定和子代理定义，都是一位作者的策略的可运行示例。
+      zh: 仓库随附的替换规则、提示词片段、回合判定和子代理定义，都是作者默认策略的可运行示例。
     - en: The updater merges three ways and keeps your local changes. Every plugin also works without omp-config.
       zh: 更新器做三方合并，保留你的本地改动；每个插件不装 omp-config 也能用。
+  seen: [omp-modes, turn-judge, watchdog-agent, model-compaction]

@@ -17,14 +17,17 @@ export interface Shot {
   readonly title: string;
   readonly caption: string;
   readonly mechanisms: readonly string[];
-  readonly source: string;
+  /** Session date, id prefix and model, each kept on one line. */
+  readonly source: readonly string[];
   readonly events: readonly ReplayEvent[];
 }
 
 export interface Labels {
   readonly play: string;
   readonly pause: string;
-  readonly restart: string;
+  /** Shown on the play button once the chapter has played to its last event. */
+  readonly replay: string;
+  readonly step: string;
   readonly humanView: string;
   readonly fullView: string;
   /** `{n}` is replaced with the count; island props must be plain data, so no formatter function. */
@@ -45,16 +48,14 @@ export default function ReplayPlayer(props: { shots: readonly Shot[]; labels: La
   const [reveal, setReveal] = createSignal(true);
 
   const shot = createMemo(() => props.shots[shotIndex()]!);
-  const visible = createMemo(() =>
-    shot()
-      .events.slice(0, step() + 1)
-      .map((e, i) => ({ e, i }))
-      .filter(({ e }) => reveal() || !silent(e)),
-  );
+  /** One stable object per event, so stepping keeps rendered cards and only animates the new one. */
+  const indexed = createMemo(() => shot().events.map((e, i) => ({ e, i })));
+  const visible = createMemo(() => indexed().filter(({ e, i }) => i <= step() && (reveal() || !silent(e))));
   const hiddenSoFar = createMemo(
     () => shot().events.slice(0, step() + 1).filter(silent).length,
   );
   const last = () => shot().events.length - 1;
+  const finished = () => !playing() && step() >= last();
 
   createEffect(() => {
     if (!playing()) return;
@@ -72,14 +73,19 @@ export default function ReplayPlayer(props: { shots: readonly Shot[]; labels: La
   });
 
   let screen: HTMLDivElement | undefined;
+  /** True while transcript content remains below the visible part of the screen. */
+  const [more, setMore] = createSignal(false);
+  const measure = () => {
+    if (screen) setMore(screen.scrollHeight - screen.scrollTop - screen.clientHeight > 4);
+  };
   /** Follow the newest event while playing; a chapter picked by hand opens at its start. */
   createEffect(
     on(
-      step,
+      visible,
       () => {
         if (playing()) screen?.scrollTo({ top: screen.scrollHeight, behavior: "smooth" });
+        queueMicrotask(measure);
       },
-      { defer: true },
     ),
   );
 
@@ -131,7 +137,7 @@ export default function ReplayPlayer(props: { shots: readonly Shot[]; labels: La
           </div>
         </div>
         <p class="rp-caption">{shot().caption}</p>
-        <div class="rp-screen" ref={screen} aria-live="polite">
+        <div class="rp-screen" classList={{ more: more() }} ref={screen} aria-live="polite" onScroll={measure}>
           <For each={visible()}>
             {({ e, i }) => (
               <div class={`rp-ev a-${e.actor} k-${e.kind}`} classList={{ fresh: i === step() }}>
@@ -159,36 +165,30 @@ export default function ReplayPlayer(props: { shots: readonly Shot[]; labels: La
             type="button"
             class="rp-play"
             onClick={() => {
-              if (!playing() && step() >= last()) setStep(0);
+              if (finished()) setStep(0);
               setPlaying(!playing());
             }}
           >
-            {playing() ? props.labels.pause : props.labels.play}
+            {playing() ? props.labels.pause : finished() ? props.labels.replay : props.labels.play}
           </button>
           <input
             type="range"
             min="0"
             max={last()}
             value={step()}
-            aria-label="step"
+            aria-label={props.labels.step}
             onInput={(ev) => {
               setPlaying(false);
               setStep(Number(ev.currentTarget.value));
             }}
           />
-          <button
-            type="button"
-            class="rp-restart"
-            onClick={() => {
-              setPlaying(false);
-              setStep(0);
-            }}
-          >
-            {props.labels.restart}
-          </button>
+          <span class="rp-count" aria-hidden="true">
+            {step() + 1} / {last() + 1}
+          </span>
         </div>
         <p class="rp-source">
-          {props.labels.source} <code>{shot().source}</code>
+          <span>{props.labels.source}</span>
+          <For each={shot().source}>{(part) => <span class="rp-source-part">{part}</span>}</For>
         </p>
       </div>
     </div>

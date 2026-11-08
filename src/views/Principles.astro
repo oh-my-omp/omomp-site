@@ -1,5 +1,5 @@
 ---
-import { getCollection } from "astro:content";
+import { getCollection, getEntries } from "astro:content";
 import Base from "../layouts/Base.astro";
 import PageHead from "../components/PageHead.astro";
 import Pager from "../components/Pager.astro";
@@ -11,7 +11,11 @@ interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
-const principles = (await getCollection("principles")).sort((a, b) => a.data.order - b.data.order);
+const principles = await Promise.all(
+  (await getCollection("principles"))
+    .sort((a, b) => a.data.order - b.data.order)
+    .map(async (p) => ({ ...p, seen: await getEntries(p.data.seen) })),
+);
 ---
 
 <Base lang={lang} title={t(copy.eyebrow, lang)} description={t(copy.lede, lang)}>
@@ -31,25 +35,30 @@ const principles = (await getCollection("principles")).sort((a, b) => a.data.ord
   {
     principles.map((p) => (
       <section class="wrap tenet reveal" id={p.id}>
-        <div class="side">
-          <span class="n big">{String(p.data.order).padStart(2, "0")}</span>
-        </div>
-        <div class="body">
-          <h2>{p.data.title[lang]}</h2>
-          <div class="cols">
-            <div class="problem">
-              <p class="label">{t(copy.problem, lang)}</p>
-              <p>{p.data.problem[lang]}</p>
-            </div>
-            <div class="practice">
-              <p class="label">{t(copy.practice, lang)}</p>
-              <ul>
-                {p.data.practice.map((line) => (
-                  <li set:html={inlineCode(line[lang])} />
-                ))}
-              </ul>
-            </div>
+        <p class="n">{String(p.data.order).padStart(2, "0")}</p>
+        <h2>{p.data.title[lang]}</h2>
+        <div class="cols">
+          <div class="problem">
+            <p class="label">{t(copy.problem, lang)}</p>
+            <p>{p.data.problem[lang]}</p>
           </div>
+          <div class="practice">
+            <p class="label">{t(copy.practice, lang)}</p>
+            <ul>
+              {p.data.practice.map((line) => (
+                <li set:html={inlineCode(line[lang])} />
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div class="seen">
+          <span class="label">{t(copy.seen, lang)}</span>
+          {p.seen.map((c) => (
+            <a class={`chip layer-${c.data.layer}`} href={href(`/lifeline/${c.data.seam}/`, lang)}>
+              <span class="layer-dot" />
+              <code>{c.data.name}</code>
+            </a>
+          ))}
         </div>
       </section>
     ))
@@ -63,8 +72,6 @@ const principles = (await getCollection("principles")).sort((a, b) => a.data.ord
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--line);
   }
   .toc a {
     display: inline-flex;
@@ -88,20 +95,12 @@ const principles = (await getCollection("principles")).sort((a, b) => a.data.ord
   }
   .tenet {
     display: grid;
-    grid-template-columns: 120px minmax(0, 1fr);
-    gap: 32px;
+    gap: 20px;
     padding-top: clamp(64px, 9vw, 112px);
     scroll-margin-top: 60px;
   }
-  .big {
-    font-size: 15px;
-    position: sticky;
-    top: 96px;
-    display: block;
-  }
-  .body {
-    display: grid;
-    gap: 36px;
+  .tenet > .n {
+    font-size: 13px;
   }
   h2 {
     font-size: clamp(28px, 3.6vw, 40px);
@@ -111,6 +110,7 @@ const principles = (await getCollection("principles")).sort((a, b) => a.data.ord
     display: grid;
     grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
     gap: clamp(24px, 5vw, 64px);
+    margin-top: 16px;
     padding-top: 28px;
     border-top: 1px solid var(--line);
   }
@@ -121,6 +121,13 @@ const principles = (await getCollection("principles")).sort((a, b) => a.data.ord
     text-transform: uppercase;
     color: var(--dim);
     margin-bottom: 12px;
+  }
+  :lang(zh) .label {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--muted);
   }
   .problem p:not(.label) {
     color: var(--muted);
@@ -148,13 +155,45 @@ const principles = (await getCollection("principles")).sort((a, b) => a.data.ord
     background: var(--accent);
     border-radius: 2px;
   }
+  .seen {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 10px;
+    margin-top: 8px;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+  }
+  .seen .label {
+    margin: 0 6px 0 0;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px 4px 9px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    transition: border-color 0.15s;
+  }
+  .chip:hover {
+    border-color: var(--layer);
+  }
+  .chip code {
+    padding: 0;
+    border: 0;
+    background: none;
+    white-space: nowrap;
+  }
   @media (max-width: 760px) {
-    .tenet {
-      grid-template-columns: 1fr;
-      gap: 12px;
+    .toc {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
     }
-    .big {
-      position: static;
+    .toc a {
+      border-radius: 10px;
     }
     .cols {
       grid-template-columns: 1fr;

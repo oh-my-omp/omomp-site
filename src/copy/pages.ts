@@ -1,41 +1,42 @@
 import type { Text } from "../i18n";
 
 export const principlesPage = {
-  eyebrow: { en: "Principles", zh: "思维内核" },
-  title: { en: "Four rules. Every repository follows them.", zh: "四条规矩，每个仓库都照着做。" },
+  eyebrow: { en: "Principles", zh: "设计原则" },
+  title: { en: "Four rules every repository follows", zh: "四条原则，每个仓库都遵循" },
   lede: {
-    en: "Each component on this site is one of these rules made concrete. Read them first and the rest reads as consequence.",
-    zh: "站上的每个组件，都是其中一条规矩的落地。先读这四条，其余部分就是推论。",
+    en: "Each component on this site puts one of these rules into practice. Read them first; the rest follows from them.",
+    zh: "站上每个组件，都是其中一条原则的落地。先读这四条，其余内容都由此推出。",
   },
   problem: { en: "The problem", zh: "问题" },
   practice: { en: "In practice", zh: "做法" },
+  seen: { en: "Where it runs", zh: "落在哪些组件" },
 } satisfies Record<string, Text>
 
 export const lifelinePage = {
   eyebrow: { en: "Lifeline", zh: "生命线" },
-  title: { en: "Six handoffs between your words and the code.", zh: "从你的一句话到代码，要转手六次。" },
+  title: { en: "Six handoffs between your words and the code", zh: "从你的一句话到代码，要转手六次" },
   lede: {
-    en: "Intent drifts at each handoff. omomp places a guard at every one, on three layers: what you see, what the agent can call, and what runs unseen.",
-    zh: "每次转手，意图都可能走样。omomp 在每一处都设了防线，分三层：你看得见的、代理能调用的、在后台默默运行的。",
+    en: "Each handoff is a seam, and intent drifts at every seam. omomp guards each one on three layers: what you see, what the agent can call, and what runs unseen.",
+    zh: "每次转手都是一道接缝，意图在每道接缝都可能走样。omomp 在每道接缝设三层防护：你看得见的、代理能调用的、在后台运行的。",
   },
-  layersTitle: { en: "Three layers at every seam", zh: "每个接缝的三层" },
+  layersTitle: { en: "Three layers at every seam", zh: "每道接缝的三层" },
   human: {
     en: "Panels and pages you read, click and answer, in the terminal or in Tern.",
     zh: "你在终端或 Tern 里读、点、作答的面板和页面。",
   },
   agent: {
     en: "Tools, URL schemes and agent roles the model gets on top of stock omp.",
-    zh: "模型在原生 omp 之外多出的工具、URL 协议和代理角色。",
+    zh: "原生 omp 之外，模型多得的工具、URL 协议和代理角色。",
   },
   silent: {
     en: "Hooks you never see. They block a bad step or ask a judge, then step aside.",
-    zh: "你看不见的钩子：拦下错误的一步，或请判定者裁决，然后退场。",
+    zh: "你看不见的钩子：拦下出错的一步，或交给判定者裁决，随即退出。",
   },
-  mapTitle: { en: "Every component, by seam and layer", zh: "全部组件，按接缝与层排布" },
-  mapHint: { en: "Point at a component to see what it solves.", zh: "指向一个组件，看它解决什么问题。" },
-  all: { en: "All layers", zh: "全部" },
+  mapTitle: { en: "Every component, by seam and layer", zh: "全部组件，按接缝与层级排布" },
+  mapHint: { en: "Select a component to see what it solves.", zh: "选择任一组件，查看它解决的问题。" },
+  all: { en: "All layers", zh: "全部层级" },
   open: { en: "Repository", zh: "仓库" },
-  seamsTitle: { en: "The seams", zh: "六个接缝" },
+  seamsTitle: { en: "The six seams", zh: "六道接缝" },
 } satisfies Record<string, Text>
 
 export const seamPage = {
@@ -48,10 +49,10 @@ export const seamPage = {
 
 export const replayPage = {
   eyebrow: { en: "Replay", zh: "回放" },
-  title: { en: "What the hooks did, in sessions that really ran.", zh: "钩子做了什么，取自真实跑过的会话。" },
+  title: { en: "What the hooks did in real sessions", zh: "真实会话里，钩子做了什么" },
   lede: {
-    en: "Silent governance has no interface, so here are the transcripts. Switch to what you saw on screen, then to everything the model saw.",
-    zh: "静默治理没有界面，所以这里给出会话记录。先看你在屏幕上看到的，再切换到模型看到的全部。",
+    en: "Silent governance has no interface, so here are the transcripts. Every reminder, block and judgment is shown as the model received it; switch to “What you saw” to keep only your screen.",
+    zh: "静默治理没有界面，所以这里直接给出会话记录。每条提醒、拦截和裁决都按模型收到的样子呈现；切到“你看到的”，就只剩你屏幕上的内容。",
   },
   note: {
     en: "Excerpts are trimmed and redacted. Nothing is reworded or invented; every line comes from a session log on the author's machine.",
@@ -62,18 +63,19 @@ export const replayPage = {
 export const productPage = {
   eyebrow: { en: "Product", zh: "独立产品" },
   others: { en: "Other products", zh: "其他产品" },
-  repo: { en: "Read the repository", zh: "去仓库看" },
+  repo: { en: "View repository", zh: "查看仓库" },
 } satisfies Record<string, Text>
 
 export const defaultsPage = {
   eyebrow: { en: "Defaults", zh: "默认策略" },
-  title: { en: "What is fixed, what is a choice, and where to change it.", zh: "哪些是固定的，哪些是选择，去哪里改。" },
+  title: { en: "What is fixed, what you choose, and where to change it", zh: "哪些固定不变，哪些由你决定，去哪里改" },
   lede: {
-    en: "Every customizable component ships a mechanism and one author's settings for it. Keep the mechanism; replace the settings. Or let /onboard-omp walk you through it.",
-    zh: "每个可定制的组件都带一套机制，外加一位作者的设定。机制留着，设定换掉；也可以让 /onboard-omp 带你走一遍。",
+    en: "Every customizable component separates its mechanism from the author's default. Keep the mechanism, replace the default, or run `/onboard-omp` to set up your own.",
+    zh: "每个可定制组件都把机制和作者默认分开。机制保留，默认替换；也可以运行 `/onboard-omp`，按引导配好自己的一套。",
   },
   component: { en: "Component", zh: "组件" },
   mechanism: { en: "Mechanism", zh: "机制" },
   policy: { en: "Author's default", zh: "作者默认" },
   customize: { en: "Change it", zh: "去改" },
+  start: { en: "Get started", zh: "开始使用" },
 } satisfies Record<string, Text>

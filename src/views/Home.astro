@@ -2,9 +2,10 @@
 import { getCollection } from "astro:content";
 import Base from "../layouts/Base.astro";
 import HostDiagram from "../components/HostDiagram.astro";
+import RepoFigure from "../components/RepoFigure.astro";
 import { home } from "../copy/home";
 import { repos, repoUrl, type Repo } from "../data/repos";
-import { href, t, type Lang } from "../i18n";
+import { href, inlineCode, t, type Lang } from "../i18n";
 
 interface Props {
   lang: Lang;
@@ -12,7 +13,7 @@ interface Props {
 const { lang } = Astro.props;
 
 const seams = (await getCollection("seams")).sort((a, b) => a.data.order - b.data.order);
-const seamName = new Map(seams.map((s) => [s.id, s.data.name[lang]]));
+const seamShort = new Map(seams.map((s) => [s.id, s.data.short[lang]]));
 const seamOrder = new Map(seams.map((s) => [s.id, s.data.order]));
 const principles = (await getCollection("principles")).sort((a, b) => a.data.order - b.data.order);
 
@@ -34,13 +35,16 @@ const tools = byKind("tool");
         <a class="btn btn-primary" href={href("/lifeline/", lang)}>{t(home.hero.primary, lang)}</a>
         <a class="btn" href={href("/principles/", lang)}>{t(home.hero.secondary, lang)}</a>
       </div>
-      <ol class="seam-strip" aria-label={lang === "en" ? "The six seams" : "六个接缝"}>
+      <ol class="seam-strip" aria-label={lang === "en" ? "The six seams" : "六道接缝"}>
         {
           seams.map((s) => (
             <li>
               <a href={href(`/lifeline/${s.id}/`, lang)}>
-                <span class="n">{String(s.data.order).padStart(2, "0")}</span>
-                <span>{s.data.name[lang]}</span>
+                <span class="strip-head">
+                  <span class="n">{String(s.data.order).padStart(2, "0")}</span>
+                  {s.data.short[lang]}
+                </span>
+                <span class="strip-name">{s.data.name[lang]}</span>
               </a>
             </li>
           ))
@@ -62,7 +66,7 @@ const tools = byKind("tool");
     <div class="band-text">
       <p class="eyebrow">{t(home.modular.eyebrow, lang)}</p>
       <h2>{t(home.modular.title, lang)}</h2>
-      <p class="sub">{t(home.modular.body, lang)}</p>
+      <p class="sub" set:html={inlineCode(t(home.modular.body, lang))} />
     </div>
     <div class="term">
       <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -82,11 +86,14 @@ const tools = byKind("tool");
 
     <h3 class="group">{t(home.blocks.runtime, lang)}</h3>
     <a class="card card-wide" href={repoUrl(runtime.name)}>
-      <code class="card-name">{runtime.name}</code>
-      <p>{runtime.line[lang]}</p>
-      <div class="chips">
-        {runtime.seams.map((s) => <span class="chip">{String(seamOrder.get(s)).padStart(2, "0")} {seamName.get(s)}</span>)}
+      <div class="wide-text">
+        <code class="card-name">{runtime.name}</code>
+        <p>{runtime.line[lang]}</p>
+        <div class="chips">
+          {runtime.seams.map((s) => <span class="chip">{String(seamOrder.get(s)).padStart(2, "0")} {seamShort.get(s)}</span>)}
+        </div>
       </div>
+      {runtime.figure && <RepoFigure figure={runtime.figure} lang={lang} />}
     </a>
 
     <h3 class="group">{t(home.blocks.plugins, lang)}</h3>
@@ -100,7 +107,7 @@ const tools = byKind("tool");
               <span class="chip-label">{t(home.blocks.seamLabel, lang)}</span>
               {r.seams.map((s) => (
                 <span class="chip">
-                  {String(seamOrder.get(s)).padStart(2, "0")} {seamName.get(s)}
+                  {String(seamOrder.get(s)).padStart(2, "0")} {seamShort.get(s)}
                 </span>
               ))}
             </div>
@@ -116,6 +123,7 @@ const tools = byKind("tool");
         products.map((r) => (
           <a class="card card-product" href={href(r.page!, lang)}>
             <code class="card-name">{r.name}</code>
+            {r.figure && <RepoFigure figure={r.figure} lang={lang} />}
             <p>{r.line[lang]}</p>
             <span class="more">{t(home.blocks.readMore, lang)} →</span>
           </a>
@@ -222,21 +230,53 @@ const tools = byKind("tool");
     overflow: hidden;
     text-align: left;
   }
+  .seam-strip li {
+    position: relative;
+  }
   .seam-strip li + li {
     border-left: 1px solid var(--line);
   }
+  /* A chevron on each inner border, so the strip reads as one pipeline. */
+  .seam-strip li:not(:last-child)::after {
+    content: "›";
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    right: -9px;
+    width: 18px;
+    height: 18px;
+    display: grid;
+    place-items: center;
+    transform: translateY(-50%);
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    background: var(--bg);
+    color: var(--accent);
+    font-size: 13px;
+    line-height: 1;
+    pointer-events: none;
+  }
   .seam-strip a {
     display: grid;
+    align-content: start;
     gap: 6px;
-    padding: 16px;
-    font-size: 13.5px;
-    line-height: 1.35;
-    color: var(--muted);
+    padding: 16px 18px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--dim);
     height: 100%;
     transition: background 0.15s, color 0.15s;
   }
-  .seam-strip a:hover {
+  .strip-head {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    font-size: 15px;
+    font-weight: 600;
     color: var(--text);
+  }
+  .seam-strip a:hover {
+    color: var(--muted);
     background: rgb(255 255 255 / 0.03);
   }
   .n {
@@ -284,8 +324,8 @@ const tools = byKind("tool");
   .term pre {
     margin: 0;
     padding: 22px 24px;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
+    white-space: pre;
+    overflow-x: auto;
   }
   .term code {
     background: none;
@@ -350,22 +390,30 @@ const tools = byKind("tool");
     color: var(--text);
   }
   .card-wide {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
+    align-items: center;
+    gap: 24px 40px;
     background:
       linear-gradient(120deg, rgb(247 168 35 / 0.08), transparent 50%),
       var(--bg-raised);
   }
+  .wide-text {
+    display: grid;
+    gap: 12px;
+  }
   .grid-products .card-product {
-    min-height: 200px;
+    display: flex;
+    flex-direction: column;
     background:
       radial-gradient(80% 60% at 100% 0%, rgb(195 177 251 / 0.1), transparent 70%),
       var(--bg-raised);
   }
-  .card-product p {
-    font-size: 17px;
-    color: var(--text);
+  .card-product .card-name {
+    align-self: flex-start;
   }
   .more {
     margin-top: auto;
+    padding-top: 4px;
     font-size: 13px;
     color: var(--accent);
   }
@@ -467,7 +515,11 @@ const tools = byKind("tool");
     .seam-strip li:nth-child(n + 4) {
       border-top: 1px solid var(--line);
     }
-    .band {
+    .seam-strip li:nth-child(3n)::after {
+      display: none;
+    }
+    .band,
+    .card-wide {
       grid-template-columns: 1fr;
     }
     .grid {
@@ -490,6 +542,18 @@ const tools = byKind("tool");
     }
     .seam-strip li:nth-child(-n + 2) {
       border-top: 0;
+    }
+    .seam-strip li:nth-child(3n)::after {
+      display: grid;
+    }
+    .seam-strip li:nth-child(even)::after {
+      display: none;
+    }
+    .term pre {
+      padding: 18px;
+    }
+    .term code {
+      font-size: 12px;
     }
     .grid,
     .tenet-grid {

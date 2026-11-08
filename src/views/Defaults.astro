@@ -4,13 +4,14 @@ import Base from "../layouts/Base.astro";
 import PageHead from "../components/PageHead.astro";
 import Pager from "../components/Pager.astro";
 import { defaultsPage as copy } from "../copy/pages";
-import { href, t, type Lang } from "../i18n";
+import { href, inlineCode, t, type Lang } from "../i18n";
 import { ui } from "../ui";
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
+const layers = ["human", "agent", "silent"] as const;
 const seams = (await getCollection("seams")).sort((a, b) => a.data.order - b.data.order);
 const components = await getCollection("components");
 const groups = seams
@@ -21,77 +22,118 @@ const groups = seams
   .filter((g) => g.rows.length > 0);
 ---
 
-<Base lang={lang} title={t(copy.eyebrow, lang)} description={t(copy.lede, lang)}>
+<Base lang={lang} title={t(copy.eyebrow, lang)} description={t(copy.lede, lang).replaceAll("`", "")}>
   <PageHead eyebrow={t(copy.eyebrow, lang)} title={t(copy.title, lang)} lede={t(copy.lede, lang)} />
 
   <div class="wrap reveal">
-    <div class="legend" aria-hidden="true">
-      <span>{t(copy.component, lang)}</span>
-      <span>{t(copy.mechanism, lang)}</span>
-      <span>{t(copy.policy, lang)}</span>
-      <span></span>
+    <ul class="key">
+      {
+        layers.map((l) => (
+          <li class={`layer-${l}`}>
+            <span class="layer-dot" />
+            {t(ui.layers[l], lang)}
+          </li>
+        ))
+      }
+    </ul>
+    <div class="table">
+      <div class="cols" aria-hidden="true">
+        <span class="c-name">{t(copy.component, lang)}</span>
+        <span>{t(copy.mechanism, lang)}</span>
+        <span>{t(copy.policy, lang)}</span>
+      </div>
+      {
+        groups.map((g) => (
+          <section class="group">
+            <h2>
+              <span class="n">{String(g.seam.data.order).padStart(2, "0")}</span>
+              <a href={href(`/lifeline/${g.seam.id}/`, lang)}>{g.seam.data.name[lang]}</a>
+            </h2>
+            {g.rows.map(({ c, d }) => (
+              <div class={`row layer-${c.data.layer}`}>
+                <div class="name">
+                  <span class="layer-dot" />
+                  <code>{c.data.name}</code>
+                </div>
+                <div class="cell mech">
+                  <span class="k">{t(copy.mechanism, lang)}</span>
+                  <p set:html={inlineCode(d.mechanism[lang])} />
+                </div>
+                <div class="cell policy">
+                  <span class="k">{t(copy.policy, lang)}</span>
+                  <p set:html={inlineCode(d.policy[lang])} />
+                </div>
+                <a class="go" href={d.customize}>
+                  {t(copy.customize, lang)} →
+                </a>
+              </div>
+            ))}
+          </section>
+        ))
+      }
     </div>
   </div>
-  {
-    groups.map((g) => (
-      <section class="wrap group reveal">
-        <h2>
-          <span class="n">{String(g.seam.data.order).padStart(2, "0")}</span>
-          <a href={href(`/lifeline/${g.seam.id}/`, lang)}>{g.seam.data.name[lang]}</a>
-        </h2>
-        <div class="rows">
-          {g.rows.map(({ c, d }) => (
-            <div class={`row layer-${c.data.layer}`}>
-              <div class="cell name">
-                <span class="layer-dot" />
-                <code>{c.data.name}</code>
-              </div>
-              <div class="cell">
-                <span class="k">{t(copy.mechanism, lang)}</span>
-                <p>{d.mechanism[lang]}</p>
-              </div>
-              <div class="cell policy">
-                <span class="k">{t(copy.policy, lang)}</span>
-                <p>{d.policy[lang]}</p>
-              </div>
-              <div class="cell go">
-                <a href={d.customize}>{t(copy.customize, lang)} →</a>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-    ))
-  }
 
-  <Pager prev={{ href: href("/products/remote-build/", lang), label: t(ui.previous, lang), title: "omp-remote-build" }} />
+  <Pager
+    prev={{ href: href("/products/remote-build/", lang), label: t(ui.previous, lang), title: "omp-remote-build" }}
+    next={{ href: "https://github.com/oh-my-omp/omp-config#readme", label: t(copy.start, lang), title: "omp-config" }}
+  />
 </Base>
 
 <style>
-  .legend,
+  .key {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px;
+  }
+  .key li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .table {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--bg-raised);
+  }
+  .cols,
   .row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1.6fr) 90px;
-    gap: 24px;
+    grid-template-columns: 248px minmax(0, 1.3fr) minmax(0, 1.6fr) 84px;
+    grid-template-areas: "name mech policy go";
+    column-gap: 24px;
+    padding-inline: 20px;
   }
-  .legend {
+  .cols {
+    padding-block: 12px;
     font-family: var(--mono);
     font-size: 12px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--dim);
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--line);
   }
-  .group {
-    padding-top: 48px;
+  /* Lines the label up with the pill text: dot width plus the gap after it. */
+  .c-name {
+    padding-left: 18px;
   }
   h2 {
     display: flex;
     gap: 14px;
     align-items: baseline;
-    font-size: 20px;
-    margin-bottom: 8px;
+    margin: 0;
+    padding: 12px 20px;
+    font-size: 16px;
+    background: rgb(255 255 255 / 0.025);
+    border-block: 1px solid var(--line);
   }
   h2 a:hover {
     color: var(--accent);
@@ -102,17 +144,30 @@ const groups = seams
     color: var(--accent);
   }
   .row {
-    padding: 18px 0;
-    border-bottom: 1px solid var(--line);
+    padding-block: 16px;
     align-items: start;
   }
+  .row + .row {
+    border-top: 1px solid var(--line);
+  }
   .name {
+    grid-area: name;
     display: flex;
     gap: 10px;
     align-items: center;
+    min-height: 26px;
   }
   .name .layer-dot {
     flex: none;
+  }
+  .name code {
+    white-space: nowrap;
+  }
+  .mech {
+    grid-area: mech;
+  }
+  .policy {
+    grid-area: policy;
   }
   .cell p {
     color: var(--muted);
@@ -125,20 +180,28 @@ const groups = seams
     display: none;
   }
   .go {
-    text-align: right;
+    grid-area: go;
+    justify-self: end;
     font-size: 13.5px;
-  }
-  .go a {
+    line-height: 26px;
     color: var(--accent);
     white-space: nowrap;
   }
   @media (max-width: 860px) {
-    .legend {
+    .cols {
       display: none;
     }
+    h2 {
+      padding-inline: 16px;
+    }
     .row {
-      grid-template-columns: 1fr;
-      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        "name go"
+        "mech mech"
+        "policy policy";
+      row-gap: 12px;
+      padding-inline: 16px;
     }
     .k {
       display: block;
@@ -148,9 +211,6 @@ const groups = seams
       text-transform: uppercase;
       color: var(--dim);
       margin-bottom: 2px;
-    }
-    .go {
-      text-align: left;
     }
   }
 </style>

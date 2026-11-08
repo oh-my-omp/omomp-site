@@ -45,14 +45,12 @@ const tones = ["var(--human)", "var(--accent)", "var(--agent)", "var(--silent)"]
     product.data.sections.map((s, i) => (
       <section class="wrap sec reveal">
         <span class="n">{String(i + 1).padStart(2, "0")}</span>
-        <div>
-          <h2>{s.title[lang]}</h2>
-          <ul>
-            {s.points.map((pt) => (
-              <li>{pt[lang]}</li>
-            ))}
-          </ul>
-        </div>
+        <h2>{s.title[lang]}</h2>
+        <ul style={`--cols:${s.points.length % 3 === 0 ? 3 : 2}`}>
+          {s.points.map((pt) => (
+            <li>{pt[lang]}</li>
+          ))}
+        </ul>
       </section>
     ))
   }
@@ -115,26 +113,24 @@ const tones = ["var(--human)", "var(--accent)", "var(--agent)", "var(--silent)"]
   }
   .sec {
     display: grid;
-    grid-template-columns: 120px minmax(0, 1fr);
-    gap: 32px;
+    gap: 14px;
     padding-top: clamp(56px, 8vw, 96px);
   }
   .n {
     font-family: var(--mono);
     font-size: 13px;
     color: var(--accent);
-    padding-top: 10px;
   }
   h2 {
     font-size: clamp(26px, 3.4vw, 36px);
-    margin-bottom: 24px;
+    margin-bottom: 10px;
   }
   ul {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
     gap: 12px;
   }
   li {
@@ -168,10 +164,6 @@ const tones = ["var(--human)", "var(--accent)", "var(--agent)", "var(--silent)"]
   @media (max-width: 640px) {
     .parties {
       grid-template-columns: 1fr;
-    }
-    .sec {
-      grid-template-columns: 1fr;
-      gap: 8px;
     }
   }
 </style>

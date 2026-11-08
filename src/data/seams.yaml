@@ -1,135 +1,141 @@
 intent:
   order: 1
   replay: ["1"]
+  short: { en: Intent, zh: 意图 }
   name:
     en: Intent enters the session
     zh: 意图进入会话
   claim:
-    en: A question worth asking is worth a full screen.
-    zh: 值得问的问题，值得占满一屏。
+    en: A question worth asking is worth a full screen
+    zh: 值得问的问题，值得占满一屏
   drift:
     en: The agent guesses instead of asking, or asks in a line you skim past and answer wrong.
     zh: 代理该问不问，自己猜；或者问得含糊，夹在一行字里，你扫一眼就答错了。
   sections:
     human:
-      en: Decisions open as a full-screen page. Each states what exists now, what is being decided and what follows, and gives every option its tradeoff. A helper model can rewrite your own draft before you send it.
-      zh: 决定以全屏页面呈现：现状、要决定什么、之后会怎样，每个选项写明取舍。你自己的草稿也可以先交给辅助模型改写，再发出。
+      en: Nothing important is settled in a chat line you scroll past. Decisions get their own screen, and your own draft can be polished before it goes out.
+      zh: 重要的事不在一滚而过的聊天里定下。决定有自己的一屏，你的草稿也能先润色再发出。
     agent:
-      en: The agent has one way to ask, a structured question in which every option carries its cost.
-      zh: 代理只有一种提问方式：结构化提问，每个选项都带着代价。
+      en: Asking is a tool with a fixed shape. The agent cannot leave out the context or the cost.
+      zh: 提问是一个有固定格式的工具，代理省不掉背景，也省不掉代价。
     silent:
-      en: A question too vague to answer is sent back to the agent before it reaches you. Routing rules keep every question on that path.
-      zh: 含糊到无法回答的问题，在到你面前之前就被退回给代理。路由规则让所有问题都走这条路。
+      en: Before a question opens, a judge that has never seen the session reads it. Questions meant for you cannot take a route around that check.
+      zh: 问题打开之前，先由没看过这个会话的判定者读一遍；给你的问题绕不开这道检查。
 
 prompt:
   order: 2
+  short: { en: Prompt, zh: 提示词 }
   name:
     en: Prompts load and stay put
     zh: 提示词加载与防漂移
   claim:
-    en: Instructions that never contradict each other, delivered without breaking the cache.
-    zh: 指令之间不互相矛盾，送达时也不打破缓存。
+    en: Instructions that never contradict each other, delivered without breaking the cache
+    zh: 指令互不矛盾，送达不破缓存
   drift:
     en: The base template, tool descriptions and your rules say the same thing three ways, or opposite things. The model starts ignoring all of them.
     zh: 基础模板、工具说明和你的规则把同一件事说三遍，或者说法相反，模型干脆都不听。
   sections:
     human:
-      en: Two entry points. The full mode for a capable main model; a light mode that leaves the governance hooks off.
-      zh: 两个入口：完整模式给能力强的主模型；轻量模式不加载治理钩子。
+      en: You choose how much governance a session carries when you launch it.
+      zh: 启动时，你就决定这个会话带多少治理。
     agent:
-      en: Tool details are not in the prompt. The agent reads the one topic a call needs, when it needs it.
-      zh: 工具细节不放在提示词里，代理在调用前只读这次需要的那个专题。
+      en: The prompt carries a table of contents, not the manual.
+      zh: 提示词里只放目录，不放整本手册。
     silent:
-      en: Duplicate prose is cut from the base template, conflicting host sentences are patched by added messages, and rules reach the agent only while it touches the files they cover.
-      zh: 基础模板里的重复说明被删掉，宿主原句的冲突用追加消息修补，规则只在代理碰到它覆盖的文件时才送达。
+      en: The prompt says each thing once. Conflicts are overridden by added messages, and instructions reach only the model, mode and files they are for.
+      zh: 提示词每件事只说一遍；冲突用追加消息覆盖；指令只送给对应的模型、模式和文件。
 
 memory:
   order: 3
+  short: { en: Memory, zh: 记忆 }
   name:
     en: Long tasks keep their plan
     zh: 长任务规划与记忆
   claim:
-    en: The plan outlives the context window.
-    zh: 计划比上下文窗口活得久。
+    en: The plan outlives the context window
+    zh: 计划比上下文窗口活得久
   drift:
     en: Halfway through, the agent forgets a constraint you settled an hour ago, or stops with items still open.
     zh: 做到一半，代理忘了一小时前定下的约束，或者还有事项没做完就停了。
   sections:
     human:
-      en: The plan lives in a Tern panel you can read and edit while the agent works.
-      zh: 计划放在 Tern 面板里，代理干活时你也能看、能改。
+      en: The plan is a document you share with the agent, not a thought inside it.
+      zh: 计划是你和代理共用的一份文档，不是藏在它脑子里的念头。
     agent:
-      en: A structured todo with a goal, phases and a time budget per item; closing an item commits its work. The agent can look back over what earlier contexts did, and hand a subagent the whole conversation instead of a summary.
-      zh: 结构化待办：有目标、分阶段、每项有时间预算，完成一项即提交对应改动。代理能回看先前上下文做过什么，也能把整段对话而不是摘要交给子代理。
+      en: The agent keeps a structured plan, can look back over earlier contexts, and can hand a subagent the whole conversation.
+      zh: 代理守着一份结构化计划，能回看先前的上下文，也能把整段对话交给子代理。
     silent:
-      en: Stopping with open items draws a reminder. Lossy compaction is pushed back per model, so settled constraints stay in context longer.
-      zh: 留着未完成项就停下会收到提醒。有损压缩按模型推迟，定下的约束在上下文里留得更久。
+      en: Two things that quietly erode a long task are watched for, stopping early and compacting too soon.
+      zh: 长任务最容易悄悄流失的两样东西被盯住：提前收工，以及过早压缩。
 
 delegation:
   order: 4
   replay: ["2", "3"]
+  short: { en: Delegation, zh: 派发 }
   name:
-    en: Subagents and advisors
+    en: Work goes to subagents and advisors
     zh: 子代理派发与顾问
   claim:
-    en: Workers get a brief. Advisors get your words.
-    zh: 执行者拿到派工单，顾问拿到你的原话。
+    en: Workers get a brief. Advisors get your words
+    zh: 执行者拿到派工单，顾问拿到你的原话
   drift:
     en: The main agent's brief carries its own misreading to every subagent, and two of them edit the same checkout at once.
     zh: 主代理的派工单把它自己的误读带给每个子代理，还有两个子代理同时改同一个工作区。
   sections:
     human:
-      en: You opt in once, and the machine measures its own subagent spend from local history.
-      zh: 你授权一次，本机就从自己的历史记录里算出子代理的花费。
+      en: You decide whether the machine may measure its own subagent spend.
+      zh: 本机能不能统计自己的子代理花费，由你决定。
     agent:
-      en: Stateless worker tiers sorted by cost and trust; a conservative and an expansive discussion partner; a mentor with no tools; an estimate of how many dispatches remain.
-      zh: 按成本和可信度分档的无状态执行者；一个保守、一个发散的讨论伙伴；一个没有工具的导师；还剩多少次派发的估算。
+      en: Doing and advising are separate roles with separate limits.
+      zh: 干活和出主意是两种角色，权限各不相同。
     silent:
-      en: Advisors receive the user's request verbatim. A dispatch that would put two writers in one checkout is sent back until isolation is stated. A dispatch that bundles unrelated topics, or caps the report length, is sent back too.
-      zh: 顾问直接收到用户原话。会让两个写者共用一个工作区的派发被退回，直到写明是否隔离。把无关主题塞进一次派发、或限制汇报长度的派发，同样被退回。
+      en: "Every dispatch is read before it leaves: what it bundles, and whether two writers would collide. Advisors are handed your own words."
+      zh: 每次派发在发出前都被读一遍：捆了哪些主题，写者会不会撞车。顾问拿到的是你的原话。
 
 execution:
   order: 5
   replay: ["4", "5"]
+  short: { en: Execution, zh: 执行 }
   name:
     en: Commands run under watch
     zh: 命令执行与过程监督
   claim:
-    en: The agent's terminal is your terminal too.
-    zh: 代理的终端，也是你的终端。
+    en: The agent's terminal is your terminal too
+    zh: 代理的终端，也是你的终端
   drift:
     en: A long command blocks the turn, a shell one-liner deletes the wrong directory, and nobody sees the agent drift back to old habits.
     zh: 长命令卡住整个回合，一行 shell 删错了目录，代理悄悄退回老习惯也没人发现。
   sections:
     human:
-      en: Long-lived terminals appear in Tern. Watch them, or type into the same session the agent is driving.
-      zh: 长驻终端出现在 Tern 里，你可以旁观，也可以往代理正在驱动的同一个会话里输入。
+      en: What runs on your machine stays in view, and you decide which sessions get a second look.
+      zh: 在你机器上跑的东西始终看得见；哪些会话要再审一遍，由你决定。
     agent:
-      en: PTY sessions that survive between turns; a delete tool that takes only literal paths and moves them to the trash; a worktree per session; a harness restart.
-      zh: 跨回合存活的 PTY 会话；只接受字面路径、默认移进回收站的删除工具；每个会话一个工作树；重启宿主。
+      en: Dedicated tools replace shell one-liners for the jobs that go wrong most often.
+      zh: 最容易出事的几类活，用专用工具代替一行 shell。
     silent:
-      en: Deletion and non-literal commands in shell and eval are refused. Interactive or long-running commands sent to the one-shot shell are blocked; other tool misuse runs, then earns a reminder at the end of its result. A watchdog you define reviews a session after every so many actions.
-      zh: shell 和 eval 里的删除与非字面命令被拒绝。交互式或长驻命令走一次性 shell 会被拦下；其他用错工具的调用照常执行，但结果末尾会附上提醒。你定义的看门狗每隔若干步审查一次会话。
+      en: Shell and eval calls are checked before and after they run, and a reviewer you define can look in on a session at intervals.
+      zh: shell 和 eval 调用在执行前后都要过检查；你定义的审查者还能定期查看会话。
 
 delivery:
   order: 6
   replay: ["6"]
+  short: { en: Delivery, zh: 交付 }
   name:
-    en: Delivery and other sessions
+    en: Results get checked and shared
     zh: 交付验收与跨会话协作
   claim:
-    en: Done means checked, not announced.
-    zh: 做完是验过，不是说过。
+    en: Done means checked, not announced. Other sessions can read what happened
+    zh: 做完是验过，不是说过；别的会话也查得到经过
   drift:
     en: A subagent reports success without running anything. The main agent writes "next, run the tests" and stops.
     zh: 子代理什么都没跑就报告成功；主代理写下“接下来跑测试”，然后就停了。
   sections:
     human:
-      en: Thinking blocks are translated into your language on screen. Plugin UI follows one language setting.
-      zh: 思考块在屏幕上被译成你的语言；插件界面跟随同一个语言设置。
+      en: What you read on screen is in your language. What the model reads is left as it was.
+      zh: 你在屏幕上读到的是你的语言；模型读到的内容保持原样。
     agent:
-      en: Past sessions are readable and queryable. Sessions in other omp processes can be found, asked a side question, or messaged.
-      zh: 历史会话可读可查；其他 omp 进程里的会话可以被发现、旁路提问、发消息。
+      en: Work does not end at the edge of one session.
+      zh: 工作不止于一个会话的边界。
     silent:
-      en: A subagent's handoff is judged against its scope, its verification and its todo. A main turn that announces work and stops is told to continue. A reply in the wrong language draws a correction on the next turn.
-      zh: 子代理交付时，按范围、验证和待办核对。主代理宣布要做却收工的回合，会被要求继续。用错语言的回复，会在下一轮收到纠正。
+      en: “Done” is checked at the subagent's handoff, at the end of the main turn, and in the language of the reply.
+      zh: “做完了”要过三道检查：子代理交付时、主回合结束时，以及回复用的语言。

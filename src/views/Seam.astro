@@ -32,30 +32,32 @@ const shots = shotsFor(seam.data.replay ?? [], lang);
   </PageHead>
 
   {
-    layers.map((l) => (
-      <section class={`wrap layer layer-${l} reveal`}>
-        <div class="head">
-          <span class="tag">
-            <span class="layer-dot" />
-            {t(ui.layers[l], lang)}
-          </span>
-        </div>
-        <div class="body">
-          <p class="lead" set:html={inlineCode(seam.data.sections[l][lang])} />
-          <div class="cards">
-            {components
-              .filter((c) => c.data.layer === l)
-              .map((c) => (
+    layers.map((l) => {
+      const cards = components.filter((c) => c.data.layer === l);
+      const cols = cards.length === 1 ? 1 : cards.length % 3 === 0 ? 3 : 2;
+      return (
+        <section class={`wrap layer layer-${l} reveal`}>
+          <div class="head">
+            <span class="tag">
+              <span class="layer-dot" />
+              {t(ui.layers[l], lang)}
+            </span>
+          </div>
+          <div class="body">
+            <p class="lead" set:html={inlineCode(seam.data.sections[l][lang])} />
+            <div class="cards" style={`--cols:${cols}`}>
+              {cards.map((c) => (
                 <a class="card" href={c.data.repo}>
                   <code class="name">{c.data.name}</code>
                   <p class="solves">{c.data.solves[lang]}</p>
                   <p class="does" set:html={inlineCode(c.data.does[lang])} />
                 </a>
               ))}
+            </div>
           </div>
-        </div>
-      </section>
-    ))
+        </section>
+      );
+    })
   }
 
   {
@@ -73,10 +75,10 @@ const shots = shotsFor(seam.data.replay ?? [], lang);
 
   <Pager
     prev={prev
-      ? { href: href(`/lifeline/${prev.id}/`, lang), label: t(ui.previous, lang), title: prev.data.name[lang] }
+      ? { href: href(`/lifeline/${prev.id}/`, lang), label: `${t(ui.previous, lang)} · ${t(copy.eyebrow, lang)} ${String(prev.data.order).padStart(2, "0")}`, title: prev.data.name[lang] }
       : { href: href("/lifeline/", lang), label: t(ui.previous, lang), title: t({ en: "The lifeline", zh: "生命线" }, lang) }}
     next={next
-      ? { href: href(`/lifeline/${next.id}/`, lang), label: t(ui.next, lang), title: next.data.name[lang] }
+      ? { href: href(`/lifeline/${next.id}/`, lang), label: `${t(ui.next, lang)} · ${t(copy.eyebrow, lang)} ${String(next.data.order).padStart(2, "0")}`, title: next.data.name[lang] }
       : { href: href("/replay/", lang), label: t(ui.next, lang), title: t(copy.toReplay, lang) }}
   />
 </Base>
@@ -129,8 +131,18 @@ const shots = shotsFor(seam.data.replay ?? [], lang);
   }
   .cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
     gap: 12px;
+  }
+  @media (max-width: 1000px) {
+    .cards {
+      grid-template-columns: repeat(min(var(--cols), 2), minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 600px) {
+    .cards {
+      grid-template-columns: 1fr;
+    }
   }
   .card {
     display: grid;

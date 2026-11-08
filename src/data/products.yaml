@@ -6,28 +6,28 @@ playbooks:
     en: Write the design together with the agent, then launch it block by block.
     zh: 和代理一起写设计，再一块一块启动执行。
   claim:
-    en: The design document is also the run.
-    zh: 设计文档本身就是执行记录。
+    en: The design document is also the run
+    zh: 设计文档本身就是执行记录
   intro:
     en: One YAML file holds the design, the prompts that execute it and the code that orchestrates them. You edit it as cards in a Tern pane; the agent edits the same file through its tools.
-    zh: 一个 YAML 文件装下设计、执行它的提示词和编排它们的代码。你在 Tern 面板里把它当卡片编辑，代理通过工具改的是同一个文件。
+    zh: 一个 YAML 文件同时装下设计、执行提示词和编排代码。你在 Tern 面板里按卡片编辑，代理通过工具读写同一个文件。
   sections:
     - title:
         en: Design and execution are separate blocks
-        zh: 设计和执行是分开的块
+        zh: 设计块与执行块分离
       points:
         - en: A design block holds one unit of design, written as a requirement and its rendered result.
-          zh: 设计块只装一个设计单元：一条需求，加上渲染出的设计。
+          zh: 每个设计块只装一个设计单元：一条需求，以及按它渲染出的结果。
         - en: An execution block pulls in the designs, context and earlier results it needs by reference. One task can draw on several designs.
-          zh: 执行块用引用拉进它需要的设计、上下文和先前结果，一个任务可以引用多个设计。
+          zh: 执行块按引用拉取所需的设计、上下文和先前结果；一个任务可以引用多个设计块。
         - en: Compiling a block freezes its prompt, so what a subagent received is always on record.
           zh: 编译时提示词被冻结下来，子代理收到了什么，始终有据可查。
     - title:
-        en: The button asks. The coordinator decides.
+        en: The button asks, the coordinator decides
         zh: 按钮只是请求，协调者做决定。
       points:
-        - en: Launch, Stop and a design change are requests to the main session. Nothing runs because you clicked.
-          zh: 启动、停止、修改设计，都是发给主会话的请求；点了按钮，不会自己跑起来。
+        - en: Launch, Stop and a design change are requests to the main session. Clicking never runs anything on its own.
+          zh: 启动、停止和修改设计，都是发给主会话的请求；点击本身不会让任何东西运行。
         - en: The coordinator compiles the prompt, picks the subagent and decides the order.
           zh: 编译提示词、挑选子代理、决定先后顺序，都由协调者负责。
         - en: Change a design while it runs, and the coordinator is told which blocks it touched.
@@ -48,7 +48,7 @@ playbooks:
         zh: 你
       role:
         en: Edit blocks, read designs, ask for launches and changes.
-        zh: 编辑块、读设计、提出启动和修改请求。
+        zh: 编辑卡片、审阅设计，提出启动和修改请求。
     - name:
         en: Coordinator
         zh: 协调者
@@ -66,7 +66,7 @@ playbooks:
         zh: 子代理
       role:
         en: Runs one compiled prompt and writes status and report back.
-        zh: 执行一份编译好的提示词，把状态和报告写回去。
+        zh: 执行一份编译好的提示词，把状态和报告写回文件。
 
 dispatch:
   order: 2
@@ -74,30 +74,30 @@ dispatch:
   repo: https://github.com/oh-my-omp/omp-dispatch
   tagline:
     en: Deliver a GitHub issue tree. A fresh session per ticket, a fresh judge per verdict.
-    zh: 交付一整棵 GitHub issue 树。每张票由新会话完成，每次裁决由新会话做出。
+    zh: 交付一整棵 GitHub issue 树。每张工单由新会话完成，每次裁决由新会话做出。
   claim:
-    en: An issue tree goes in. Merged, verified, closed issues come out.
-    zh: 进去的是一棵 issue 树，出来的是合并、验证、关闭好的 issue。
+    en: An issue tree goes in. Merged, verified, closed issues come out
+    zh: 输入一棵 issue 树，输出已合并、已验证、已关闭的 issue
   intro:
     en: Click the link an issue carries, or let a GitHub App event fire, and a coordinator session opens for that issue. It turns the tree into tickets and walks each one through a workflow you can rewrite.
-    zh: 点一下 issue 里的链接，或由 GitHub App 事件触发，就会为这个 issue 开一个协调者会话。它把整棵树拆成票，按一份你可以改写的工作流逐张推进。
+    zh: 点击 issue 里的链接，或由 GitHub App 事件触发，就会为该 issue 开一个协调者会话。它把整棵树拆成工单，按一份你可以改写的工作流逐单推进。
   sections:
     - title:
         en: Tickets move through a state machine
-        zh: 每张票走一台状态机
+        zh: 每张工单走一台状态机
       points:
         - en: The default path runs from coding to a PR, checks, review, merge, verification and close.
           zh: 默认路径：编码、开 PR、等检查、评审、合并、验证、关闭。
         - en: The workflow is a YAML file. Add a judge, reroute a rejection, or skip a step for first-round work.
           zh: 工作流是一个 YAML 文件：加一个判定者，改掉退回的去向，或者让首轮跳过某一步。
         - en: The coordinator decides which tickets run side by side and which wait on a dependency.
-          zh: 哪些票并行、哪些等依赖，由协调者决定。
+          zh: 哪些工单并行、哪些等依赖，由协调者决定。
     - title:
         en: Every seat is new
         zh: 每个席位都是新的
       points:
         - en: The work on a ticket is done by a one-shot session in its own checkout. It pushes a branch and submits.
-          zh: 每张票的活由一次性会话在独立检出里完成，推送分支后提交。
+          zh: 每张工单由一次性会话在独立检出里完成，推送分支后提交。
         - en: A judge is always a fresh session, pinned to the exact PR head or merge commit it rules on.
           zh: 判定者永远是新会话，钉在它所裁决的那个 PR head 或合并提交上。
         - en: A new push drops every approval given to the old one.
@@ -109,7 +109,7 @@ dispatch:
         - en: Every write to GitHub is recorded first, then confirmed by reading it back.
           zh: 每次写 GitHub 都先记录，再读回来确认。
         - en: The agenda survives a crash. A new coordinator resumes it only when the old one is gone.
-          zh: 议程能熬过崩溃；只有旧协调者确实退出了，新的才能接手。
+          zh: 议程在崩溃后仍然保留；只有确认旧协调者已退出，新协调者才会接手。
         - en: A failed or uncertain write goes to the coordinator, never silently retried.
           zh: 写失败或结果不明，一律交给协调者处理，不会悄悄重试。
   parties:
@@ -124,13 +124,13 @@ dispatch:
         zh: 协调者
       role:
         en: Convenes tickets, sets dependencies, rules on escalations.
-        zh: 召集票、设定依赖、裁决升级的问题。
+        zh: 编排工单、设定依赖、裁决升级上来的问题。
     - name:
         en: Owner
         zh: 负责人
       role:
         en: A one-shot session that delivers one ticket.
-        zh: 一次性会话，交付一张票。
+        zh: 一次性会话，交付一张工单。
     - name:
         en: Judge
         zh: 判定者
@@ -146,8 +146,8 @@ remote-build:
     en: Edit on your laptop. Build and test in a remote container, one per worktree.
     zh: 在本机编辑，到远端容器里构建和测试，每个 worktree 一个容器。
   claim:
-    en: Edit here. Build there.
-    zh: 这边改，那边构建。
+    en: Edit here. Build there
+    zh: 这边改，那边构建
   intro:
     en: The agent keeps editing files locally with its usual tools. Compiling, testing and running happen in a container on a remote host that sees every edit before the next step.
     zh: 代理照常用本地工具改文件；编译、测试、运行都在远端主机的容器里进行，每一步之前容器都已看到最新改动。
@@ -157,11 +157,11 @@ remote-build:
         zh: 每个 worktree 一套环境
       points:
         - en: Each worktree is mirrored one way to the build host, and a long-lived container mounts the mirror.
-          zh: 每个 worktree 单向同步到构建主机，一个长驻容器挂载这份镜像。
+          zh: 每个 worktree 单向同步到构建主机，由长驻容器挂载该同步目录。
         - en: After any tool call that could have changed files, the mirror is flushed before the agent moves on.
           zh: 任何可能改了文件的工具调用之后，都先刷新同步，代理才继续下一步。
         - en: A project opts in with one file. Projects without it are never touched.
-          zh: 项目放一个文件就算加入；没有这个文件的项目一概不碰。
+          zh: 项目只需一个配置文件即可接入；未配置的项目一概不碰。
     - title:
         en: The image is part of the repository
         zh: 镜像写进仓库

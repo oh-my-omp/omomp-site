@@ -331,6 +331,54 @@
         }
       ],
       "source": "session://01a1b7bc-0969-7560-a690-dd3974878e36 entries 4-23 (customType dispatch-start, dispatch resolve call and result)"
+    },
+    {
+      "id": "remote-build",
+      "mechanism": ["omp-remote-build"],
+      "session": { "id": "01a13299", "date": "2026-10-13", "model": "anthropic/claude-opus-5-5" },
+      "events": [
+        {
+          "t": "2026-10-13T00:11:15Z",
+          "actor": "user",
+          "kind": "message",
+          "text": "Call remote_env_init once. Then call container_exec once with input \"cat hello.txt; echo EXIT=$?\\n\" and yield_time_ms 10000. If EXIT= is not in that result, call container_write_stdin with no chars once. … Print the text of every container tool result verbatim."
+        },
+        {
+          "t": "2026-10-13T00:11:17Z",
+          "actor": "assistant",
+          "kind": "tool_call",
+          "tool": "write xd://remote_env_init",
+          "text": "content=\"{}\""
+        },
+        {
+          "t": "2026-10-13T00:11:36Z",
+          "actor": "tool",
+          "kind": "tool_result",
+          "tool": "xd://remote_env_init",
+          "text": "status: ready\nworktree: /private/tmp/rb-pty/app-wt\nproject: app-68a3d73639 (main checkout /private/tmp/rb-pty/app)\ncontainer: rb-app-wt-f566aaa1c7 on server <host>; workdir /workspace; shell bash\nimage: archlinux:latest\nimage_source: configured image\nbootstrap: none\nusage: run project commands with container_exec in rb-app-wt-f566aaa1c7; local edits sync one-way into /workspace after each tool call; files created in the container are not copied back; …"
+        },
+        {
+          "t": "2026-10-13T00:11:36Z",
+          "actor": "assistant",
+          "kind": "tool_call",
+          "tool": "write xd://container_exec",
+          "text": "content=\"{\\\"input\\\": \\\"cat hello.txt; echo EXIT=$?\\\\n\\\", \\\"yield_time_ms\\\": 10000}\""
+        },
+        {
+          "t": "2026-10-13T00:11:53Z",
+          "actor": "tool",
+          "kind": "tool_result",
+          "tool": "xd://container_exec",
+          "text": "[running] session_id: 1\nlog_path: …/pi-unified-exec-1-05dc2a40.log\nnote: km always exits 0; this is only the local transport's exit code. Read command exit codes from the container shell output, e.g. echo $? immediately after the command.\n---\n…\n==================================================\n# Connected to <host>/rb-app-wt-f566aaa1c7 (km) #\n==================================================\n[root@<host> workspace]# cat hello.txt; echo EXIT=$?\nhello from the replica\nEXIT=0\n[root@<host> workspace]#"
+        },
+        {
+          "t": "2026-10-13T00:11:53Z",
+          "actor": "assistant",
+          "kind": "message",
+          "text": "`EXIT=` showed up in the `container_exec` output, so I skipped `container_write_stdin`. No log files were read. `hello.txt` printed `hello from the replica` and the command exited with `EXIT=0`.\n\n…\n\nSession 1 is still open."
+        }
+      ],
+      "source": "session://01a13299-5f7a-7431-903a-a0693b3aca42/entry/cd21ebfd, entry/d3e61142, entry/b1f95dd7, entry/86fe904d"
     }
   ]
 }

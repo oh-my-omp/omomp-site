@@ -2,6 +2,9 @@ import type { Text } from "../i18n";
 
 export type SeamId = "intent" | "prompt" | "memory" | "delegation" | "execution" | "delivery";
 
+/** Schematic drawn inside a featured card; see components/RepoFigure.astro. */
+export type Figure = "seams" | "playbooks" | "dispatch" | "remote-build";
+
 /** A repository shown as a card on the home page. */
 export interface Repo {
   readonly name: string;
@@ -11,6 +14,7 @@ export interface Repo {
   readonly seams: readonly SeamId[];
   /** Product page route, for products only. */
   readonly page?: string;
+  readonly figure?: Figure;
 }
 
 export const repoUrl = (name: string) => `https://github.com/oh-my-omp/${name}`;
@@ -20,9 +24,10 @@ export const repos: readonly Repo[] = [
     name: "omp-config",
     kind: "runtime",
     seams: ["intent", "prompt", "memory", "delegation", "execution", "delivery"],
+    figure: "seams",
     line: {
       en: "The governance layer. Prompt cleanup, dispatch gates, judges and guards, wired into one runtime.",
-      zh: "治理层。提示词去重、派发闸门、判定与防护，接成一个运行时。",
+      zh: "治理层。提示词整理、派发闸门、回合判定与执行防护，接成一套运行时。",
     },
   },
   {
@@ -40,7 +45,7 @@ export const repos: readonly Repo[] = [
     seams: ["memory"],
     line: {
       en: "A plan the agent has to keep: a goal, phases, a time budget per item, a commit when one closes.",
-      zh: "代理必须守住的计划：有目标、分阶段，每项带时间预算，完成即提交。",
+      zh: "代理必须守住的计划：有目标、分阶段，每项带时间预算，完成一项即提交。",
     },
   },
   {
@@ -84,6 +89,7 @@ export const repos: readonly Repo[] = [
     kind: "product",
     seams: [],
     page: "/products/playbooks/",
+    figure: "playbooks",
     line: {
       en: "Write the design together with the agent, then launch it block by block.",
       zh: "和代理一起写设计，再一块一块启动执行。",
@@ -94,9 +100,10 @@ export const repos: readonly Repo[] = [
     kind: "product",
     seams: [],
     page: "/products/dispatch/",
+    figure: "dispatch",
     line: {
       en: "Deliver a GitHub issue tree. A fresh session per ticket, a fresh judge per verdict.",
-      zh: "交付一整棵 GitHub issue 树。每张票由新会话完成，每次裁决由新会话做出。",
+      zh: "交付一整棵 GitHub issue 树。每张工单由新会话完成，每次裁决由新会话做出。",
     },
   },
   {
@@ -104,6 +111,7 @@ export const repos: readonly Repo[] = [
     kind: "product",
     seams: [],
     page: "/products/remote-build/",
+    figure: "remote-build",
     line: {
       en: "Edit on your laptop. Build and test in a remote container, one per worktree.",
       zh: "在本机编辑，到远端容器里构建和测试，每个 worktree 一个容器。",
@@ -115,7 +123,7 @@ export const repos: readonly Repo[] = [
     seams: [],
     line: {
       en: "Generate and edit images through the Codex login omp already holds.",
-      zh: "借用 omp 已有的 Codex 登录生成和编辑图片。",
+      zh: "复用 omp 已有的 Codex 登录来生成和编辑图片。",
     },
   },
 ];

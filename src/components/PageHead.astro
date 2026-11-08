@@ -1,4 +1,5 @@
 ---
+import { inlineCode } from "../i18n";
 interface Props {
   eyebrow: string;
   title: string;
@@ -10,7 +11,7 @@ const { eyebrow, title, lede } = Astro.props;
 <header class="ph wrap">
   <p class="eyebrow">{eyebrow}</p>
   <h1 class="gradient-text">{title}</h1>
-  <p class="lede">{lede}</p>
+  <p class="lede" set:html={inlineCode(lede)} />
   <slot />
 </header>
 

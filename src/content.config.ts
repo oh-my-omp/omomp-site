@@ -1,4 +1,4 @@
-import { defineCollection } from "astro:content";
+import { defineCollection, reference } from "astro:content";
 import { file } from "astro/loaders";
 import { z } from "astro/zod";
 
@@ -28,6 +28,7 @@ const seams = defineCollection({
   schema: z
     .object({
       order: z.number().int().positive(),
+      short: text,
       name: text,
       claim: text,
       drift: text,
@@ -65,6 +66,8 @@ const principles = defineCollection({
       summary: text,
       problem: text,
       practice: z.array(text).min(1),
+      /** Components that put the rule into practice, shown as links to their seams. */
+      seen: z.array(reference("components")).min(1),
     })
     .strict(),
 });

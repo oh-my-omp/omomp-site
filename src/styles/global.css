@@ -107,6 +107,7 @@ h4 {
 :lang(zh) :is(h1, h2, h3, h4) {
   word-break: keep-all;
   overflow-wrap: anywhere;
+  line-break: strict;
 }
 
 p {
@@ -126,7 +127,14 @@ p {
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--dim);
+  color: var(--accent);
+}
+
+:lang(zh) .eyebrow {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
 }
 
 .gradient-text {

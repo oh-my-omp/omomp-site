@@ -6,41 +6,62 @@ interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
-const rows = home.hosts.rows;
-const tone = ["var(--accent)", "var(--human)", "var(--agent)"];
+const { top, hosts } = home.hosts;
+const hostTones = ["var(--agent)", "var(--human)"];
 ---
 
 <div class="hd">
-  {
-    rows.map((row, i) => (
-      <div class="hd-row" style={`--tone:${tone[i]}`}>
-        <span class="hd-name">{row.name}</span>
-        <span class="hd-role">{row.role[lang]}</span>
-      </div>
-    ))
-  }
+  <div class="hd-box hd-top" style="--tone:var(--accent)">
+    <span class="hd-name">{top.name}</span>
+    <span class="hd-role">{top.role[lang]}</span>
+  </div>
+  <div class="hd-links" aria-hidden="true"><span></span><span></span></div>
+  <div class="hd-hosts">
+    {
+      hosts.map((row, i) => (
+        <div class="hd-box" style={`--tone:${hostTones[i]}`}>
+          <span class="hd-name">{row.name}</span>
+          <span class="hd-role">{row.role[lang]}</span>
+        </div>
+      ))
+    }
+  </div>
 </div>
 
 <style>
   .hd {
     display: grid;
-    gap: 10px;
-    perspective: 1200px;
   }
-  .hd-row {
+  .hd-box {
     display: grid;
-    grid-template-columns: 160px 1fr;
-    align-items: center;
-    gap: 20px;
-    padding: 22px 24px;
+    gap: 8px;
+    align-content: start;
+    padding: 20px 22px;
     border-radius: 14px;
     border: 1px solid color-mix(in srgb, var(--tone) 35%, transparent);
     background:
-      linear-gradient(90deg, color-mix(in srgb, var(--tone) 12%, transparent), transparent 70%),
+      linear-gradient(160deg, color-mix(in srgb, var(--tone) 12%, transparent), transparent 70%),
       var(--bg-raised);
   }
-  .hd-row:first-child {
+  .hd-top {
     box-shadow: 0 0 60px -20px color-mix(in srgb, var(--tone) 60%, transparent);
+  }
+  .hd-hosts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  /* Two connectors from the top layer down into each host. */
+  .hd-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    height: 28px;
+  }
+  .hd-links span {
+    justify-self: center;
+    width: 1px;
+    background: linear-gradient(var(--accent), var(--line-strong));
   }
   .hd-name {
     font-family: var(--mono);
@@ -50,12 +71,18 @@ const tone = ["var(--accent)", "var(--human)", "var(--agent)"];
   }
   .hd-role {
     color: var(--muted);
-    font-size: 15px;
+    font-size: 14.5px;
   }
-  @media (max-width: 640px) {
-    .hd-row {
+  @media (max-width: 480px) {
+    .hd-hosts,
+    .hd-links {
       grid-template-columns: 1fr;
-      gap: 6px;
+    }
+    .hd-links span:last-child {
+      display: none;
+    }
+    .hd-hosts {
+      gap: 10px;
     }
   }
 </style>
