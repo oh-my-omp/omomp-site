@@ -24,13 +24,14 @@ const groups = seams
 <Base lang={lang} title={t(copy.eyebrow, lang)} description={t(copy.lede, lang)}>
   <PageHead eyebrow={t(copy.eyebrow, lang)} title={t(copy.title, lang)} lede={t(copy.lede, lang)} />
 
-  <div class="wrap legend reveal" aria-hidden="true">
-    <span>{t(copy.component, lang)}</span>
-    <span>{t(copy.mechanism, lang)}</span>
-    <span>{t(copy.policy, lang)}</span>
-    <span></span>
+  <div class="wrap reveal">
+    <div class="legend" aria-hidden="true">
+      <span>{t(copy.component, lang)}</span>
+      <span>{t(copy.mechanism, lang)}</span>
+      <span>{t(copy.policy, lang)}</span>
+      <span></span>
+    </div>
   </div>
-
   {
     groups.map((g) => (
       <section class="wrap group reveal">

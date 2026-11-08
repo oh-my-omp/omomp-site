@@ -40,7 +40,7 @@ const STEP_MS = 1600;
 
 export default function ReplayPlayer(props: { shots: readonly Shot[]; labels: Labels; compact?: boolean }) {
   const [shotIndex, setShotIndex] = createSignal(0);
-  const [step, setStep] = createSignal(0);
+  const [step, setStep] = createSignal((props.shots[0]?.events.length ?? 1) - 1);
   const [playing, setPlaying] = createSignal(false);
   const [reveal, setReveal] = createSignal(true);
 

@@ -127,7 +127,7 @@ dispatch:
         zh: 召集票、设定依赖、裁决升级的问题。
     - name:
         en: Owner
-        zh: Owner
+        zh: 负责人
       role:
         en: A one-shot session that delivers one ticket.
         zh: 一次性会话，交付一张票。

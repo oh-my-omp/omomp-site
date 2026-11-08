@@ -70,7 +70,6 @@ a {
 }
 
 p a,
-li a,
 .prose a {
   color: var(--text);
   text-decoration: underline;
@@ -80,7 +79,6 @@ li a,
 }
 
 p a:hover,
-li a:hover,
 .prose a:hover {
   text-decoration-color: var(--accent);
 }
@@ -103,6 +101,12 @@ h4 {
   letter-spacing: -0.022em;
   line-height: 1.15;
   text-wrap: balance;
+}
+
+/* Chinese headings break at spaces and punctuation, not between any two characters. */
+:lang(zh) :is(h1, h2, h3, h4) {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 p {
