@@ -2,7 +2,7 @@
   "shots": [
     {
       "id": "1",
-      "mechanism": ["omp-ask-more", "ask-readability-gate"],
+      "mechanism": ["omp-ask-more"],
       "session": { "id": "01a1b1ec", "date": "2026-11-06", "model": "anthropic/claude-opus-5-5" },
       "events": [
         {
@@ -66,7 +66,7 @@
     },
     {
       "id": "3",
-      "mechanism": ["task-split-check", "isolation-nudge"],
+      "mechanism": ["isolation-nudge", "task-split-check"],
       "session": { "id": "01a1a45b", "date": "2026-11-04", "model": "anthropic/claude-opus-5-5" },
       "events": [
         {
@@ -244,7 +244,7 @@
     },
     {
       "id": "playbooks",
-      "mechanism": ["omp-playbooks", "xd:// device tools"],
+      "mechanism": ["omp-playbooks"],
       "session": { "id": "01a192be", "date": "2026-10-31", "model": "opencode-go/deepseek-v4.1-flash" },
       "events": [
         {
@@ -292,7 +292,7 @@
     },
     {
       "id": "dispatch",
-      "mechanism": ["omp-dispatch", "owner-seat resolve ruling"],
+      "mechanism": ["omp-dispatch"],
       "session": { "id": "01a1b7bc", "date": "2026-11-07", "model": "anthropic/claude-opus-5-5" },
       "events": [
         {

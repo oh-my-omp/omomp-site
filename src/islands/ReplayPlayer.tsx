@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, For, onCleanup, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, For, on, onCleanup, Show } from "solid-js";
 
 export type Actor = "user" | "assistant" | "tool" | "hook" | "subagent";
 export type Kind = "message" | "tool_call" | "tool_result" | "reminder" | "block";
@@ -72,15 +72,22 @@ export default function ReplayPlayer(props: { shots: readonly Shot[]; labels: La
   });
 
   let screen: HTMLDivElement | undefined;
-  createEffect(() => {
-    visible();
-    if (screen) screen.scrollTo({ top: screen.scrollHeight, behavior: "smooth" });
-  });
+  /** Follow the newest event while playing; a chapter picked by hand opens at its start. */
+  createEffect(
+    on(
+      step,
+      () => {
+        if (playing()) screen?.scrollTo({ top: screen.scrollHeight, behavior: "smooth" });
+      },
+      { defer: true },
+    ),
+  );
 
   const pick = (i: number) => {
     setShotIndex(i);
     setStep(props.shots[i]!.events.length - 1);
     setPlaying(false);
+    screen?.scrollTo({ top: 0 });
   };
 
   return (
@@ -152,10 +159,7 @@ export default function ReplayPlayer(props: { shots: readonly Shot[]; labels: La
             type="button"
             class="rp-play"
             onClick={() => {
-              if (!playing() && step() >= last() && shotIndex() >= props.shots.length - 1) {
-                setShotIndex(0);
-                setStep(0);
-              }
+              if (!playing() && step() >= last()) setStep(0);
               setPlaying(!playing());
             }}
           >
