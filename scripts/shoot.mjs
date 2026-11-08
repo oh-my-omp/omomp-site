@@ -19,6 +19,7 @@ const widths = [
 const seen = new Set();
 const broken = [];
 let failed = false;
+const TILE = 1600;
 
 for (const vp of widths) {
   const page = await browser.newPage({ viewport: { width: vp.width, height: vp.height }, deviceScaleFactor: 1 });
@@ -37,9 +38,14 @@ for (const vp of widths) {
     console.log(`${vp.name} ${route} -> ${res?.status()}`);
     if (!res || res.status() >= 400) failed = true;
     await page.addStyleTag({ content: ".reveal{opacity:1!important;transform:none!important;transition:none!important}" });
-    const file = `${outDir}/${vp.name}${route.replaceAll("/", "_")}.png`;
-    await page.screenshot({ path: file, fullPage: true });
-    console.log(`  saved ${file}`);
+    const file = `${outDir}/${vp.name}${route.replaceAll("/", "_")}`;
+    await page.screenshot({ path: `${file}.png`, fullPage: true });
+    // Full-page shots of long pages shrink past legibility when opened; tiles keep near-native resolution.
+    const height = await page.evaluate(() => document.documentElement.scrollHeight);
+    for (let y = 0, n = 1; y < height; y += TILE, n++) {
+      await page.screenshot({ path: `${file}.${String(n).padStart(2, "0")}.png`, fullPage: true, clip: { x: 0, y, width: vp.width, height: Math.min(TILE, height - y) } });
+    }
+    console.log(`  saved ${file}.png and ${Math.ceil(height / TILE)} tiles`);
     const hrefs = await page.$$eval("a[href]", (as) => as.map((a) => a.getAttribute("href")));
     for (const h of hrefs) {
       if (!h || !h.startsWith("/") || seen.has(h.split("#")[0])) continue;

@@ -17,6 +17,7 @@ const widths = [
   { name: "mobile", width: 390, height: 844 },
 ];
 let failed = false;
+const TILE = 1600;
 
 for (const vp of widths) {
   const page = await browser.newPage({ viewport: { width: vp.width, height: vp.height }, deviceScaleFactor: 1 });
@@ -34,9 +35,14 @@ for (const vp of widths) {
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.waitForTimeout(1000);
     const { hostname, pathname } = new URL(url);
-    const file = `${outDir}/${vp.name}_${hostname}${pathname.replaceAll("/", "_")}.png`;
-    await page.screenshot({ path: file, fullPage: true });
-    console.log(`  saved ${file}`);
+    const file = `${outDir}/${vp.name}_${hostname}${pathname.replaceAll("/", "_")}`;
+    await page.screenshot({ path: `${file}.png`, fullPage: true });
+    // Full-page shots of long pages shrink past legibility when opened; tiles keep near-native resolution.
+    const height = await page.evaluate(() => document.documentElement.scrollHeight);
+    for (let y = 0, n = 1; y < height; y += TILE, n++) {
+      await page.screenshot({ path: `${file}.${String(n).padStart(2, "0")}.png`, fullPage: true, clip: { x: 0, y, width: vp.width, height: Math.min(TILE, height - y) } });
+    }
+    console.log(`  saved ${file}.png and ${Math.ceil(height / TILE)} tiles`);
   }
   await page.close();
 }
