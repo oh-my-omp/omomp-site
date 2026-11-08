@@ -47,6 +47,7 @@ prompt:
 
 memory:
   order: 3
+  replay: ["memory"]
   short: { en: Memory, zh: 记忆 }
   name:
     en: Long tasks keep their plan

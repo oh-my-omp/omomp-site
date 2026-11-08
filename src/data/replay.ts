@@ -160,6 +160,18 @@ export const shotCopy: Readonly<Record<string, ShotCopy>> = {
       },
     },
   },
+  memory: {
+    title: { en: "An unfinished plan won't let the turn close", zh: "计划没做完，回合就收不了尾" },
+    caption: {
+      en: "The agent stops while a build runs elsewhere. A hidden reminder hands back the plan it still owes; the agent closes the items it had finished, tries to stop again, and the reminder returns with the one item left.",
+      zh: "别处的构建还在跑，代理先停了下来。一条隐藏的提醒把还欠着的计划原样递回；代理勾掉已经做完的几项，又想停下，提醒再次出现，只剩最后一项。",
+    },
+    notes: {
+      1: { en: "The reminder carries the plan itself: open items, what each means, the goal.", zh: "提醒带回的就是计划本身：未完成项、每项的说明和目标。" },
+      3: { en: "The plan answers with what is still open.", zh: "计划随即回报还剩下什么。" },
+      5: { en: "The second stop gets the same reminder, now holding only what is still owed.", zh: "第二次停下，提醒又来了，只剩还没做完的那一项。" },
+    },
+  },
 };
 
 const raw = rawShots.parse(sessions).shots;
@@ -186,7 +198,8 @@ export function shotsFor(ids: readonly string[], lang: Lang): Shot[] {
   });
 }
 
-export const replayIds: readonly string[] = ["1", "2", "3", "4", "5", "6"];
+/** Replay page chapters in seam order: intent, prompt, memory, delegation, execution, delivery. */
+export const replayIds: readonly string[] = ["1", "memory", "2", "3", "4", "5", "6"];
 
 export function replayLabels(lang: Lang): Labels {
   const zh = lang === "zh";

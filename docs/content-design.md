@@ -103,7 +103,7 @@ flowchart TB
 | ① 意图进入会话 | `omp-ask-more` 全屏决策面板（现状、决定、后果，代码证据、示意图、演示动画）；`input-polish` 改写输入 | 结构化 `ask`：每个选项写明取舍 | `ask-more` 的可读性检查退回含糊的提问；路由规则要求所有问题走面板 |
 | ② 提示词加载与防漂移 | `omp` 完整模式与 `omp-light` 轻量模式两个入口 | `tool://` 与 `xd://` 按需读取工具专题 | `SYSTEM_TEMPLATE.md` 去重、`tool-topics` 压缩工具说明、`system-prompt-replace` 修补冲突措辞、`repo-rules` 按路径投递规则 |
 | ③ 长任务规划与记忆 | `omp-todo-more` 的 Tern 待办面板 | 结构化 `todo`（目标、阶段、时间预算、完成即提交）、`ctx` 回顾、`fork_task` 复制完整对话前缀 | 未完成项的停止提醒；`model-compaction` 按模型推迟有损压缩 |
-| ④ 子代理派发与顾问 | `/subagent-usage` 授权本机用量校准 | 按成本与可信度分档的 `task:*`、保守的 `discuss:steady`、发散的 `discuss:divergent`、无工具的 `mentor:default`、剩余派发次数估算 | `user-prompt-inject` 把用户原话注入顾问；`isolation-nudge` 退回会让多个写者共用工作区、又没写明是否隔离的派发；`task-split-check` 拦截多主题混派和限制报告长度 |
+| ④ 子代理派发与顾问 | `/subagent-usage` 授权本机用量校准 | 按成本与可信度分档的 `task:*`、保守的 `discuss:steady`、发散的 `discuss:divergent`、无工具的 `mentor:default`、剩余派发次数估算 | `user-prompt-inject` 把用户原话注入顾问；`isolation-nudge` 退回会让多个改文件的子代理共用工作区、又没写明是否隔离的派发；`task-split-check` 拦截多主题混派和限制报告长度 |
 | ⑤ 命令执行与过程监督 | `omp-unified-exec` 的 Tern 终端 HUD，人可旁观并向同一终端输入；`/watchdog` 管理命令 | 长驻 PTY 会话（`exec_command`、`write_stdin`、`monitor`）、只收字面路径并默认进回收站的 `delete`、`wt` 会话工作树、`harness_restart` | `delete-guard` 拦截 shell 与 eval 中的删除和非字面执行；`tool-policy-nag` 阻断交互和长驻命令走 `bash`，其他误用照常执行并在结果末尾追加提醒；`watchdog-agent` 按动作数定期审查用户定义的会话 |
 | ⑥ 交付验收与跨会话协作 | `omp-thinking-translator` 流式翻译思考块；`omomp-lang` 统一界面语言 | `omp-sessions`（`session://` 与 `session_query` SQL）、`omp-peers`（跨进程发现、旁路询问、IRC 消息） | `task-completion-judge` 在子代理交付时核对范围、验证和 Todo；`turn-judge` 在主代理只说不做就收工时要求继续；`lang-nag` 在下一轮纠正用错的回复语言 |
 
@@ -122,7 +122,7 @@ flowchart TB
 | 5 | 跨轮次保留的终端：代理在一个保留下来的终端里启动完整的 omp 会话，几分钟里多次向同一终端输入。人在 Tern 终端 HUD 里的按键直接写进终端，不进会话记录，所以这一帧展示代理一侧，人可以向同一终端输入作为事实写在说明里 | `omp-unified-exec` |
 | 6 | 拒绝半途而废：子代理交付时被退回，判定者对照任务和实际调用发现验证用错了模型，子代理换模型重做；另附一次主代理没做完就停下时 `turn-judge` 注入的提示 | `task-completion-judge`、`turn-judge` |
 
-产品页另有三帧：`omp-playbooks` 一次有边界的运行检查（读设备文档、打开 Playbook、读块、启动 Run）；`omp-dispatch` 协调者被唤醒后读 issue 与背后的决定、作出裁决，由状态机把工单交回负责人；`omp-remote-build` 一次测试运行，代理取得自己的容器，在容器里读到本机写下、经同步送达的文件。
+产品页另有三帧：`omp-playbooks` 一次测试会话（读工具说明、打开 Playbook、读块、启动 Run）；`omp-dispatch` 协调者被唤醒后读 issue 与背后的决定、作出裁决，由状态机把工单交回负责人；`omp-remote-build` 一次测试运行，代理取得自己的容器，在容器里读到本机写下、经同步送达的文件。
 
 呈现形式参考 Amp 首页的章节与逐字稿：回放页是一个按帧分章、可逐步播放的会话播放器，每帧附完整摘录；接缝页和产品页内嵌对应的那一帧。
 
@@ -135,6 +135,8 @@ Playbook、Dispatch、Remote Build 自成体系，各有完整的使用流程和
 | [omp-playbooks](https://github.com/oh-my-omp/omp-playbooks) | 人机共创的可执行设计文档：设计块、执行块和编排块放在同一份 YAML 里，人在 Tern 面板中把块当卡片编辑，主会话负责编译和启动子代理 | 人、协调者、文档服务、子代理四方的职责边界，以及“按钮是请求，不是自动执行器”；内嵌一帧真实会话 |
 | [omp-dispatch](https://github.com/oh-my-omp/omp-dispatch) | GitHub issue 图交付引擎：持久票据按工作流状态机推进，每次交付由一次性 owner 会话完成，由全新的独立判定者把关 | 从 issue 里的链接或 GitHub App 事件启动协调者的端到端流程；为什么判定必须对准具体 commit、由新会话完成；内嵌一帧协调者裁决的真实会话 |
 | [omp-remote-build](https://github.com/oh-my-omp/omp-remote-build) | 按 worktree 隔离的远端构建环境：本地照常编辑，Mutagen 单向同步到远端主机，在 Komodo 管理的容器里编译、测试 | 本地 worktree、同步、远端主机与容器各方的职责；项目如何用一个配置文件选择接入；内嵌一帧真实会话 |
+
+三个产品页的页头并列列出全部产品，可直接互相切换。
 
 `omp-codex-image-gen` 等单一功能插件放在页面末尾的工具区，一张卡片一句话。
 
