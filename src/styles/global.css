@@ -103,9 +103,8 @@ h4 {
   text-wrap: balance;
 }
 
-/* Chinese headings break at spaces and punctuation, not between any two characters; balancing would push breaks onto the spaces around Latin words. */
+/* Chinese headings wrap only at the word boundaries src/middleware.ts marks with <wbr>, and at spaces and punctuation. */
 :lang(zh) :is(h1, h2, h3, h4) {
-  text-wrap: wrap;
   word-break: keep-all;
   overflow-wrap: anywhere;
 }
