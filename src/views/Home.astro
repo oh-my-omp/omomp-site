@@ -22,6 +22,21 @@ const runtime = byKind("runtime")[0]!;
 const plugins = byKind("plugin");
 const products = byKind("product");
 const tools = byKind("tool");
+
+/** Install commands; `tail` is the repo slug, which may wrap to its own line on narrow screens. */
+type TermLine =
+  | { kind: "comment"; text: string }
+  | { kind: "blank" }
+  | { kind: "command"; prompt: "$" | ">"; head: string; tail?: string };
+const terminal: readonly TermLine[] = [
+  { kind: "comment", text: lang === "en" ? "one plugin" : "单个插件" },
+  { kind: "command", prompt: "$", head: "omp plugin install https://github.com/oh-my-omp/", tail: "omp-ask-more" },
+  { kind: "blank" },
+  { kind: "comment", text: lang === "en" ? "the whole runtime" : "整套运行时" },
+  { kind: "command", prompt: "$", head: "git clone https://github.com/oh-my-omp/", tail: "omp-config" },
+  { kind: "command", prompt: "$", head: "cd omp-config && omp" },
+  { kind: "command", prompt: ">", head: "/onboard-omp" },
+];
 ---
 
 <Base lang={lang} title={t(home.meta.title, lang)} description={t(home.meta.description, lang)}>
@@ -70,13 +85,17 @@ const tools = byKind("tool");
     </div>
     <div class="term">
       <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i></div>
-      <pre><code><span class="c"># {lang === "en" ? "one plugin" : "单个插件"}</span>
-<span class="p">$</span> omp plugin install https://github.com/oh-my-omp/omp-ask-more
-
-<span class="c"># {lang === "en" ? "the whole runtime" : "整套运行时"}</span>
-<span class="p">$</span> git clone https://github.com/oh-my-omp/omp-config
-<span class="p">$</span> cd omp-config && omp
-<span class="p">&gt;</span> /onboard-omp</code></pre>
+      <pre><code>{
+        terminal.map((line) =>
+          line.kind === "comment" ? (
+            <span class="ln c"># {line.text}</span>
+          ) : line.kind === "blank" ? (
+            <span class="ln"> </span>
+          ) : (
+            <span class="ln"><span class="p">{line.prompt}</span> {line.head}{line.tail && <><wbr />{line.tail}</>}</span>
+          ),
+        )
+      }</code></pre>
     </div>
   </section>
 
@@ -324,15 +343,22 @@ const tools = byKind("tool");
   .term pre {
     margin: 0;
     padding: 22px 24px;
-    white-space: pre;
-    overflow-x: auto;
+    white-space: pre-wrap;
   }
   .term code {
     background: none;
     border: 0;
     padding: 0;
-    font-size: 13.5px;
+    font-size: 12.5px;
     line-height: 1.8;
+  }
+  /* A command wraps only before its repo slug, and its continuation hangs under the command. */
+  .term .ln {
+    display: block;
+    padding-left: 2ch;
+    text-indent: -2ch;
+    overflow-wrap: normal;
+    word-break: normal;
   }
   .term .c {
     color: var(--dim);
@@ -383,6 +409,16 @@ const tools = byKind("tool");
   .card p {
     color: var(--muted);
     font-size: 15px;
+  }
+  .grid .card:not(.card-product) {
+    display: flex;
+    flex-direction: column;
+  }
+  .grid .card:not(.card-product) .card-name {
+    align-self: flex-start;
+  }
+  .grid .card .chips {
+    margin-top: auto;
   }
   .card-name {
     justify-self: start;

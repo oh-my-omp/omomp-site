@@ -74,15 +74,17 @@ const hostTones = ["var(--agent)", "var(--human)"];
     font-size: 14.5px;
   }
   @media (max-width: 480px) {
-    .hd-hosts,
-    .hd-links {
-      grid-template-columns: 1fr;
-    }
-    .hd-links span:last-child {
-      display: none;
-    }
     .hd-hosts {
       gap: 10px;
+    }
+    .hd-box {
+      padding: 16px 14px;
+    }
+    .hd-name {
+      font-size: 13px;
+    }
+    .hd-role {
+      font-size: 13.5px;
     }
   }
 </style>

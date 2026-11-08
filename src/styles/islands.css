@@ -359,10 +359,10 @@
   gap: 12px;
   scrollbar-width: thin;
 }
-/* An embedded excerpt is short: size to it, and only scroll past the cap. */
+/* An embedded excerpt shows whole: the screen grows with it instead of scrolling. */
 .rp.compact .rp-screen {
   height: auto;
-  max-height: 560px;
+  overflow-y: visible;
 }
 /* Content continues below: fade the last lines instead of cutting a line in half at the border. */
 .rp-screen.more {
@@ -514,10 +514,12 @@
   /* An embedded player has two chapters at most: a list reads better than a scroller. */
   .rp.compact .rp-chapters {
     grid-auto-flow: row;
+    grid-auto-columns: auto;
+    grid-template-columns: minmax(0, 1fr);
     overflow-x: visible;
     mask-image: none;
   }
-  .rp-screen {
+  .rp:not(.compact) .rp-screen {
     height: 460px;
   }
 }

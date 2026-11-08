@@ -24,7 +24,7 @@ playbooks:
           zh: 编译时提示词被冻结下来，子代理收到了什么，始终有据可查。
     - title:
         en: The button asks, the coordinator decides
-        zh: 按钮只是请求，协调者做决定。
+        zh: 按钮只是请求，协调者做决定
       points:
         - en: Launch, Stop and a design change are requests to the main session. Clicking never runs anything on its own.
           zh: 启动、停止和修改设计，都是发给主会话的请求；点击本身不会让任何东西运行。
