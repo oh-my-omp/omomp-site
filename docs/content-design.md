@@ -182,7 +182,7 @@ Playbook、Dispatch、Remote Build 自成体系，各有完整的使用流程和
 ### 技术路线
 
 - 用 Astro 生成静态站点，不依赖服务端运行。
-- 页面默认是静态内容；生命线动画、回放时间轴、界面切片这类交互部分做成 Astro island，全站只用一种 UI 框架。
+- 页面默认是静态内容；生命线动画、回放时间轴、界面切片这类交互部分做成 Astro island，全站只用 Solid 一种 UI 框架，经 Astro 官方集成 `@astrojs/solid-js` 接入。该集成目前只支持 Solid 1；Solid 2 还是 RC，它的渲染入口已拆到 `@solidjs/web`，官方集成跟进后再迁移。
 - 接缝、组件、产品这些结构化内容放进 Astro 内容集合，由 schema 约束字段；机制与默认策略索引由这些数据生成，不手写表格。
 - 关键图（首页的宿主边界图、接缝页的生命线与三层视角图）按视觉基准定制绘制，不用 mermaid 默认样式；mermaid 只用于索引等次要页面，并在构建时渲染成 SVG。
 - 录屏视频放在站点自己的存储里，不直接嵌入 GitHub 附件链接：用 curl 不带登录请求 omp-ask-more README 里的 `github.com/user-attachments/assets/...` 录屏链接，返回 404，外站无法直接播放。
@@ -197,7 +197,7 @@ Playbook、Dispatch、Remote Build 自成体系，各有完整的使用流程和
 ## 待定事项
 
 - 语言：只做中文，还是中英双语。
-- island 使用的 UI 框架：React 或 Svelte。
+- 动画与样式方案：Solid 核心不带过渡动画和组件级 scoped CSS，需要选定动画库和样式方案。
 - 托管方式，以及是否使用自定义域名。
 - 回放素材：从哪些真实会话中选取，如何脱敏。
 - 独立产品与安装清单的关系：omp-config 的 `install-plugins.sh` 目前默认安装 `omp-playbooks`、不含 `omp-dispatch`，`omp-remote-build` 是注释掉的可选项；官网按产品分量把三者作为独立产品呈现，安装清单是否随之调整另行决定。
