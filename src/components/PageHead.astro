@@ -1,0 +1,34 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  lede: string;
+}
+const { eyebrow, title, lede } = Astro.props;
+---
+
+<header class="ph wrap">
+  <p class="eyebrow">{eyebrow}</p>
+  <h1 class="gradient-text">{title}</h1>
+  <p class="lede">{lede}</p>
+  <slot />
+</header>
+
+<style>
+  .ph {
+    padding-top: clamp(64px, 10vw, 120px);
+    padding-bottom: clamp(40px, 6vw, 72px);
+    display: grid;
+    gap: 20px;
+    max-width: 920px;
+    margin-left: max(0px, calc((100% - var(--page)) / 2));
+  }
+  h1 {
+    font-size: clamp(36px, 5.6vw, 60px);
+  }
+  .lede {
+    font-size: clamp(17px, 1.6vw, 20px);
+    color: var(--muted);
+    max-width: 680px;
+  }
+</style>

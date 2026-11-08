@@ -1,0 +1,74 @@
+---
+interface Link {
+  href: string;
+  label: string;
+  title: string;
+}
+interface Props {
+  prev?: Link | undefined;
+  next?: Link | undefined;
+}
+const { prev, next } = Astro.props;
+---
+
+<nav class="pager wrap" aria-label="Pagination">
+  {
+    prev ? (
+      <a class="p prev" href={prev.href}>
+        <span class="k">← {prev.label}</span>
+        <span class="t">{prev.title}</span>
+      </a>
+    ) : (
+      <span />
+    )
+  }
+  {
+    next && (
+      <a class="p next" href={next.href}>
+        <span class="k">{next.label} →</span>
+        <span class="t">{next.title}</span>
+      </a>
+    )
+  }
+</nav>
+
+<style>
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 96px;
+  }
+  .p {
+    display: grid;
+    gap: 6px;
+    padding: 20px 22px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .p:hover {
+    border-color: var(--line-strong);
+    background: rgb(255 255 255 / 0.03);
+  }
+  .next {
+    text-align: right;
+    grid-column: 2;
+  }
+  .k {
+    font-size: 13px;
+    color: var(--dim);
+  }
+  .t {
+    font-weight: 500;
+  }
+  @media (max-width: 640px) {
+    .pager {
+      grid-template-columns: 1fr;
+    }
+    .next {
+      grid-column: 1;
+    }
+  }
+</style>
