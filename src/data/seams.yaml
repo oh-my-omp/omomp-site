@@ -24,6 +24,7 @@ intent:
 
 prompt:
   order: 2
+  replay: ["prompt"]
   short: { en: Prompt, zh: 提示词 }
   name:
     en: Prompts load and stay put

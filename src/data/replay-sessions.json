@@ -427,6 +427,34 @@
         }
       ],
       "source": "session://01a1b6a9-907f-7438-a3b9-2c24a7723a53/entry/6553bcff, entry/e4b6d0b9, entry/0889ab38, entry/691ebc43, entry/1a38d2de, entry/1b7181bc"
+    },
+    {
+      "id": "prompt",
+      "mechanism": ["tool-topics"],
+      "session": { "id": "01a1b7b1", "date": "2026-11-07", "model": "anthropic/claude-sonnet-5-5" },
+      "events": [
+        {
+          "t": "2026-11-07T20:38:02Z",
+          "actor": "user",
+          "kind": "message",
+          "text": "每一个伞issue，派一个task high去处理，不需要告诉他们怎么处理，你需要和他们说只有全部做完再做e2e，否则只简单测试甚至跳过测试，并且做e2e需要通知你，你来协调e2e的并发限制和顺序，并且要约定e2e交接的原语"
+        },
+        {
+          "t": "2026-11-07T20:38:07Z",
+          "actor": "assistant",
+          "kind": "tool_call",
+          "tool": "read",
+          "text": "read(path=\"tool://task/limits\")\nread(path=\"tool://task/follow-up\")\nread(path=\"tool://task/isolation\")"
+        },
+        {
+          "t": "2026-11-07T20:38:11Z",
+          "actor": "hook",
+          "kind": "reminder",
+          "tool": "tool-topic-injection",
+          "text": "<tool-topic-injection rule=\"omp-config%2Ftool-topic-injection/read-runtime\" topic=\"tool://read/runtime\">\n# Agents, jobs, artifacts and transcripts\n\n- `agent://<id>` — the agent's latest published output (line selectors apply); before anything is published it shows status and progress. …\n- `history://` lists registered and persisted subagents; `history://<id>` is the read-only transcript: exact wording, tool arguments and raw errors. …\n</tool-topic-injection>"
+        }
+      ],
+      "source": "session://01a1b7b1-e476-73f2-a45b-4059b9d2d966/entry/e0706a2e, entry/e6083b16, entry/43504bbf"
     }
   ]
 }

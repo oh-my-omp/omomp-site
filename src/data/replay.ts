@@ -172,6 +172,17 @@ export const shotCopy: Readonly<Record<string, ShotCopy>> = {
       5: { en: "The second stop gets the same reminder, now holding only what is still owed.", zh: "第二次停下，提醒又来了，只剩还没做完的那一项。" },
     },
   },
+  prompt: {
+    title: { en: "Tool notes arrive when needed, not in the prompt", zh: "工具说明按需送到，不进提示词" },
+    caption: {
+      en: "Before sending out a batch of workers, the agent reads the parts of the task tool's notes it needs. A moment later a note on runtime URLs arrives as a hidden message. Neither touches the system prompt.",
+      zh: "派出一批执行者之前，代理先读 task 工具说明里它要用的几节。片刻之后，一条关于运行时 URL 的说明以隐藏消息送到。两者都不碰 system prompt。",
+    },
+    notes: {
+      1: { en: "Each topic is fetched only when a call needs it.", zh: "每个专题只在调用需要时才取。" },
+      2: { en: "Appended as a message, so the cached prompt prefix stays the same.", zh: "以追加消息送达，缓存的提示前缀保持不变。" },
+    },
+  },
 };
 
 const raw = rawShots.parse(sessions).shots;
@@ -199,7 +210,7 @@ export function shotsFor(ids: readonly string[], lang: Lang): Shot[] {
 }
 
 /** Replay page chapters in seam order: intent, prompt, memory, delegation, execution, delivery. */
-export const replayIds: readonly string[] = ["1", "memory", "2", "3", "4", "5", "6"];
+export const replayIds: readonly string[] = ["1", "prompt", "memory", "2", "3", "4", "5", "6"];
 
 export function replayLabels(lang: Lang): Labels {
   const zh = lang === "zh";
