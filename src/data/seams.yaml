@@ -1,6 +1,6 @@
 intent:
   order: 1
-  replay: 1
+  replay: ["1"]
   name:
     en: Intent enters the session
     zh: 意图进入会话
@@ -23,7 +23,6 @@ intent:
 
 prompt:
   order: 2
-  replay: 4
   name:
     en: Prompts load and stay put
     zh: 提示词加载与防漂移
@@ -46,7 +45,6 @@ prompt:
 
 memory:
   order: 3
-  replay: 6
   name:
     en: Long tasks keep their plan
     zh: 长任务规划与记忆
@@ -69,7 +67,7 @@ memory:
 
 delegation:
   order: 4
-  replay: 2
+  replay: ["2", "3"]
   name:
     en: Subagents and advisors
     zh: 子代理派发与顾问
@@ -92,7 +90,7 @@ delegation:
 
 execution:
   order: 5
-  replay: 5
+  replay: ["4", "5"]
   name:
     en: Commands run under watch
     zh: 命令执行与过程监督
@@ -115,7 +113,7 @@ execution:
 
 delivery:
   order: 6
-  replay: 6
+  replay: ["6"]
   name:
     en: Delivery and other sessions
     zh: 交付验收与跨会话协作

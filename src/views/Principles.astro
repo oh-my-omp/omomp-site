@@ -1,0 +1,163 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import PageHead from "../components/PageHead.astro";
+import Pager from "../components/Pager.astro";
+import { principlesPage as copy } from "../copy/pages";
+import { href, inlineCode, t, type Lang } from "../i18n";
+import { ui } from "../ui";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const principles = (await getCollection("principles")).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Base lang={lang} title={t(copy.eyebrow, lang)} description={t(copy.lede, lang)}>
+  <PageHead eyebrow={t(copy.eyebrow, lang)} title={t(copy.title, lang)} lede={t(copy.lede, lang)} />
+
+  <nav class="wrap toc" aria-label={t(copy.eyebrow, lang)}>
+    {
+      principles.map((p) => (
+        <a href={`#${p.id}`}>
+          <span class="n">{String(p.data.order).padStart(2, "0")}</span>
+          {p.data.short[lang]}
+        </a>
+      ))
+    }
+  </nav>
+
+  {
+    principles.map((p) => (
+      <section class="wrap tenet reveal" id={p.id}>
+        <div class="side">
+          <span class="n big">{String(p.data.order).padStart(2, "0")}</span>
+        </div>
+        <div class="body">
+          <h2>{p.data.title[lang]}</h2>
+          <div class="cols">
+            <div class="problem">
+              <p class="label">{t(copy.problem, lang)}</p>
+              <p>{p.data.problem[lang]}</p>
+            </div>
+            <div class="practice">
+              <p class="label">{t(copy.practice, lang)}</p>
+              <ul>
+                {p.data.practice.map((line) => (
+                  <li set:html={inlineCode(line[lang])} />
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    ))
+  }
+
+  <Pager next={{ href: href("/lifeline/", lang), label: t(ui.next, lang), title: t({ en: "The lifeline", zh: "生命线" }, lang) }} />
+</Base>
+
+<style>
+  .toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .toc a {
+    display: inline-flex;
+    gap: 10px;
+    align-items: baseline;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 14px;
+    color: var(--muted);
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .toc a:hover {
+    color: var(--text);
+    border-color: var(--line-strong);
+  }
+  .n {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+  }
+  .tenet {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 32px;
+    padding-top: clamp(64px, 9vw, 112px);
+    scroll-margin-top: 60px;
+  }
+  .big {
+    font-size: 15px;
+    position: sticky;
+    top: 96px;
+    display: block;
+  }
+  .body {
+    display: grid;
+    gap: 36px;
+  }
+  h2 {
+    font-size: clamp(28px, 3.6vw, 40px);
+    max-width: 820px;
+  }
+  .cols {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(24px, 5vw, 64px);
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+  .label {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 12px;
+  }
+  .problem p:not(.label) {
+    color: var(--muted);
+    font-size: 16.5px;
+  }
+  .practice ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+  }
+  .practice li {
+    position: relative;
+    padding-left: 22px;
+    font-size: 16px;
+  }
+  .practice li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 8px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+  @media (max-width: 760px) {
+    .tenet {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .big {
+      position: static;
+    }
+    .cols {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

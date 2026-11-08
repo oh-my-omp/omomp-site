@@ -103,13 +103,13 @@ flowchart TB
 | ① 意图进入会话 | `omp-ask-more` 全屏决策面板（现状、决定、后果，代码证据、示意图、演示动画）；`input-polish` 改写输入 | 结构化 `ask`：每个选项写明取舍 | `ask-more` 的可读性检查退回含糊的提问；路由规则要求所有问题走面板 |
 | ② 提示词加载与防漂移 | `omp` 完整模式与 `omp-light` 轻量模式两个入口 | `tool://` 与 `xd://` 按需读取工具专题 | `SYSTEM_TEMPLATE.md` 去重、`tool-topics` 压缩工具说明、`system-prompt-replace` 修补冲突措辞、`repo-rules` 按路径投递规则 |
 | ③ 长任务规划与记忆 | `omp-todo-more` 的 Tern 待办面板 | 结构化 `todo`（目标、阶段、时间预算、完成即提交）、`ctx` 回顾、`fork_task` 复制完整对话前缀 | 未完成项的停止提醒；`model-compaction` 按模型推迟有损压缩 |
-| ④ 子代理派发与顾问 | `/subagent-usage` 授权本机用量校准 | 按成本与可信度分档的 `task:*`、保守的 `discuss:steady`、发散的 `discuss:divergent`、无工具的 `mentor:default`、剩余派发次数估算 | `user-prompt-inject` 把用户原话注入顾问；`isolation-nudge` 拦截未隔离的并发写者；`task-split-check` 拦截多主题混派和限制报告长度 |
-| ⑤ 命令执行与过程监督 | `omp-unified-exec` 的 Tern 终端 HUD，人可旁观并向同一终端输入；`/watchdog` 管理命令 | 长驻 PTY 会话（`exec_command`、`write_stdin`、`monitor`）、只收字面路径并默认进回收站的 `delete`、`wt` 会话工作树、`harness_restart` | `delete-guard` 拦截 shell 与 eval 中的删除和非字面执行；`tool-policy-nag` 阻断交互和长驻命令走 `bash`，并对工具误用追加提醒；`watchdog-agent` 定期抽查 |
-| ⑥ 交付验收与跨会话协作 | `omp-thinking-translator` 流式翻译思考块；`omomp-lang` 统一界面语言 | `omp-sessions`（`session://` 与 `session_query` SQL）、`omp-peers`（跨进程发现、旁路询问、IRC 消息） | `task-completion-judge` 在子代理交付时核对范围、验证和 Todo；`turn-judge` 在主代理只说不做就收工时要求继续；`lang-nag` 纠正回复语言 |
+| ④ 子代理派发与顾问 | `/subagent-usage` 授权本机用量校准 | 按成本与可信度分档的 `task:*`、保守的 `discuss:steady`、发散的 `discuss:divergent`、无工具的 `mentor:default`、剩余派发次数估算 | `user-prompt-inject` 把用户原话注入顾问；`isolation-nudge` 退回会让多个写者共用工作区、又没写明是否隔离的派发；`task-split-check` 拦截多主题混派和限制报告长度 |
+| ⑤ 命令执行与过程监督 | `omp-unified-exec` 的 Tern 终端 HUD，人可旁观并向同一终端输入；`/watchdog` 管理命令 | 长驻 PTY 会话（`exec_command`、`write_stdin`、`monitor`）、只收字面路径并默认进回收站的 `delete`、`wt` 会话工作树、`harness_restart` | `delete-guard` 拦截 shell 与 eval 中的删除和非字面执行；`tool-policy-nag` 阻断交互和长驻命令走 `bash`，其他误用照常执行并在结果末尾追加提醒；`watchdog-agent` 按动作数定期审查用户定义的会话 |
+| ⑥ 交付验收与跨会话协作 | `omp-thinking-translator` 流式翻译思考块；`omomp-lang` 统一界面语言 | `omp-sessions`（`session://` 与 `session_query` SQL）、`omp-peers`（跨进程发现、旁路询问、IRC 消息） | `task-completion-judge` 在子代理交付时核对范围、验证和 Todo；`turn-judge` 在主代理只说不做就收工时要求继续；`lang-nag` 在下一轮纠正用错的回复语言 |
 
 ### 带批注的真实回放
 
-静默治理层没有界面，生命线之后接一段回放：以一次真实的多文件任务为时间轴，在关键帧并排展示“会话里发生了什么”和“没有 omomp 会怎样”。每一帧都取自真实会话记录，不编造；素材用 `omp-sessions` 从会话记录中检索。官网的所有演示都为官网重新制作，不复用插件 README 里的录屏。
+静默治理层没有界面，生命线之后接一段回放：每一帧是一段真实会话记录的摘录，可以在“你看到的”和“模型看到的”两种视角之间切换，后者多出钩子注入、拒绝和提醒这些人平时看不到的消息。摘录只删减和脱敏，不改写、不编造；素材用 `omp-sessions` 从本机会话记录中检索。官网的所有演示都为官网重新制作，不复用插件 README 里的录屏。
 
 计划寻找的镜头：
 
@@ -122,7 +122,7 @@ flowchart TB
 | 5 | 人机同屏终端：代理启动长驻进程，人在 Tern 终端 HUD 里介入，代理接着读同一终端 | `omp-unified-exec` |
 | 6 | 拒绝半途而废：子代理未验证就交付被退回；主代理宣布“接下来可以运行测试”准备收工，被要求继续 | `task-completion-judge`、`turn-judge` |
 
-呈现形式参考 Amp 首页：长视频按章节打时间戳，附完整逐字稿。
+呈现形式参考 Amp 首页的章节与逐字稿：回放页是一个按帧分章、可逐步播放的会话播放器，每帧附完整摘录；接缝页和产品页内嵌对应的那一帧。
 
 ## 三、独立重量级产品
 

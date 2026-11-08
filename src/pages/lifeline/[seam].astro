@@ -1,0 +1,11 @@
+---
+import { getCollection } from "astro:content";
+import Seam from "../../views/Seam.astro";
+
+export async function getStaticPaths() {
+  return (await getCollection("seams")).map((seam) => ({ params: { seam: seam.id }, props: { seam } }));
+}
+const { seam } = Astro.props;
+---
+
+<Seam lang="en" seam={seam} />

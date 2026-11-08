@@ -1,0 +1,193 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import Base from "../layouts/Base.astro";
+import PageHead from "../components/PageHead.astro";
+import Pager from "../components/Pager.astro";
+import ReplayPlayer from "../islands/ReplayPlayer";
+import { replayPage, seamPage as copy } from "../copy/pages";
+import { shotsFor, replayLabels } from "../data/replay";
+import { href, inlineCode, t, type Lang } from "../i18n";
+import { ui } from "../ui";
+
+interface Props {
+  lang: Lang;
+  seam: CollectionEntry<"seams">;
+}
+const { lang, seam } = Astro.props;
+const seams = (await getCollection("seams")).sort((a, b) => a.data.order - b.data.order);
+const index = seams.findIndex((s) => s.id === seam.id);
+const prev = seams[index - 1];
+const next = seams[index + 1];
+const components = (await getCollection("components")).filter((c) => c.data.seam === seam.id);
+const layers = ["human", "agent", "silent"] as const;
+const order = String(seam.data.order).padStart(2, "0");
+const shots = shotsFor(seam.data.replay ?? [], lang);
+---
+
+<Base lang={lang} title={seam.data.name[lang]} description={seam.data.claim[lang]}>
+  <PageHead eyebrow={`${t(copy.eyebrow, lang)} ${order} · ${seam.data.name[lang]}`} title={seam.data.claim[lang]} lede={seam.data.drift[lang]}>
+    <ol class="rail" aria-hidden="true">
+      {seams.map((s) => <li class:list={[{ on: s.id === seam.id, past: s.data.order < seam.data.order }]} />)}
+    </ol>
+  </PageHead>
+
+  {
+    layers.map((l) => (
+      <section class={`wrap layer layer-${l} reveal`}>
+        <div class="head">
+          <span class="tag">
+            <span class="layer-dot" />
+            {t(ui.layers[l], lang)}
+          </span>
+        </div>
+        <div class="body">
+          <p class="lead" set:html={inlineCode(seam.data.sections[l][lang])} />
+          <div class="cards">
+            {components
+              .filter((c) => c.data.layer === l)
+              .map((c) => (
+                <a class="card" href={c.data.repo}>
+                  <code class="name">{c.data.name}</code>
+                  <p class="solves">{c.data.solves[lang]}</p>
+                  <p class="does" set:html={inlineCode(c.data.does[lang])} />
+                </a>
+              ))}
+          </div>
+        </div>
+      </section>
+    ))
+  }
+
+  {
+    shots.length > 0 && (
+      <section class="wrap replay reveal">
+        <div class="replay-head">
+          <h2>{t(copy.replay, lang)}</h2>
+          <a href={href("/replay/", lang)}>{t(copy.replayMore, lang)} →</a>
+        </div>
+        <ReplayPlayer client:visible shots={shots} labels={replayLabels(lang)} compact />
+        <p class="note">{t(replayPage.note, lang)}</p>
+      </section>
+    )
+  }
+
+  <Pager
+    prev={prev
+      ? { href: href(`/lifeline/${prev.id}/`, lang), label: t(ui.previous, lang), title: prev.data.name[lang] }
+      : { href: href("/lifeline/", lang), label: t(ui.previous, lang), title: t({ en: "The lifeline", zh: "生命线" }, lang) }}
+    next={next
+      ? { href: href(`/lifeline/${next.id}/`, lang), label: t(ui.next, lang), title: next.data.name[lang] }
+      : { href: href("/replay/", lang), label: t(ui.next, lang), title: t(copy.toReplay, lang) }}
+  />
+</Base>
+
+<style>
+  .rail {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+    display: flex;
+    gap: 6px;
+  }
+  .rail li {
+    width: 36px;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--line-strong);
+  }
+  .rail li.past {
+    background: rgb(247 168 35 / 0.4);
+  }
+  .rail li.on {
+    background: var(--accent);
+  }
+  .layer {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 32px;
+    padding-top: 48px;
+    padding-bottom: 48px;
+    border-top: 1px solid var(--line);
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    position: sticky;
+    top: 96px;
+  }
+  .body {
+    display: grid;
+    gap: 24px;
+  }
+  .lead {
+    font-size: clamp(18px, 1.8vw, 21px);
+    line-height: 1.5;
+    max-width: 760px;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  .card {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    border-left: 2px solid color-mix(in srgb, var(--layer) 60%, transparent);
+    border-radius: 10px;
+    background: var(--bg-raised);
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .card:hover {
+    border-color: var(--line-strong);
+    border-left-color: var(--layer);
+    background: rgb(255 255 255 / 0.025);
+  }
+  .name {
+    justify-self: start;
+    font-size: 13px;
+  }
+  .solves {
+    font-weight: 500;
+  }
+  .does {
+    color: var(--muted);
+    font-size: 14.5px;
+  }
+  .replay {
+    padding-top: 64px;
+    display: grid;
+    gap: 20px;
+  }
+  .replay-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+  }
+  .replay-head h2 {
+    font-size: clamp(24px, 3vw, 32px);
+  }
+  .replay-head a {
+    font-size: 14px;
+    color: var(--accent);
+  }
+  .note {
+    font-size: 13px;
+    color: var(--dim);
+  }
+  @media (max-width: 760px) {
+    .layer {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .tag {
+      position: static;
+    }
+  }
+</style>

@@ -27,7 +27,8 @@ export interface Labels {
   readonly restart: string;
   readonly humanView: string;
   readonly fullView: string;
-  readonly hiddenCount: (n: number) => string;
+  /** `{n}` is replaced with the count; island props must be plain data, so no formatter function. */
+  readonly hidden: Readonly<Record<"one" | "other", string>>;
   readonly actors: Readonly<Record<Actor, string>>;
   readonly source: string;
 }
@@ -55,11 +56,9 @@ export default function ReplayPlayer(props: { shots: readonly Shot[]; labels: La
   );
   const last = () => shot().events.length - 1;
 
-  let timer: number | undefined;
   createEffect(() => {
-    window.clearInterval(timer);
     if (!playing()) return;
-    timer = window.setInterval(() => {
+    const timer = window.setInterval(() => {
       if (step() < last()) {
         setStep(step() + 1);
       } else if (shotIndex() < props.shots.length - 1) {
@@ -69,8 +68,8 @@ export default function ReplayPlayer(props: { shots: readonly Shot[]; labels: La
         setPlaying(false);
       }
     }, STEP_MS);
+    onCleanup(() => window.clearInterval(timer));
   });
-  onCleanup(() => window.clearInterval(timer));
 
   let screen: HTMLDivElement | undefined;
   createEffect(() => {
@@ -143,7 +142,9 @@ export default function ReplayPlayer(props: { shots: readonly Shot[]; labels: La
             )}
           </For>
           <Show when={!reveal() && hiddenSoFar() > 0}>
-            <p class="rp-hidden">{props.labels.hiddenCount(hiddenSoFar())}</p>
+            <p class="rp-hidden">
+              {props.labels.hidden[hiddenSoFar() === 1 ? "one" : "other"].replace("{n}", String(hiddenSoFar()))}
+            </p>
           </Show>
         </div>
         <div class="rp-controls">

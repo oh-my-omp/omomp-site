@@ -1,0 +1,3 @@
+overrides:
+  # @emnapi/core 1.x crashes on the 2.0 beta runtime (`bridge.setLastError is not a function`) when astro check loads astro2tsx.
+  "@napi-rs/wasm-runtime>@emnapi/runtime": "^1"

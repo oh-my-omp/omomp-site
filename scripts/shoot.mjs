@@ -36,7 +36,7 @@ for (const vp of widths) {
     const res = await page.goto(origin + route, { waitUntil: "networkidle", timeout: 30000 });
     console.log(`${vp.name} ${route} -> ${res?.status()}`);
     if (!res || res.status() >= 400) failed = true;
-    await page.evaluate(() => document.querySelectorAll(".reveal").forEach((el) => el.classList.add("is-visible")));
+    await page.addStyleTag({ content: ".reveal{opacity:1!important;transform:none!important;transition:none!important}" });
     const file = `${outDir}/${vp.name}${route.replaceAll("/", "_")}.png`;
     await page.screenshot({ path: file, fullPage: true });
     console.log(`  saved ${file}`);

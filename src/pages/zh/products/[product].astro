@@ -1,0 +1,11 @@
+---
+import { getCollection } from "astro:content";
+import Product from "../../../views/Product.astro";
+
+export async function getStaticPaths() {
+  return (await getCollection("products")).map((product) => ({ params: { product: product.id }, props: { product } }));
+}
+const { product } = Astro.props;
+---
+
+<Product lang="zh" product={product} />

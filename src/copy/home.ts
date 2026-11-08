@@ -2,32 +2,32 @@ import type { Text } from "../i18n";
 
 export const home = {
   meta: {
-    title: { en: "oh-my-omp — keep the agent on what you asked", zh: "oh-my-omp — 让代理始终做你要的事" },
+    title: { en: "oh-my-omp — your intent survives every handoff", zh: "oh-my-omp — 你的意图，转手多少次都不走样" },
     description: {
-      en: "A governed runtime and plugins for the Oh My Pi coding agent. Each handoff between you, the model, its subagents and the shell is watched for drift.",
-      zh: "Oh My Pi 编码代理的治理配置与插件。你、模型、子代理、终端之间的每一次转手，都有机制盯着有没有走样。",
+      en: "Governance config, plugins and standalone products for the Oh My Pi (omp) coding agent. Drift is caught at each handoff between you, the model, its subagents and the terminal.",
+      zh: "Oh My Pi（omp）编码代理的治理配置、插件与独立产品。你、模型、子代理与终端之间的每次转手，偏离都在当场被拦下。",
     },
   },
   hero: {
-    eyebrow: { en: "For the Oh My Pi coding agent", zh: "为 Oh My Pi 编码代理而作" },
-    title: { en: "What you asked for survives every handoff.", zh: "你要的东西，转手多少次都不走样。" },
+    eyebrow: { en: "For the Oh My Pi (omp) coding agent", zh: "面向 Oh My Pi（omp）编码代理" },
+    title: { en: "Your intent survives every handoff.", zh: "你的意图，转手多少次都不走样。" },
     lede: {
-      en: "A request passes through prompts, plans, subagents and shells before it becomes code. oh-my-omp guards each of those handoffs, so drift is caught where it starts.",
-      zh: "一句需求要经过提示词、计划、子代理和终端才变成代码。oh-my-omp 守住其中每一次转手，在偏离出现的地方就把它拦下。",
+      en: "A request crosses prompts, plans, subagents and terminals before it becomes code. omomp catches drift at the seam where it starts.",
+      zh: "一句需求要经过提示词、计划、子代理和终端，才变成代码。omomp 在偏离露头的那个接缝就把它拦下。",
     },
     primary: { en: "Walk the lifeline", zh: "沿生命线看" },
     secondary: { en: "Read the principles", zh: "读思维内核" },
   },
   hosts: {
     eyebrow: { en: "Where it sits", zh: "所处位置" },
-    title: { en: "Two hosts below. omomp on top.", zh: "下面两个宿主，上面是 omomp。" },
+    title: { en: "omomp sits on two hosts you already run.", zh: "omomp 叠在你已有的两个宿主之上。" },
     body: {
-      en: "omomp does not replace the agent. It configures and extends the two programs you already run.",
-      zh: "omomp 不替换代理，只配置和扩展你已经在用的两个程序。",
+      en: "It replaces neither the agent nor the terminal. It adds governance, panels and workflows on top.",
+      zh: "它不替换代理，也不替换终端，只在上面加治理、面板和工作流。",
     },
     rows: [
       {
-        name: "oh-my-omp",
+        name: "oh-my-omp (omomp)",
         role: {
           en: "Governance config, plugins and standalone products.",
           zh: "治理配置、插件和独立产品。",
@@ -36,25 +36,25 @@ export const home = {
       {
         name: "Tern",
         role: {
-          en: "Graphical terminal. Hosts the panels plugins draw: todo, terminals, decisions, playbooks.",
-          zh: "图形化终端，承载插件绘制的面板：待办、终端、决策、Playbook。",
+          en: "Graphical terminal. Draws the plugins' panels: todo, terminals, decisions, playbooks.",
+          zh: "图形化终端，绘制插件的面板：待办、终端、决策、Playbook。",
         },
       },
       {
-        name: "Oh My Pi",
+        name: "Oh My Pi (omp)",
         role: {
-          en: "Terminal coding agent. Sessions, tools, subagents, extensions.",
-          zh: "终端编码代理，提供会话、工具、子代理与扩展机制。",
+          en: "Terminal coding agent. Sessions, tools, subagents, extensions and plugins.",
+          zh: "终端编码代理，提供会话、工具、子代理、扩展与插件机制。",
         },
       },
     ] satisfies ReadonlyArray<{ name: string; role: Text }>,
   },
   modular: {
     eyebrow: { en: "Take what you need", zh: "按需取用" },
-    title: { en: "Install one plugin, or the whole runtime.", zh: "装一个插件，或者装整套。" },
+    title: { en: "One plugin, or the whole setup.", zh: "装一个插件，或者装整套。" },
     body: {
-      en: "Each plugin works on a plain omp install. omp-config ties them into one governed runtime, and the onboarding command adapts it to the rules you already have.",
-      zh: "每个插件装在原生 omp 上就能完整工作。omp-config 把它们接成一个受治理的运行时，引导命令会按你已有的规则做适配。",
+      en: "Every plugin works on stock omp. Add omp-config and they run under its dispatch gates and turn judges. /onboard-omp reads your existing rules first and installs only when you ask.",
+      zh: "每个插件在原生 omp 上都能单独用。加上 omp-config，它们就跑在派发闸门和回合判定之下。/onboard-omp 先读你已有的规则，你开口才安装。",
     },
     onboard: { en: "Start with /onboard-omp", zh: "从 /onboard-omp 开始" },
   },

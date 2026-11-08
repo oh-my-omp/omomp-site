@@ -1,0 +1,580 @@
+# One entry per component placement on the lifeline. Keys are stable ids.
+ask-more-panel:
+  name: omp-ask-more
+  repo: https://github.com/oh-my-omp/omp-ask-more
+  layer: human
+  seam: intent
+  solves:
+    en: Decisions get a full-screen page with the context, the stakes and a tradeoff per option, instead of a line in the chat.
+    zh: 决定有了自己的全屏页面，写明背景、利害和每个选项的取舍，而不是夹在聊天里的一行字。
+  does:
+    en: Replaces the native ask tool and renders each question as its own page, in the terminal or as a sheet in Tern.
+    zh: 取代原生 ask 工具，每个问题单独成页，在终端里或以 Tern 浮层呈现。
+  defaults:
+    mechanism:
+      en: The structured question, the full-screen page, the readability check and the routing rule.
+      zh: 结构化提问、全屏页面、可读性检查和路由规则。
+    policy:
+      en: Timeout, notification and expiry behavior, and whether the readability check runs.
+      zh: 超时、通知与到期处理方式，以及是否启用可读性检查。
+    customize: https://github.com/oh-my-omp/omp-ask-more#readme
+
+input-polish:
+  name: input-polish
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#input-polish
+  layer: human
+  seam: intent
+  solves:
+    en: A rough draft can be rewritten before it reaches the agent.
+    zh: 粗糙的草稿可以在交给代理之前先改写。
+  does:
+    en: A shortcut sends your draft to a helper model; you accept or discard the rewrite in an overlay.
+    zh: 一个快捷键把草稿交给辅助模型改写，你在浮层里决定采用还是丢弃。
+  defaults:
+    mechanism:
+      en: Shortcut, helper rewrite, accept-or-discard overlay.
+      zh: 快捷键、辅助改写、采用或丢弃的浮层。
+    policy:
+      en: The key, and the rewrite instruction. The shipped one makes the draft sound more motivating.
+      zh: 快捷键和改写指令。随附的指令让草稿读起来更有干劲。
+    customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#input-polish
+
+ask-tool:
+  name: ask
+  repo: https://github.com/oh-my-omp/omp-ask-more
+  layer: agent
+  seam: intent
+  solves:
+    en: The agent cannot ask a vague question; the tool demands context and a cost for every option.
+    zh: 代理没法问出含糊的问题：工具要求写明背景，每个选项都要带代价。
+  does:
+    en: Each question carries where things stand, what is being decided and what follows; it can attach code lines, diagrams and short demos.
+    zh: 每个问题都写明现状、要决定什么、之后会怎样，还能附上代码行、示意图和短演示。
+
+ask-readability:
+  name: ask readability check
+  repo: https://github.com/oh-my-omp/omp-ask-more#readme
+  layer: silent
+  seam: intent
+  solves:
+    en: Questions a stranger could not follow never reach you.
+    zh: 外人看不懂的问题，到不了你面前。
+  does:
+    en: A judge reads each question before the page opens and sends an unclear one back for a rewrite. Routing rules keep every question for you on this path.
+    zh: 页面打开前由判定者先读一遍，看不懂就退回重写。路由规则让所有给你的问题都走这条路。
+
+omp-modes:
+  name: omp · omp-light
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/plugins-and-modes.md#full-mode-omp-vs-light-mode-omp-light
+  layer: human
+  seam: prompt
+  solves:
+    en: Short questions should not pay for the governance a long task needs.
+    zh: 简短的问题不该为长任务需要的治理买单。
+  does:
+    en: Two launchers. The full mode loads every check; the light mode starts the same agent without the governance hooks.
+    zh: 两个启动入口：完整模式加载全部检查；轻量模式启动同一个代理，但不带治理钩子。
+  defaults:
+    mechanism:
+      en: A per-launch config overlay; files on disk stay untouched.
+      zh: 按启动叠加的配置，不改磁盘上的文件。
+    policy:
+      en: Which extensions the light mode turns off.
+      zh: 轻量模式关掉哪些扩展。
+    customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/plugins-and-modes.md#full-mode-omp-vs-light-mode-omp-light
+
+tool-topics:
+  name: tool-topics
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#tool-topics
+  layer: agent
+  seam: prompt
+  solves:
+    en: Every request no longer carries the full manual for every tool.
+    zh: 不必在每个请求里都带上所有工具的完整说明。
+  does:
+    en: Host tool descriptions shrink to the common case plus a list of topics. The agent reads a topic only before the call that needs it.
+    zh: 宿主工具说明压缩成常用写法加一份专题目录，代理只在需要的那次调用前读对应专题。
+  defaults:
+    mechanism:
+      en: The topic scheme, description replacement and on-demand delivery.
+      zh: 专题协议、说明替换和按需送达。
+    policy:
+      en: Which host tools are covered and what each topic says.
+      zh: 覆盖哪些宿主工具，以及每个专题写什么。
+    customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#tool-topics
+
+system-template:
+  name: SYSTEM_TEMPLATE.md
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/prompts-and-context.md#prompt-files
+  layer: silent
+  seam: prompt
+  solves:
+    en: The base prompt says each thing once.
+    zh: 基础提示词里，每件事只说一遍。
+  does:
+    en: A rewritten base template that drops tool prose repeated elsewhere and adjusts itself for subagents.
+    zh: 重写的基础模板，去掉别处已有的工具说明，并按子代理身份调整自身。
+
+system-prompt-replace:
+  name: system-prompt-replace
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/prompts-and-context.md#system-prompt-replace
+  layer: silent
+  seam: prompt
+  solves:
+    en: A host sentence that contradicts your setup gets corrected without editing the prompt.
+    zh: 与你的配置相矛盾的宿主原句，不改提示词也能纠正。
+  does:
+    en: Matches passages of the rendered prompt and adds a message that quotes each one and states how it should read.
+    zh: 在渲染后的提示词里匹配原文，追加一条消息，引用原句并写明应当怎么读。
+  defaults:
+    mechanism:
+      en: Conditional matching by session, model or mode, declared as an added message.
+      zh: 按会话、模型或模式条件匹配，以追加消息声明替换。
+    policy:
+      en: The shipped rules remove a sentence that conflicts with subagent todos and forbid file lookup inside eval.
+      zh: 随附规则删掉与子代理待办冲突的句子，并禁止在 eval 里检索文件。
+    customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/prompts-and-context.md#system-prompt-replace
+
+append-system-model:
+  name: append-system-model
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/prompts-and-context.md#append-system-model
+  layer: silent
+  seam: prompt
+  solves:
+    en: Instructions meant for one model or one mode stay out of everyone else's prompt.
+    zh: 只针对某个模型或模式的指令，不进入其他会话的提示词。
+  does:
+    en: Adds prompt fragments as a message when their conditions match.
+    zh: 条件匹配时，把提示词片段作为一条消息追加进去。
+  defaults:
+    mechanism:
+      en: Fragments with conditions, added as one message.
+      zh: 带条件的片段，合并成一条追加消息。
+    policy:
+      en: In full mode the main session consults two discussion advisors on big decisions and a mentor around long investigations.
+      zh: 完整模式下，主会话在重大决定时咨询两位讨论顾问，长调查前后咨询导师。
+    customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/prompts-and-context.md#append-system-model
+
+repo-rules:
+  name: repo-rules
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/prompts-and-context.md#repo-rules
+  layer: silent
+  seam: prompt
+  solves:
+    en: Rules arrive only when they apply, and moving to another worktree does not change the prompt.
+    zh: 规则只在适用时送达；换到另一个工作树，提示词也不变。
+  does:
+    en: Delivers project instructions and rule files as added messages, named by their path inside the repository. Path-scoped rules wait until a matching file is touched.
+    zh: 把项目说明和规则文件作为追加消息送达，以仓库内路径命名；按路径生效的规则等碰到匹配文件时才送达。
+
+todo-panel:
+  name: omp-todo-more
+  repo: https://github.com/oh-my-omp/omp-todo-more
+  layer: human
+  seam: memory
+  solves:
+    en: You can see and edit the plan the agent is working from.
+    zh: 你看得到、也改得了代理正在执行的计划。
+  does:
+    en: Shows the goal, phases and per-item time in a Tern panel you can edit while the agent works.
+    zh: 在 Tern 面板里显示目标、阶段和每项用时，代理干活时你也能编辑。
+  defaults:
+    mechanism:
+      en: The plan document, time budgets, reminders and commit-on-done.
+      zh: 计划文档、时间预算、提醒、完成即提交。
+    policy:
+      en: Whether stop reminders fire, how often, and whether a plan is requested up front.
+      zh: 是否发出停止提醒、发几次，以及是否一开始就要求列计划。
+    customize: https://github.com/oh-my-omp/omp-todo-more#readme
+
+todo-tool:
+  name: todo · ctx
+  repo: https://github.com/oh-my-omp/omp-todo-more
+  layer: agent
+  seam: memory
+  solves:
+    en: A long task keeps its goal, its order and its history.
+    zh: 长任务守得住目标、顺序和来龙去脉。
+  does:
+    en: A plan with a goal, phases and an estimate per item; closing an item can commit its work. A read-only view recalls what earlier contexts did.
+    zh: 有目标、分阶段、每项有估时的计划，完成一项可以连带提交改动；另有只读视图回看先前上下文做过什么。
+
+fork-task:
+  name: fork_task
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/prompts-and-context.md#fork-task
+  layer: agent
+  seam: memory
+  solves:
+    en: A subagent can start from the whole conversation instead of a lossy summary.
+    zh: 子代理可以从整段对话起步，而不是从有损的摘要起步。
+  does:
+    en: Copies the caller's latest request into a child, so a same-model fork reuses the cached prefix.
+    zh: 把调用方最近一次请求复制给子代理；同模型的分叉因此能复用已缓存的前缀。
+
+todo-reminders:
+  name: stop reminders
+  repo: https://github.com/oh-my-omp/omp-todo-more
+  layer: silent
+  seam: memory
+  solves:
+    en: Stopping with open items is noticed.
+    zh: 留着未完成项就停下，会被发现。
+  does:
+    en: When the agent ends a turn with items still open, a reminder follows.
+    zh: 代理结束回合时如果还有未完成项，会收到提醒。
+
+model-compaction:
+  name: model-compaction
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/prompts-and-context.md#model-compaction
+  layer: silent
+  seam: memory
+  solves:
+    en: Settled constraints survive longer before lossy compaction drops them.
+    zh: 定下的约束能在上下文里留得更久，不被有损压缩过早丢掉。
+  does:
+    en: Sets when compaction starts, per model and per project, for the running session only.
+    zh: 按模型、按项目设定压缩何时开始，只作用于当前会话。
+  defaults:
+    mechanism:
+      en: Rule discovery and a session-only setting.
+      zh: 规则发现，以及只作用于当前会话的设置。
+    policy:
+      en: None shipped. Every rule is yours.
+      zh: 不随附任何规则，全部由你决定。
+    customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/prompts-and-context.md#model-compaction
+
+subagent-usage-cmd:
+  name: /subagent-usage
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#subagent-usage
+  layer: human
+  seam: delegation
+  solves:
+    en: The agent can weigh dispatch cost against what your quota has left.
+    zh: 代理能把派发成本和剩余额度放在一起权衡。
+  does:
+    en: You opt in once; the machine calibrates from its own session history, with no model calls.
+    zh: 你授权一次，本机就从自己的会话历史校准，不调用任何模型。
+
+worker-tiers:
+  name: task:*
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/agents.md#subagent-definitions-and-model-bindings
+  layer: agent
+  seam: delegation
+  solves:
+    en: Work goes to the cheapest worker that can be trusted with it.
+    zh: 活交给能信得过的最便宜的执行者。
+  does:
+    en: Stateless worker tiers ranked by cost and trust. Each takes a brief and returns a structured report.
+    zh: 按成本和可信度排序的无状态执行档位，接一份派工单，交一份结构化报告。
+  defaults:
+    mechanism:
+      en: Stateless tiers, structured handoff, role limits.
+      zh: 无状态档位、结构化交付、角色权限。
+    policy:
+      en: Which model and subscription each tier binds to, chosen so models complement each other and cost is spread.
+      zh: 每个档位绑定哪个模型和订阅，按模型互补、成本分摊来选。
+    customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/agents.md#subagent-definitions-and-model-bindings
+
+advisors:
+  name: discuss:* · mentor:default
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/agents.md#advisor-context-and-user-prompt-inject
+  layer: agent
+  seam: delegation
+  solves:
+    en: The main agent gets a second opinion that is not its own echo.
+    zh: 主代理能听到不是自己回声的第二种意见。
+  does:
+    en: A conservative and an expansive discussion partner that can only read, and a mentor with no tools at all.
+    zh: 一个保守、一个发散的讨论伙伴，都只能读；还有一个完全没有工具的导师。
+
+subagent-usage-tool:
+  name: subagent_usage
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#subagent-usage
+  layer: agent
+  seam: delegation
+  solves:
+    en: Dispatch decisions see the budget.
+    zh: 派发决策看得见预算。
+  does:
+    en: Estimates, per agent, how many more dispatches fit before its model's quota runs out.
+    zh: 估算每个代理在其模型额度用完前还能派几次。
+
+user-prompt-inject:
+  name: user-prompt-inject
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/agents.md#user-prompt-inject
+  layer: silent
+  seam: delegation
+  solves:
+    en: Advisors judge against what you said, not the main agent's paraphrase.
+    zh: 顾问对照的是你说的话，而不是主代理的转述。
+  does:
+    en: Every time an advisor wakes, it receives your own messages and answers from the root session.
+    zh: 顾问每次被唤醒，都会收到根会话里你本人的消息和作答。
+  defaults:
+    mechanism:
+      en: Collecting the user's words from the root session and rendering them for chosen agents.
+      zh: 从根会话收集用户原话，并为选定的代理渲染。
+    policy:
+      en: Which agents receive them. The shipped template targets the two discussion partners and the mentor.
+      zh: 哪些代理收到。随附模板发给两位讨论伙伴和导师。
+    customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/agents.md#user-prompt-inject
+
+isolation-nudge:
+  name: isolation-nudge
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#isolation-nudge
+  layer: silent
+  seam: delegation
+  solves:
+    en: Two writers do not end up in one checkout by accident.
+    zh: 两个写者不会无意间挤进同一个工作区。
+  does:
+    en: Sends back a dispatch that would share a checkout between writers until isolation is stated explicitly.
+    zh: 会让多个写者共用工作区的派发被退回，直到明确写出是否隔离。
+
+task-split-check:
+  name: task-split-check
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#task-split-check
+  layer: silent
+  seam: delegation
+  solves:
+    en: One worker, one topic, and a report as long as the evidence needs.
+    zh: 一个执行者只做一个主题，汇报写多长由证据决定。
+  does:
+    en: A judge reads each dispatch and sends it back if it bundles unrelated topics or caps the report length.
+    zh: 判定者读每一份派工单，混了无关主题或限制汇报长度的就退回。
+  defaults:
+    mechanism:
+      en: Two judged checks on every dispatch.
+      zh: 每次派发都经过的两项判定。
+    policy:
+      en: Which worker definitions opt in to the topic check, and which model judges.
+      zh: 哪些执行者定义启用主题检查，以及由哪个模型判定。
+    customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#task-split-check
+
+terminals-hud:
+  name: omp-unified-exec
+  repo: https://github.com/oh-my-omp/omp-unified-exec
+  layer: human
+  seam: execution
+  solves:
+    en: You can watch, and step into, the terminal the agent is driving.
+    zh: 你可以旁观代理正在驱动的终端，也可以直接上手。
+  does:
+    en: Every long-lived session appears in Tern. Open it to see the live screen and type into it.
+    zh: 每个长驻会话都出现在 Tern 里，打开就能看到实时画面并输入。
+
+watchdog-cmd:
+  name: /watchdog
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#watchdog-agent
+  layer: human
+  seam: execution
+  solves:
+    en: You decide which sessions get a periodic second look.
+    zh: 由你决定哪些会话定期被复查。
+  does:
+    en: Lists, toggles and drafts the watchdog specs on this machine.
+    zh: 列出、开关、起草本机的看门狗配置。
+
+exec-tools:
+  name: exec_command · write_stdin · monitor
+  repo: https://github.com/oh-my-omp/omp-unified-exec
+  layer: agent
+  seam: execution
+  solves:
+    en: Servers, REPLs and TUIs run without blocking the turn.
+    zh: 服务器、REPL 和 TUI 运行时不会卡住回合。
+  does:
+    en: Commands run in PTY sessions that outlive the turn; the agent sends input, reads the screen and waits for a match.
+    zh: 命令运行在跨回合存活的 PTY 会话里，代理可以输入、读屏、等待匹配的输出。
+
+delete-tool:
+  name: delete
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#delete-guard
+  layer: agent
+  seam: execution
+  solves:
+    en: A deletion names exactly what it removes, and can be undone.
+    zh: 每次删除都明确写出删什么，而且能撤回。
+  does:
+    en: Takes literal paths only, checks them all first, and moves them to the trash unless you asked for permanent removal.
+    zh: 只接受字面路径，先全部校验，默认移进回收站；只有你明确要求才永久删除。
+
+wt:
+  name: wt · harness_restart
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#wt-tool
+  layer: agent
+  seam: execution
+  solves:
+    en: The agent can move into its own worktree, or restart the harness, without losing the session.
+    zh: 代理可以搬进自己的工作树，或重启宿主，而不丢掉会话。
+  does:
+    en: Queues the request until the turn is idle, then runs the host's own command and reports back.
+    zh: 先把请求排队，等回合空闲再执行宿主自带的命令，并回报结果。
+
+delete-guard:
+  name: delete-guard
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#delete-guard
+  layer: silent
+  seam: execution
+  solves:
+    en: A shell one-liner cannot delete files before anyone sees it.
+    zh: 一行 shell 没法在没人看见的情况下删掉文件。
+  does:
+    en: Reads every shell and eval call before it runs and refuses deletions and commands whose names are not written out.
+    zh: 在每次 shell 和 eval 调用执行前先读一遍，拒绝删除操作和名字没写明的命令。
+
+tool-policy-nag:
+  name: tool-policy-nag
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#tool-policy-nag
+  layer: silent
+  seam: execution
+  solves:
+    en: An agent slipping back into shell habits is noticed at the step it happens.
+    zh: 代理退回 shell 老习惯，在那一步就会被发现。
+  does:
+    en: Interactive and long-running commands in the one-shot shell are refused. Other misuse runs, and a reminder is attached to its result.
+    zh: 走一次性 shell 的交互式和长驻命令被拒绝；其他误用照常执行，结果末尾附上提醒。
+  defaults:
+    mechanism:
+      en: A blocking lane before the call, and reminder lanes after it.
+      zh: 调用前的阻断通道，调用后的提醒通道。
+    policy:
+      en: Which detector runs, how often reminders fire, how they read, and how risky a command chain may be.
+      zh: 用哪种检测、提醒频率和措辞，以及命令链能有多冒险。
+    customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#tool-policy-nag
+
+watchdog-agent:
+  name: watchdog-agent
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#watchdog-agent
+  layer: silent
+  seam: execution
+  solves:
+    en: One kind of session, or one model, can get its own reviewer.
+    zh: 某一类会话或某个模型，可以有自己专属的审查者。
+  does:
+    en: Counts a watched session's actions and runs a review at a set interval, then injects what it found.
+    zh: 统计被监视会话的动作数，每隔一段做一次审查，再把发现注入会话。
+  defaults:
+    mechanism:
+      en: Spec discovery, action counting, review and injection.
+      zh: 配置发现、动作计数、审查与注入。
+    policy:
+      en: None shipped. A watchdog exists only once you write its spec.
+      zh: 不随附任何配置，你写下配置，看门狗才存在。
+    customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#watchdog-agent
+
+thinking-translator:
+  name: omp-thinking-translator
+  repo: https://github.com/oh-my-omp/omp-thinking-translator
+  layer: human
+  seam: delivery
+  solves:
+    en: You can follow the model's reasoning in your own language.
+    zh: 你能用自己的语言跟上模型的推理。
+  does:
+    en: Translates each thinking line on screen as it completes. The translation never enters the transcript.
+    zh: 每行思考写完就在屏幕上翻译，译文从不进入会话记录。
+  defaults:
+    mechanism:
+      en: Per-line translation and rendering, with model fallback.
+      zh: 逐行翻译与渲染，带模型回退。
+    policy:
+      en: Target language and model chain. None ship; you create them on first run.
+      zh: 目标语言和模型链。不随附，首次运行时由你创建。
+    customize: https://github.com/oh-my-omp/omp-thinking-translator#readme
+
+omomp-lang:
+  name: omomp-lang
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#omomp-lang
+  layer: human
+  seam: delivery
+  solves:
+    en: Every plugin shows its interface in the same language.
+    zh: 所有插件用同一种语言显示界面。
+  does:
+    en: One setting decides the language of every human-facing string. Text sent to the model is never translated.
+    zh: 一个设置决定所有面向人的文字用什么语言；发给模型的文字从不翻译。
+
+sessions:
+  name: omp-sessions
+  repo: https://github.com/oh-my-omp/omp-sessions
+  layer: agent
+  seam: delivery
+  solves:
+    en: Past work is evidence the agent can cite.
+    zh: 过去的工作成了代理可以引用的证据。
+  does:
+    en: Every session on the machine is readable through a URL scheme and queryable in SQL.
+    zh: 本机每个会话都能通过 URL 协议读取，也能用 SQL 查询。
+
+peers:
+  name: omp-peers
+  repo: https://github.com/oh-my-omp/omp-peers
+  layer: agent
+  seam: delivery
+  solves:
+    en: Sessions in separate omp processes can work together.
+    zh: 分属不同 omp 进程的会话可以协作。
+  does:
+    en: Lists live sessions, asks one a side question it answers without touching its transcript, or posts a message into it.
+    zh: 列出在线会话，向其中一个旁路提问（它作答时不写进自己的记录），或给它发消息。
+
+task-completion-judge:
+  name: task-completion-judge
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#task-completion-judge
+  layer: silent
+  seam: delivery
+  solves:
+    en: A subagent cannot declare success it has not shown.
+    zh: 子代理没法宣称自己没有证明过的成功。
+  does:
+    en: Reads the assignment, the recent tool calls and the report, and sends back a handoff that is unfinished, unverified or leaves todo items open.
+    zh: 对照派工单、最近的工具调用和报告，把没做完、没验证或留着待办的交付退回。
+  defaults:
+    mechanism:
+      en: A judged verdict on every handoff, plus a todo check.
+      zh: 每次交付的判定，外加待办检查。
+    policy:
+      en: Which worker definitions are judged, and which model judges.
+      zh: 哪些执行者定义受判定，以及由哪个模型判定。
+    customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#task-completion-judge
+
+turn-judge:
+  name: turn-judge
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#turn-judge
+  layer: silent
+  seam: delivery
+  solves:
+    en: "\"Next, I'll run the tests\" is not a place to stop."
+    zh: “接下来我会跑测试”不是停下的地方。
+  does:
+    en: After a turn ends, a judge answers yes-or-no questions about the reply; a matching rule sends the agent back to work.
+    zh: 回合结束后，判定者就这次回复回答几个是非题；命中规则就让代理回去接着干。
+  defaults:
+    mechanism:
+      en: Session filters, yes-or-no questions, and a prompt to send when a rule holds.
+      zh: 会话过滤、是非题，以及规则成立时要发出的提示。
+    policy:
+      en: The shipped rule catches GPT main sessions that list remaining work and stop.
+      zh: 随附规则针对 GPT 主会话：列出剩余工作却停下。
+    customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#turn-judge
+
+lang-nag:
+  name: lang-nag
+  repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#lang-nag
+  layer: silent
+  seam: delivery
+  solves:
+    en: Replies stay in the language you work in.
+    zh: 回复始终用你工作时用的语言。
+  does:
+    en: Checks the last reply's language and, if it is wrong, puts a correction in front of your next message.
+    zh: 检查上一条回复的语言，不对就在你下一条消息前加上纠正。
+  defaults:
+    mechanism:
+      en: A language judgment and a correction on the next turn.
+      zh: 语言判定，以及下一轮的纠正。
+    policy:
+      en: The target language and the wording of the correction.
+      zh: 目标语言和纠正措辞。
+    customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#lang-nag

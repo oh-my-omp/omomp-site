@@ -1,0 +1,177 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import Base from "../layouts/Base.astro";
+import PageHead from "../components/PageHead.astro";
+import Pager from "../components/Pager.astro";
+import ReplayPlayer from "../islands/ReplayPlayer";
+import { productPage as copy, replayPage } from "../copy/pages";
+import { replayLabels, shotsFor } from "../data/replay";
+import { href, t, type Lang } from "../i18n";
+import { ui } from "../ui";
+
+interface Props {
+  lang: Lang;
+  product: CollectionEntry<"products">;
+}
+const { lang, product } = Astro.props;
+const all = (await getCollection("products")).sort((a, b) => a.data.order - b.data.order);
+const index = all.findIndex((p) => p.id === product.id);
+const prev = all[index - 1];
+const next = all[index + 1];
+const shots = shotsFor([product.id], lang);
+const tones = ["var(--human)", "var(--accent)", "var(--agent)", "var(--silent)"];
+---
+
+<Base lang={lang} title={product.data.name} description={product.data.tagline[lang]}>
+  <PageHead eyebrow={`${t(copy.eyebrow, lang)} · ${product.data.name}`} title={product.data.claim[lang]} lede={product.data.intro[lang]}>
+    <div class="ctas">
+      <a class="btn" href={product.data.repo}>{t(copy.repo, lang)} →</a>
+    </div>
+  </PageHead>
+
+  <section class="wrap parties reveal">
+    {
+      product.data.parties.map((p, i) => (
+        <div class="party" style={`--tone:${tones[i % tones.length]}`}>
+          <span class="pname">{p.name[lang]}</span>
+          <span class="prole">{p.role[lang]}</span>
+          {i < product.data.parties.length - 1 && <span class="link" aria-hidden="true" />}
+        </div>
+      ))
+    }
+  </section>
+
+  {
+    product.data.sections.map((s, i) => (
+      <section class="wrap sec reveal">
+        <span class="n">{String(i + 1).padStart(2, "0")}</span>
+        <div>
+          <h2>{s.title[lang]}</h2>
+          <ul>
+            {s.points.map((pt) => (
+              <li>{pt[lang]}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    ))
+  }
+
+  {
+    shots.length > 0 && (
+      <section class="wrap replay reveal">
+        <ReplayPlayer client:visible shots={shots} labels={replayLabels(lang)} compact />
+        <p class="note">{t(replayPage.note, lang)}</p>
+      </section>
+    )
+  }
+
+  <Pager
+    prev={prev
+      ? { href: href(`/products/${prev.id}/`, lang), label: t(ui.previous, lang), title: prev.data.name }
+      : { href: href("/replay/", lang), label: t(ui.previous, lang), title: t(replayPage.eyebrow, lang) }}
+    next={next
+      ? { href: href(`/products/${next.id}/`, lang), label: t(ui.next, lang), title: next.data.name }
+      : { href: href("/defaults/", lang), label: t(ui.next, lang), title: t({ en: "Defaults", zh: "默认策略" }, lang) }}
+  />
+</Base>
+
+<style>
+  .ctas {
+    margin-top: 8px;
+  }
+  .parties {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .party {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    padding: 20px;
+    border: 1px solid color-mix(in srgb, var(--tone) 30%, transparent);
+    border-radius: var(--radius);
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--tone) 9%, transparent), transparent 70%),
+      var(--bg-raised);
+  }
+  .pname {
+    font-weight: 600;
+    color: var(--tone);
+  }
+  .prole {
+    color: var(--muted);
+    font-size: 14.5px;
+  }
+  .link {
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    width: 12px;
+    height: 1px;
+    background: var(--line-strong);
+  }
+  .sec {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 32px;
+    padding-top: clamp(56px, 8vw, 96px);
+  }
+  .n {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    padding-top: 10px;
+  }
+  h2 {
+    font-size: clamp(26px, 3.4vw, 36px);
+    margin-bottom: 24px;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+  li {
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--bg-raised);
+    color: var(--muted);
+    font-size: 15px;
+  }
+  .replay {
+    padding-top: 72px;
+    display: grid;
+    gap: 16px;
+  }
+  .note {
+    font-size: 13px;
+    color: var(--dim);
+  }
+  @media (max-width: 960px) {
+    .parties {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .link {
+      display: none;
+    }
+    ul {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 640px) {
+    .parties {
+      grid-template-columns: 1fr;
+    }
+    .sec {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+  }
+</style>

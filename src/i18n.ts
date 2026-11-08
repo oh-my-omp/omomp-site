@@ -27,6 +27,11 @@ export function routeOf(pathname: string): string {
   return rest === "" ? "/" : rest;
 }
 
-export function asset(path: string): string {
-  return `${base}${path}`;
+/** Escapes HTML, then renders `backtick` spans as <code>. Copy is authored in this repo, never user input. */
+export function inlineCode(s: string): string {
+  return s
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replace(/`([^`]+)`/g, "<code>$1</code>");
 }

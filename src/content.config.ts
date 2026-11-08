@@ -34,7 +34,7 @@ const seams = defineCollection({
       sections: z
         .object({ human: text, agent: text, silent: text })
         .strict(),
-      replay: z.number().int().positive().optional(),
+      replay: z.array(z.string()).optional(),
     })
     .strict(),
 });
@@ -50,6 +50,7 @@ const products = defineCollection({
       claim: text,
       intro: text,
       sections: z.array(z.object({ title: text, points: z.array(text).min(1) }).strict()).min(1),
+      parties: z.array(z.object({ name: text, role: text }).strict()).min(2),
     })
     .strict(),
 });
