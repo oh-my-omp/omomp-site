@@ -10,6 +10,7 @@ Argon reviews only the finished site, as the final polishing pass. Never send it
 What to send:
 - Screenshot paths of the actual rendered pages: desktop and mobile widths, English and Chinese, captured with headless Playwright after `astro build` + preview.
 - One page or one page group per message, listing the routes the screenshots cover.
+- The directory of fresh desktop and mobile screenshots of the real supabase.com and linear.app pages (captured with `scripts/refs.mjs`), so Argon measures against the actual pages instead of its memory of them. Argon may also `read` the live URLs.
 
 What Argon judges, at the bar of an Apple designer:
 - **Visual consistency:** type scale, spacing rhythm, color, alignment, and component reuse across pages.
