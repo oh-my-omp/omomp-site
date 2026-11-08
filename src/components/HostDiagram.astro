@@ -1,0 +1,61 @@
+---
+import type { Lang } from "../i18n";
+import { home } from "../copy/home";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const rows = home.hosts.rows;
+const tone = ["var(--accent)", "var(--human)", "var(--agent)"];
+---
+
+<div class="hd">
+  {
+    rows.map((row, i) => (
+      <div class="hd-row" style={`--tone:${tone[i]}`}>
+        <span class="hd-name">{row.name}</span>
+        <span class="hd-role">{row.role[lang]}</span>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .hd {
+    display: grid;
+    gap: 10px;
+    perspective: 1200px;
+  }
+  .hd-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    align-items: center;
+    gap: 20px;
+    padding: 22px 24px;
+    border-radius: 14px;
+    border: 1px solid color-mix(in srgb, var(--tone) 35%, transparent);
+    background:
+      linear-gradient(90deg, color-mix(in srgb, var(--tone) 12%, transparent), transparent 70%),
+      var(--bg-raised);
+  }
+  .hd-row:first-child {
+    box-shadow: 0 0 60px -20px color-mix(in srgb, var(--tone) 60%, transparent);
+  }
+  .hd-name {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--tone);
+  }
+  .hd-role {
+    color: var(--muted);
+    font-size: 15px;
+  }
+  @media (max-width: 640px) {
+    .hd-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+</style>
