@@ -109,7 +109,7 @@ flowchart TB
 
 ### 带批注的真实回放
 
-静默治理层没有界面，生命线之后接一段回放：以一次真实的多文件任务为时间轴，在关键帧并排展示“会话里发生了什么”和“没有 omomp 会怎样”。每一帧都取自真实会话记录或现有录屏，不编造；素材可用 `omp-sessions` 从会话记录中检索，ask-more、unified-exec、playbooks 的 README 已有真实录屏可直接复用。
+静默治理层没有界面，生命线之后接一段回放：以一次真实的多文件任务为时间轴，在关键帧并排展示“会话里发生了什么”和“没有 omomp 会怎样”。每一帧都取自真实会话记录，不编造；素材用 `omp-sessions` 从会话记录中检索。官网的所有演示都为官网重新制作，不复用插件 README 里的录屏。
 
 计划寻找的镜头：
 
@@ -130,8 +130,8 @@ Playbook、Dispatch、Remote Build 自成体系，各有完整的使用流程和
 
 | 产品 | 定位 | 专题页重点 |
 |---|---|---|
-| [omp-playbooks](https://github.com/oh-my-omp/omp-playbooks) | 人机共创的可执行设计文档：设计块、执行块和编排块放在同一份 YAML 里，人在 Tern 面板中把块当卡片编辑，主会话负责编译和启动子代理 | 人、协调者、文档服务、子代理四方的职责边界，以及“按钮是请求，不是自动执行器”；串联仓库 README 里从打开、协同设计、整理执行块、启动监督到编排交接的录屏 |
-| [omp-dispatch](https://github.com/oh-my-omp/omp-dispatch) | GitHub issue 图交付引擎：持久票据按工作流状态机推进，每次交付由一次性 owner 会话完成，由全新的独立判定者把关 | 从 issue 里的链接或 GitHub App 事件启动协调者的端到端流程；为什么判定必须对准具体 commit、由新会话完成；复用仓库 README 的真实 issue 树交付录屏 |
+| [omp-playbooks](https://github.com/oh-my-omp/omp-playbooks) | 人机共创的可执行设计文档：设计块、执行块和编排块放在同一份 YAML 里，人在 Tern 面板中把块当卡片编辑，主会话负责编译和启动子代理 | 人、协调者、文档服务、子代理四方的职责边界，以及“按钮是请求，不是自动执行器”；按打开、协同设计、整理执行块、启动监督、编排交接的流程重做演示 |
+| [omp-dispatch](https://github.com/oh-my-omp/omp-dispatch) | GitHub issue 图交付引擎：持久票据按工作流状态机推进，每次交付由一次性 owner 会话完成，由全新的独立判定者把关 | 从 issue 里的链接或 GitHub App 事件启动协调者的端到端流程；为什么判定必须对准具体 commit、由新会话完成；重做一次真实 issue 树交付的演示 |
 | [omp-remote-build](https://github.com/oh-my-omp/omp-remote-build) | 按 worktree 隔离的远端构建环境：本地照常编辑，Mutagen 单向同步到远端主机，在 Komodo 管理的容器里编译、测试 | 本地 worktree、Mutagen、Komodo、远端容器的关系图；项目如何用一个配置文件选择接入 |
 
 `omp-codex-image-gen` 等单一功能插件放在页面末尾的工具区，一张卡片一句话。
@@ -185,19 +185,20 @@ Playbook、Dispatch、Remote Build 自成体系，各有完整的使用流程和
 - 页面默认是静态内容；生命线动画、回放时间轴、界面切片这类交互部分做成 Astro island，全站只用 Solid 一种 UI 框架，经 Astro 官方集成 `@astrojs/solid-js` 接入。该集成目前只支持 Solid 1；Solid 2 还是 RC，它的渲染入口已拆到 `@solidjs/web`，官方集成跟进后再迁移。
 - 接缝、组件、产品这些结构化内容放进 Astro 内容集合，由 schema 约束字段；机制与默认策略索引由这些数据生成，不手写表格。
 - 关键图（首页的宿主边界图、接缝页的生命线与三层视角图）按视觉基准定制绘制，不用 mermaid 默认样式；mermaid 只用于索引等次要页面，并在构建时渲染成 SVG。
-- 录屏视频放在站点自己的存储里，不直接嵌入 GitHub 附件链接：用 curl 不带登录请求 omp-ask-more README 里的 `github.com/user-attachments/assets/...` 录屏链接，返回 404，外站无法直接播放。
+- 演示视频由官网自行制作，托管在站点自己的存储里。
 
 ## 维护约束
 
 - 不写集合的数量（几个扩展、几个插件），写出名字或链接到列出它们的文件。
 - 不搬参数表、配置字段、超时和阈值；这些随代码变化，留在各仓库。
 - 每个组件在官网上只有名字、它解决的问题、它在生命线上的位置和指向仓库的链接。
-- 能复用仓库已有的真实录屏就复用，不另做示意动画冒充运行结果。
+- 演示一律为官网重新制作，内容取自真实会话和真实界面，不做脱离真实运行结果的示意动画。
 
 ## 待定事项
 
 - 语言：只做中文，还是中英双语。
 - 动画与样式方案：Solid 核心不带过渡动画和组件级 scoped CSS，需要选定动画库和样式方案。
 - 托管方式，以及是否使用自定义域名。
+- 演示的制作方式：真实界面录屏加后期剪辑，还是依据会话记录用 HTML 重建并渲染（候选工具 [HyperFrames](https://github.com/heygen-com/hyperframes)）。
 - 回放素材：从哪些真实会话中选取，如何脱敏。
 - 独立产品与安装清单的关系：omp-config 的 `install-plugins.sh` 目前默认安装 `omp-playbooks`、不含 `omp-dispatch`，`omp-remote-build` 是注释掉的可选项；官网按产品分量把三者作为独立产品呈现，安装清单是否随之调整另行决定。
