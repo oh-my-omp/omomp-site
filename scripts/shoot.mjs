@@ -20,6 +20,7 @@ const seen = new Set();
 const broken = [];
 let failed = false;
 const TILE = 1600;
+const OVERLAP = 80;
 
 for (const vp of widths) {
   const page = await browser.newPage({ viewport: { width: vp.width, height: vp.height }, deviceScaleFactor: 1 });
@@ -39,12 +40,20 @@ for (const vp of widths) {
     if (!res || res.status() >= 400) failed = true;
     const file = `${outDir}/${vp.name}${route.replaceAll("/", "_")}`;
     await page.screenshot({ path: `${file}.png`, fullPage: true });
-    // Full-page shots of long pages shrink past legibility when opened; tiles keep near-native resolution.
+    // Full-page shots of long pages shrink past legibility when opened, and a full-page capture stretches the viewport
+    // to the whole page, which leaves scrolling panes blank. Tiles are real viewport shots scrolled down the page; each
+    // overlaps the one before by the sticky header's height plus a margin, so nothing sits hidden under the header.
+    await page.setViewportSize({ width: vp.width, height: TILE });
     const height = await page.evaluate(() => document.documentElement.scrollHeight);
-    for (let y = 0, n = 1; y < height; y += TILE, n++) {
-      await page.screenshot({ path: `${file}.${String(n).padStart(2, "0")}.png`, fullPage: true, clip: { x: 0, y, width: vp.width, height: Math.min(TILE, height - y) } });
+    let tiles = 0;
+    for (let y = 0; ; y += TILE - OVERLAP) {
+      await page.evaluate((top) => window.scrollTo(0, top), y);
+      await page.waitForTimeout(150);
+      await page.screenshot({ path: `${file}.${String(++tiles).padStart(2, "0")}.png` });
+      if (y + TILE >= height) break;
     }
-    console.log(`  saved ${file}.png and ${Math.ceil(height / TILE)} tiles`);
+    await page.setViewportSize({ width: vp.width, height: vp.height });
+    console.log(`  saved ${file}.png and ${tiles} tiles`);
     const hrefs = await page.$$eval("a[href]", (as) => as.map((a) => a.getAttribute("href")));
     for (const h of hrefs) {
       if (!h || !h.startsWith("/") || seen.has(h.split("#")[0])) continue;
