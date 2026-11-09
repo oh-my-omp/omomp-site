@@ -37,7 +37,6 @@ for (const vp of widths) {
     const res = await page.goto(origin + route, { waitUntil: "networkidle", timeout: 30000 });
     console.log(`${vp.name} ${route} -> ${res?.status()}`);
     if (!res || res.status() >= 400) failed = true;
-    await page.addStyleTag({ content: ".reveal{opacity:1!important;transform:none!important;transition:none!important}" });
     const file = `${outDir}/${vp.name}${route.replaceAll("/", "_")}`;
     await page.screenshot({ path: `${file}.png`, fullPage: true });
     // Full-page shots of long pages shrink past legibility when opened; tiles keep near-native resolution.
