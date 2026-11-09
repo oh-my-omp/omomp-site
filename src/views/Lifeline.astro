@@ -5,9 +5,13 @@ import PageHead from "../components/PageHead.astro";
 import SplitHead from "../components/SplitHead.astro";
 import Grid from "../components/Grid.astro";
 import Cell from "../components/Cell.astro";
+import Stage from "../components/Stage.astro";
 import Pager from "../components/Pager.astro";
 import LifelineMap from "../islands/LifelineMap";
-import { lifelinePage as copy, principlesPage } from "../copy/pages";
+import ArtView from "../slices/Art";
+import { lifelineLayerNotes, lifelinePage as copy, lifelineSeamLines, principlesPage } from "../copy/pages";
+import { componentArt, type ComponentId } from "../data/component-art";
+import { scenario } from "../data/scenario";
 import { href, t, type Lang } from "../i18n";
 import { ui } from "../ui";
 
@@ -17,52 +21,276 @@ interface Props {
 const { lang } = Astro.props;
 const seams = (await getCollection("seams")).sort((a, b) => a.data.order - b.data.order);
 const components = await getCollection("components");
-const pad = (n: number) => String(n).padStart(2, "0");
+
+/** The slice that shows what each seam looks like at work: the panel, call or message a reader meets there first. */
+const seamArt = {
+  intent: "ask-more-panel",
+  prompt: "tool-topics",
+  memory: "todo-panel",
+  delegation: "isolation-nudge",
+  execution: "terminals-hud",
+  delivery: "task-completion-judge",
+} as const satisfies Record<keyof typeof lifelineSeamLines, ComponentId>;
+type SeamKey = keyof typeof seamArt;
+const isSeamKey = (id: string): id is SeamKey => id in seamArt;
+/** The demo's steps under each seam, numbered against the whole scenario as the replay counts them. */
+const demo = scenario[lang].map((step, i) => ({ step, number: i + 1 }));
+const stepsAt = (seamId: string) => demo.filter((d) => d.step.seam === seamId);
+const seamKey = (id: string): SeamKey => {
+  if (!isSeamKey(id)) throw new Error(`seam \`${id}\` has no overview art or line in Lifeline.astro`);
+  return id;
+};
 ---
 
 <Base lang={lang} title={t(copy.kicker, lang)} description={t(copy.lede, lang)}>
   <PageHead kicker={t(copy.kicker, lang)} title={t(copy.title, lang)} lede={t(copy.lede, lang)} />
 
   <section class="section">
-    <SplitHead title={t(copy.seamsTitle, lang)} lede={t(copy.seamsLede, lang)} />
+    <SplitHead title={t(copy.seamsTitle, lang)} lede={t(copy.seamsLede, lang)}>
+      <div class="chips">
+        <a class="chip" href={href("/replay/", lang)}>{t(copy.mapDemo, lang)} →</a>
+      </div>
+    </SplitHead>
     <div class="wrap body">
+      <Stage title={t(copy.trackTitle, lang)} text={t(copy.trackText, lang)}>
+        <ol class="track" style={`--n:${seams.length}`}>
+          {
+            seams.map((s) => {
+              const at = stepsAt(s.id);
+              const hooks = at.flatMap((d) => d.step.hooks.map((h) => h.hook));
+              return (
+                <li class="tcol">
+                  <a class="thead" href={href(`/lifeline/${s.id}/`, lang)}>
+                    <span class="tnode" aria-hidden="true" />
+                    {s.data.short[lang]}
+                  </a>
+                  <ul class="tsteps">
+                    {at.map((d) => (
+                      <li>
+                        <span class="tn">{d.number}</span>
+                        {d.step.title}
+                      </li>
+                    ))}
+                  </ul>
+                  {hooks.length > 0 ? (
+                    <ul class="thooks">
+                      {hooks.map((h) => (
+                        <li class={`thook k-${h.kind}`}>
+                          <span class="tk">{h.label}</span>
+                          <code>{h.source}</code>
+                          <span class="tat">{h.at}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p class="tquiet">{t(copy.trackQuiet, lang)}</p>
+                  )}
+                </li>
+              );
+            })
+          }
+        </ol>
+      </Stage>
+      <div class="gap" />
       <Grid cols={3} count={seams.length}>
-        {seams.map((s) => <Cell tag={`${pad(s.data.order)} →`} title={s.data.name[lang]} text={`${s.data.claim[lang]}${lang === "zh" ? "。" : "."}`} href={href(`/lifeline/${s.id}/`, lang)} />)}
+        {
+          seams.map((s) => {
+            const key = seamKey(s.id);
+            return (
+              <Cell title={s.data.name[lang]} text={t(lifelineSeamLines[key], lang)} href={href(`/lifeline/${s.id}/`, lang)}>
+                <ArtView lang={lang} art={componentArt[seamArt[key]][lang]} />
+              </Cell>
+            );
+          })
+        }
       </Grid>
     </div>
   </section>
 
   <section class="section">
-    <SplitHead title={t(copy.mapTitle, lang)} lede={t(copy.mapLede, lang)} />
+    <SplitHead title={t(copy.mapTitle, lang)} lede={t(copy.mapLede, lang)}>
+      <div class="chips">
+        <a class="chip" href={href("/defaults/", lang)}>{t(copy.mapDefaults, lang)} →</a>
+      </div>
+    </SplitHead>
     <div class="wrap body">
-      <LifelineMap
-        client:visible
-        seams={seams.map((s) => ({ id: s.id, order: s.data.order, name: s.data.short[lang], href: href(`/lifeline/${s.id}/`, lang) }))}
-        components={components.map((c) => ({
-          id: c.id,
-          name: c.data.name,
-          seam: c.data.seam,
-          layer: c.data.layer,
-          line: c.data.line[lang],
-          repo: c.data.repo,
-        }))}
-        labels={{
-          layers: { human: t(ui.layers.human, lang), agent: t(ui.layers.agent, lang), silent: t(ui.layers.silent, lang) },
-          repo: t(ui.repo, lang),
-          seamPage: t(copy.seamPage, lang),
-        }}
-      />
+      <Stage>
+        <LifelineMap
+          client:load
+          seams={seams.map((s) => ({ id: s.id, name: s.data.short[lang], href: href(`/lifeline/${s.id}/`, lang) }))}
+          components={components.map((c) => ({
+            id: c.id,
+            name: c.data.name,
+            seam: c.data.seam,
+            layer: c.data.layer,
+            line: c.data.line[lang],
+            repo: c.data.repo,
+          }))}
+          labels={{
+            layers: { human: t(ui.layers.human, lang), agent: t(ui.layers.agent, lang), silent: t(ui.layers.silent, lang) },
+            layerNotes: {
+              human: t(lifelineLayerNotes.human, lang),
+              agent: t(lifelineLayerNotes.agent, lang),
+              silent: t(lifelineLayerNotes.silent, lang),
+            },
+            repo: t(ui.repo, lang),
+            seamPage: t(copy.seamPage, lang),
+          }}
+        />
+      </Stage>
     </div>
   </section>
 
   <Pager
     prev={{ href: href("/principles/", lang), label: t(ui.previous, lang), title: t(principlesPage.kicker, lang) }}
-    next={{ href: href(`/lifeline/${seams[0]!.id}/`, lang), label: `${t(ui.next, lang)} · 01`, title: seams[0]!.data.name[lang] }}
+    next={{ href: href(`/lifeline/${seams[0]!.id}/`, lang), label: t(ui.next, lang), title: seams[0]!.data.name[lang] }}
   />
 </Base>
 
 <style>
   .body {
     margin-top: clamp(40px, 5vw, 64px);
+  }
+  .gap {
+    height: clamp(40px, 5vw, 64px);
+  }
+  /* The demo laid along the seams: a line through one node per seam, each column holding its steps and messages. */
+  .track {
+    display: grid;
+    grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+  .track::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 12px;
+    height: 1px;
+    background: var(--line-strong);
+  }
+  .tcol {
+    display: grid;
+    align-content: start;
+    gap: 14px;
+    padding: 0 14px 4px 0;
+    min-width: 0;
+  }
+  .tcol + .tcol {
+    padding-left: 14px;
+    border-left: 1px solid var(--line);
+  }
+  .thead {
+    display: grid;
+    gap: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .thead:hover {
+    color: var(--accent);
+  }
+  .tnode {
+    position: relative;
+    width: 9px;
+    height: 9px;
+    margin-top: 8px;
+    border-radius: 50%;
+    background: var(--bg-raised);
+    border: 1px solid var(--soft);
+  }
+  .tsteps,
+  .thooks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .tsteps li {
+    display: flex;
+    gap: 8px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--soft);
+  }
+  .tn {
+    flex: none;
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 19px;
+    color: var(--dim);
+    min-width: 1.6em;
+  }
+  .thook {
+    --tone: var(--silent);
+    display: grid;
+    gap: 3px;
+    padding: 7px 9px 8px;
+    border: 1px solid color-mix(in srgb, var(--tone) 28%, transparent);
+    border-left: 2px solid var(--tone);
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--tone) 6%, transparent);
+    min-width: 0;
+  }
+  .thook.k-block {
+    --tone: var(--danger);
+  }
+  .thook.k-judge {
+    --tone: var(--warn);
+  }
+  .tk {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--tone);
+  }
+  .thook code {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: 11.5px;
+    color: var(--text);
+    overflow-wrap: anywhere;
+  }
+  .tat {
+    font-size: 11.5px;
+    color: var(--dim);
+  }
+  .tquiet {
+    font-size: 12.5px;
+    color: var(--dim);
+  }
+  @media (max-width: 860px) {
+    .track {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+    .track::before {
+      display: none;
+    }
+    .tcol,
+    .tcol + .tcol {
+      padding: 18px 0;
+      border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+    .tcol:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+    .thead {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .tnode {
+      margin-top: 0;
+    }
   }
 </style>

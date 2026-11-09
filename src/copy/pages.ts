@@ -45,20 +45,45 @@ export const lifelinePage = {
   kicker: { en: "Lifeline", zh: "生命线" },
   title: { en: "Six seams between your words and the code", zh: "从一句话到代码" },
   lede: {
-    en: "Intent can drift at any of the six seams. At each seam omomp works on three layers: human surfaces you see and answer, agent primitives the model calls, and silent governance hooks that run in the background.",
-    zh: "意图可能在任意一道接缝走样。omomp 在每道接缝分三层介入：你直接查看与作答的人机交互面、模型调用的代理原语，以及后台运行的静默治理钩子。",
+    en: "A request passes six handoffs on its way to code, and intent can drift at each one. Every seam has its own page; the map at the bottom places each component where it acts.",
+    zh: "一句需求要经过六次转手才变成代码，每一次都可能让意图走样。每道接缝各有一页，页末的组件图标出每个组件在哪里起作用。",
   },
   mapTitle: { en: "Every component, by seam and layer", zh: "组件按接缝与层级排布" },
   mapLede: {
-    en: "Select a component to read what it does. Each seam's page shows its components at work and its part of the demo.",
-    zh: "选中一个组件，就能读到它做什么。每道接缝的页面会展示其中组件的实际样子，以及演示里对应的几步。",
+    en: "Select a component and its sentence opens right under it, with links to its repository and its seam page.",
+    zh: "选中一个组件，它的说明就在下方展开，并附上仓库和所在接缝页的链接。",
   },
-  seamPage: { en: "Seam", zh: "接缝" },
+  mapDemo: { en: "Watch the demo", zh: "看演示" },
+  trackTitle: { en: "One rate-limit task, seam by seam", zh: "一个限流任务，逐道接缝" },
+  trackText: {
+    en: "Each column holds the demo steps at that seam and the messages that reached the model there without showing on your screen.",
+    zh: "每一列是演示里落在这道接缝的几步，以及那里送到模型、却不出现在你屏幕上的消息。",
+  },
+  trackQuiet: { en: "Nothing reached the model here.", zh: "这里没有给模型追加消息。" },
+  mapDefaults: { en: "Mechanism and defaults", zh: "机制与默认策略" },
+  seamPage: { en: "Seam page", zh: "接缝页" },
   seamsTitle: { en: "The six seams", zh: "六道接缝" },
   seamsLede: {
     en: "In the order a task passes through them, from the request to the delivered result.",
     zh: "按一个任务经过的先后排列，从提出需求到交付结果。",
   },
+} satisfies Record<string, Text>
+
+/** One line per seam for the overview cells: what you see happen there. */
+export const lifelineSeamLines = {
+  intent: { en: "Your decisions open as a full page, with a tradeoff per option.", zh: "需要你拍板的事单独成页，每个选项写明取舍。" },
+  prompt: { en: "Manuals and rules arrive as appended messages when needed.", zh: "工具说明和规则在调用需要时作为追加消息送达。" },
+  memory: { en: "A todo panel you both see holds the plan through compaction.", zh: "计划是你和代理共用的待办面板，压缩后照样在。" },
+  delegation: { en: "Each worker gets its own checkout; advisors read your own words.", zh: "执行者各用一份检出、各管一个主题，顾问读你的原话。" },
+  execution: { en: "Long commands run in terminals you can watch and type into.", zh: "长命令跑在你能旁观、也能输入的终端里。" },
+  delivery: { en: "A claim of done is checked before the result goes back.", zh: "说做完了，要先过检查，结果才交回去。" },
+} satisfies Record<string, Text>
+
+/** Row labels of the component map: what each layer is, in a few words. */
+export const lifelineLayerNotes = {
+  human: { en: "What you see and answer", zh: "你看到并作答的界面" },
+  agent: { en: "What the model calls", zh: "模型调用的工具与角色" },
+  silent: { en: "Hooks that run unseen", zh: "后台运行的钩子" },
 } satisfies Record<string, Text>
 
 export const seamPage = {
