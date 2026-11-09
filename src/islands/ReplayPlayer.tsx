@@ -25,7 +25,7 @@ const reducedMotion = () => typeof matchMedia === "function" && matchMedia("(pre
 
 /**
  * The demo scenario as a split screen: on the left what the person sees, on the right what reached the model.
- * Opens on the first step, fully shown. Play reveals each step beat by beat; when a hook fires, the hook and
+ * Opens on step `start` (the first by default), fully shown. Play reveals each step beat by beat; when a hook fires, the hook and
  * the front element it reacts to light up together.
  */
 export default function ReplayPlayer(props: {
@@ -36,13 +36,16 @@ export default function ReplayPlayer(props: {
   firstNumber?: number;
   /** Total number of steps in the whole scenario; defaults to the length of `steps` when they are the whole scenario. */
   total?: number;
+  /** Index in `steps` of the step the player opens on. */
+  start?: number;
   compact?: boolean;
 }) {
   const beats = createMemo(() => props.steps.map(beatsOf));
   const beatCount = (step: number) => beats()[step]!.length;
   const last = () => props.steps.length - 1;
 
-  const [state, setState] = createSignal<Playback>({ kind: "paused", step: 0, shown: beatCount(0) });
+  const opening = Math.max(0, Math.min(last(), props.start ?? 0));
+  const [state, setState] = createSignal<Playback>({ kind: "paused", step: opening, shown: beatCount(opening) });
   const [hover, setHover] = createSignal<number | undefined>(undefined);
 
   const step = createMemo(() => props.steps[state().step]!);

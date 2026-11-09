@@ -345,31 +345,72 @@ const prefixRows = {
 const workers = ["OrdersRoute", "SearchRoute", "WebhooksRoute"] as const;
 const branch = (name: string) => `wt/${name.replace("Route", "").toLowerCase()}-route`;
 
-/** One saved session query, run from an eval cell; the text is the `details` JSON eval prints. */
-const sessionQuery = (lang: Lang): TLine => {
-  const titles =
-    lang === "en"
-      ? ["Rate limiting for the public API", "Login sessions moved to Redis", "Pagination for the orders route"]
-      : ["给公开 API 加限流", "登录会话改存 Redis", "orders 路由分页"];
-  const rows = [
-    { title: titles[0], modified: "2026-11-09T06:41:12Z", assistant_turns: 38 },
-    { title: titles[1], modified: "2026-11-02T15:07:55Z", assistant_turns: 24 },
-    { title: titles[2], modified: "2026-10-28T09:30:18Z", assistant_turns: 17 },
-  ];
+/** Session titles in the shop-api scenario; a session is titled in the language its person writes. */
+const sessionTitles = {
+  en: { current: "Rate limiting for the public API", login: "Login sessions moved to Redis", orders: "Pagination for the orders route", docs: "Docs sweep" },
+  zh: { current: "给公开 API 加限流", login: "登录会话改存 Redis", orders: "orders 路由分页", docs: "文档整理" },
+} as const;
+
+/** One session query from a Python eval cell (omp-sessions `session_query`, action `sql`), with the rows it returned. */
+const sessionQuery = (lang: Lang): Panel => {
+  const t = sessionTitles[lang];
+  return {
+    kind: "sql",
+    data: {
+      language: "py",
+      code: [
+        '(await tool.session_query({"action": "sql", "query": """',
+        "  SELECT title, assistant_turns FROM src.sessions",
+        "  WHERE cwd LIKE '%shop-api%'",
+        '  ORDER BY modified DESC LIMIT 3"""})).details',
+      ],
+      columns: ["title", "assistant_turns"],
+      rows: [
+        [t.current, 38],
+        [t.login, 24],
+        [t.orders, 17],
+      ],
+    },
+  };
+};
+
+/** omp-peers' peer_list result (src/tools.ts): live omp processes and their main sessions. */
+const peerList = (lang: Lang): TLine => {
+  const t = sessionTitles[lang];
   return {
     kind: "call",
-    tool: "eval",
-    args: `py · (await tool.session_query({"action": "sql", "query": "SELECT title, modified, assistant_turns FROM src.sessions WHERE cwd LIKE '%shop-api%' ORDER BY modified DESC LIMIT 3"})).details`,
+    tool: "peer_list",
+    args: "",
     status: "ok",
     result: [
-      '{"kind": "rows",',
-      ' "columns": ["title", "modified", "assistant_turns"],',
-      ' "rows": [',
-      ...rows.map((r, i) => `   ${JSON.stringify(r)}${i < rows.length - 1 ? "," : ""}`),
-      " ],",
-      ' "truncated": false}',
+      "2 omp process(es) reachable through omp-peers, 2 main session(s):",
+      "- pid 68412 (this process)",
+      `  - b8d2c4f9 "${t.current}" — ~/code/shop-api — busy (you)`,
+      "- pid 59307",
+      `  - 9c1e77a2 "${t.docs}" — ~/code/handbook — idle`,
     ].join("\n"),
   };
+};
+
+/** delete-guard's non-literal refusal (guard.ts `reasonFor`, rule `nonLiteral`; posix.ts command-name detail). */
+const nonLiteralCommand = "$RM -rf coverage";
+const nonLiteralRefusal = `delete-guard: this call did not run. Non-literal command: \`${nonLiteralCommand}\` (the command name \`$RM\` comes from an expansion). Commands must be literal: no command name from a variable or substitution, no non-literal nested shell or eval script, no script fed to a shell through stdin; write the command out. To delete files, call the \`delete\` tool with literal paths and leave \`mode\` unset; the default moves them to the system trash.`;
+
+/** tool-policy-nag's pty routing refusal for a command that never ends on its own (rule `tailFollow`). */
+const ptyRefusal = "pty 路由：这次 `bash` 调用没有执行：`tail` 不会自己结束，或在等外部条件（open-ended，规则 `tailFollow`）。\nxd://exec_command";
+
+/** task-completion-judge's return when the work is done but the worker's todo is not (index.ts:816-825, items per index.ts:730-734). */
+const todoReturn = (lang: Lang): string => {
+  const item = lang === "en" ? "Routes: Switch the search route — Same change as orders, with a higher limit" : "路由: 改 search 路由 — 改法同 orders，额度更高";
+  return `完成度鉴定：这次任务已经完成，但你的 todo 里还有未完成的项，yield 被退回：\n- ${item}\n先维护 todo，让它反映真实进度，再调用 yield。`;
+};
+
+/** turn-judge's notification when a rule holds (index.ts `describeVerdict`): every question's probability, two decimals. */
+const turnJudgeVerdict = (lang: Lang): { head: string; text: string } => {
+  const parts = "says_remaining 0.94 · announces_future 0.88 · admits_mistake 0.03 · asks_user 0.02 · user_forbids_work 0.01 · external_blocker 0.02";
+  return lang === "en"
+    ? { head: "turn-judge gpt-talk-only: when.unfinished_with_plan", text: `(${parts})` }
+    : { head: "turn-judge gpt-talk-only：when.unfinished_with_plan", text: `（${parts}）` };
 };
 
 export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
@@ -580,17 +621,43 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
       }
     case "execution":
       switch (layer) {
-        case "human":
+        case "human": {
+          // The view the grid cell shows, opened full-pane on the other session: the person's keys go to that terminal.
+          const view = panelOf("terminals-hud", lang);
+          if (view.kind !== "terminals") throw new Error("terminals-hud art is not the Terminals view");
           return {
             kind: "screen",
             frame: { tabs: [labels[lang].exec.terminals], meta: "Tern" },
-            panels: [panelOf("terminals-hud", lang)],
+            panels: [{ kind: "terminals", data: { ...view.data, mode: "page", selected: 2 } }],
           };
+        }
         case "agent":
           return {
             kind: "screen",
             frame: session,
-            panels: [{ kind: "transcript", lines: [...linesOf("exec-tools", lang), ...linesOf("delete-tool", lang), ...linesOf("wt", lang)] }],
+            panels: [
+              {
+                kind: "transcript",
+                lines: [
+                  { kind: "call", tool: "write_stdin", args: '1, "a"', status: "ok" },
+                  {
+                    kind: "call",
+                    tool: "delete",
+                    args: "coverage",
+                    status: "ok",
+                    result: "delete (trash): all 1 done\nok     coverage: moved to /Users/dev/.Trash/coverage",
+                  },
+                  {
+                    kind: "call",
+                    tool: "wt",
+                    args: 'branch: "wt/webhooks-route"',
+                    status: "ok",
+                    result:
+                      "Queued: a new worktree on branch `wt/webhooks-route` is created once this turn ends. End your turn now without further tool calls; the outcome arrives as the next message.",
+                  },
+                ],
+              },
+            ],
           };
         case "silent":
           return {
@@ -600,24 +667,68 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
               {
                 kind: "transcript",
                 lines: [
-                  { kind: "call", tool: "bash", args: "rm -rf node_modules/.vite/vitest", status: "blocked" },
-                  ...linesOf("delete-tool", lang),
-                  { kind: "call", tool: "bash", args: "tail -f /usr/local/var/log/redis.log", status: "blocked" },
+                  { kind: "call", tool: "bash", args: nonLiteralCommand, status: "blocked" },
+                  { kind: "call", tool: "bash", args: "tail -f logs/api.log", status: "blocked" },
                 ],
               },
             ],
-            hooks: [hookOf("delete-guard", lang), hookOf("tool-policy-nag", lang)],
+            hooks: [
+              {
+                kind: "block",
+                source: "delete-guard",
+                at: en ? "bash call" : "bash 调用前",
+                label: en ? "refused" : "拦下",
+                body: nonLiteralRefusal,
+                gloss: en
+                  ? undefined
+                  : {
+                      label: "译文",
+                      text: `这次调用没有执行。命令不是字面写出的：\`${nonLiteralCommand}\`（命令名 \`$RM\` 来自变量展开）。命令必须原样写出：命令名不能来自变量或替换，嵌套的 shell 或 eval 脚本也要原样写出，不能经标准输入把脚本交给 shell。要删文件，用 \`delete\` 工具并写明路径，\`mode\` 不填，默认移进系统回收站。`,
+                    },
+              },
+              {
+                kind: "block",
+                source: "tool-policy-nag",
+                at: en ? "bash call" : "bash 调用前",
+                label: en ? "refused" : "拦下",
+                body: ptyRefusal,
+                gloss: en
+                  ? {
+                      label: "Translation",
+                      text: "pty routing: this `bash` call did not run: `tail` does not end on its own, or waits on an outside condition (open-ended, rule `tailFollow`).",
+                    }
+                  : undefined,
+              },
+            ],
           };
       }
     case "delivery":
       switch (layer) {
         case "human":
-          return { kind: "screen", frame: session, panels: [panelOf("thinking-translator", lang)] };
+          // An earlier thinking block than the grid cell's, caught while its last line is still being translated.
+          return {
+            kind: "screen",
+            frame: session,
+            panels: [
+              {
+                kind: "thinking",
+                data: {
+                  block: 2,
+                  thinking: [
+                    "WebhooksRoute's yield came back: the signed-callback test still fails.",
+                    "In src/routes/webhooks.ts the limiter runs before the signature check.",
+                    "Move verifySignature ahead of rateLimit, then rerun webhooks.test.ts.",
+                  ],
+                  translated: ["WebhooksRoute 的 yield 被退回了：签名回调那个测试还是失败。", "src/routes/webhooks.ts 里，限流在签名校验之前执行。"],
+                },
+              },
+            ],
+          };
         case "agent":
           return {
             kind: "screen",
             frame: session,
-            panels: [{ kind: "transcript", lines: [sessionQuery(lang), ...linesOf("peers", lang)] }],
+            panels: [sessionQuery(lang), { kind: "transcript", lines: [peerList(lang)] }],
           };
         case "silent":
           return {
@@ -630,8 +741,8 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
                   name,
                   agent: "task:low",
                   where: branch(name),
-                  state: name === "WebhooksRoute" ? ("returned" as const) : ("done" as const),
-                  stateText: name === "WebhooksRoute" ? (en ? "yield returned" : "yield 被退回") : en ? "done" : "完成",
+                  state: name === "SearchRoute" ? ("returned" as const) : ("done" as const),
+                  stateText: name === "SearchRoute" ? (en ? "yield returned" : "yield 被退回") : en ? "done" : "完成",
                 })),
               },
               {
@@ -643,10 +754,25 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
                       ? "All three routes now use the shared limiter. Next I'll run the full suite and commit."
                       : "三个路由都换成了共用的限流器。接下来我会跑完整测试并提交。",
                   },
+                  { kind: "card", tone: "info", ...turnJudgeVerdict(lang) },
                 ],
               },
             ],
-            hooks: [hookOf("task-completion-judge", lang), hookOf("turn-judge", lang)],
+            hooks: [
+              {
+                kind: "judge",
+                source: "task-completion-judge",
+                at: "yield",
+                label: en ? "judged" : "裁决",
+                body: todoReturn(lang),
+                gloss: en
+                  ? {
+                      label: "Translation",
+                      text: "Completion check: the task is done, but your todo still has unfinished items, so the yield is returned: - Routes: Switch the search route — Same change as orders, with a higher limit. Bring the todo up to date so it shows real progress, then call yield.",
+                    }
+                  : undefined,
+              },
+            ],
           };
       }
   }

@@ -12,7 +12,7 @@ export type Art =
   | { readonly kind: "lines"; readonly lines: readonly TLine[] }
   /** A plugin panel the person sees. */
   | { readonly kind: "panel"; readonly panel: Panel }
-  /** A file or command the person writes: config, a prompt file, a slash command and its output. */
+  /** A file, command or tool call as written, under its name: config, a prompt file, a slash command or a tool's arguments, and the output. */
   | { readonly kind: "code"; readonly title: string; readonly lines: readonly string[] };
 
 export default function ArtView(props: { lang: Lang; art: Art }) {

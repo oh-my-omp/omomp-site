@@ -633,6 +633,12 @@
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
   min-height: 0;
 }
+/* In a grid cell the list keeps a session title and its elapsed time (`4分12秒` is wider than `4m12s`) whole. */
+@media (min-width: 641px) {
+  .sl-term.compact .sl-term-split {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr);
+  }
+}
 .sl-term-list {
   list-style: none;
   margin: 0;
@@ -658,6 +664,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+/* A grid cell is too narrow for a whole title on one line; it wraps at its spaces instead of losing its end. */
+.sl-term.compact .sl-term-list .t {
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .sl-term-list .e {
   font-family: var(--mono);
@@ -851,8 +862,13 @@
   text-align: left;
   min-width: 0;
 }
+/* As a grid cell's art it sits in its own frame, like the cell's other slices. */
 .sl-think.compact {
   font-size: 11.5px;
+  padding: 0.9em;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--bg-panel);
 }
 .sl-think-src {
   color: var(--muted);
@@ -991,6 +1007,22 @@
 .sl-agents .s {
   color: var(--muted);
   font-size: 0.92em;
+}
+/* On a phone the worktree branch takes its own line under the name, so no column is cut to a fragment. */
+@media (max-width: 640px) {
+  .sl-agents li {
+    grid-template-columns: auto auto 1fr auto;
+    row-gap: 0.15em;
+  }
+  .sl-agents code {
+    justify-self: start;
+  }
+  .sl-agents .w {
+    grid-row: 2;
+    grid-column: 2 / -1;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
 }
 
 /* omp and omp-light: fixed prefix, appended messages, loaded checks */

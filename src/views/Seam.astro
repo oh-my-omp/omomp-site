@@ -38,6 +38,8 @@ const all = scenario[lang];
 const first = all.findIndex((s) => s.seam === seam.id);
 const steps = all.filter((s) => s.seam === seam.id);
 if (first < 0) throw new Error(`seam \`${seam.id}\` has no step in the demo scenario`);
+/** The player opens on the seam's first step that puts something in front of the model, so both panes start filled. */
+const opening = Math.max(0, steps.findIndex((s) => s.hooks.length > 0));
 const colsFor = (n: number) => (n === 2 || n === 4 ? 2 : 3);
 ---
 
@@ -67,7 +69,7 @@ const colsFor = (n: number) => (n === 2 || n === 4 ? 2 : 3);
       <a class="more" href={href("/replay/", lang)}>{t(copy.demoAll, lang)} →</a>
     </SplitHead>
     <div class="wrap demo">
-      <ReplayPlayer client:load lang={lang} steps={steps} labels={playerLabels[lang]} firstNumber={first + 1} total={all.length} />
+      <ReplayPlayer client:load lang={lang} steps={steps} labels={playerLabels[lang]} firstNumber={first + 1} total={all.length} start={opening} />
     </div>
   </section>
 

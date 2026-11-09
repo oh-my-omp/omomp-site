@@ -237,11 +237,49 @@ const ordersHandoff = {
 const deleteGuard =
   "delete-guard: deletion commands are disabled; this call did not run. Deletion command: `rm -rf node_modules/.vite/vitest` (`rm` deletes files). To delete files, call the `delete` tool with literal paths and leave `mode` unset; the default moves them to the system trash.";
 
-const ptyRefusal =
-  "pty 路由：这次 `bash` 调用没有执行：`tail` 不会自己结束，或在等外部条件（open-ended，规则 `tailFollow`）。\nxd://exec_command";
+/** tool-policy-nag's intent reminder (intent.ts `intentReminder`) for a shell call judged as editing an existing file. */
+const intentReminder = [
+  "你这次 `bash` 调用属于「修改已有文件」，应该用 `edit`，而不是这样绕出去。",
+  "",
+  "这次调用：",
+  "```sh",
+  "sed -i 's/limit: 100/limit: 300/' src/routes/search.ts",
+  "```",
+].join("\n");
 
-const execCommandResult =
-  "[still running]\nsession_id: 1\n…\n---\n ✓ src/middleware/rate-limit.test.ts (6 tests) 41ms\n ✗ src/routes/webhooks.test.ts > signed callbacks skip the limiter\n…";
+/** omp-unified-exec's exec_command result for a command still running when the call returns. */
+const execCommandResult = [
+  "[still running]",
+  "session_id: 1",
+  "…",
+  "---",
+  " ✓ src/middleware/rate-limit.test.ts (6 tests) 41ms",
+  " ✗ src/routes/webhooks.test.ts > signed callbacks skip the limiter",
+  "…",
+];
+
+/**
+ * A watchdog that is off globally, switched on for this session (watchdog-agent runtime.ts:599-602),
+ * then the line `/watchdog list` prints for it (runtime.ts:413-424).
+ */
+const watchdogCommand = {
+  en: [
+    "/watchdog on RateLimitChecks",
+    'watchdog "RateLimitChecks" on for this session',
+    "",
+    "/watchdog list",
+    "RateLimitChecks: ON · global off · session on · target main · cwd any · inject system · every 30 · scope full · chat @advisor",
+    "  ~/code/shop-api/.omp/WATCHDOG-RateLimitChecks.md",
+  ],
+  zh: [
+    "/watchdog on RateLimitChecks",
+    "watchdog“RateLimitChecks”已在本会话开启",
+    "",
+    "/watchdog list",
+    "RateLimitChecks: 开启 · 全局 关闭 · 会话 开启 · target main · cwd 不限 · inject system · 每 30 · 范围 全部 · 聊天 @advisor",
+    "  ~/code/shop-api/.omp/WATCHDOG-RateLimitChecks.md",
+  ],
+} as const;
 
 const subagentUsageReport =
   "subagent_usage at 2026-11-09 06:12 UTC. Per-dispatch averages from 2026-11-08 22:10; quota conversion from 2026-11-09 06:00 over the preceding 21 days.\n…\nPOOL opencode-go: shared quota, do not add these counts\n  - task:low (deepseek-v4.1-flash): about 34 dispatches. $0.0430 per dispatch (average of 6 dispatches in this project in the last 21 days). $1.46 quota left on 1 of 1 account; tightest hourly 41% left, resets in 38m.\n…";
@@ -389,30 +427,23 @@ const terminalsPanel = (lang: Lang) =>
     },
 }) as const;
 
-/** omp-sessions at work: a past session read through its URL, then the same history queried with DuckDB SQL from eval. Results stay English, as the plugin writes them. */
-const sessionLines = [
-  {
-    kind: "call",
-    tool: "read",
-    args: "session://b8d2c4f9/timeline",
-    status: "ok",
-    result:
-      "session b8d2c4f9-… · ~/code/shop-api\ntitle rate-limit the public API\nstart 2026-11-09 13:58:12 +08:00 · 214 entries · 198 on the active branch (leaf #e96)\n…",
-  },
-  {
-    kind: "call",
-    tool: "eval",
-    args: 'await tool.session_query({ action: "sql", query: "SELECT title, assistant_turns FROM src.sessions WHERE cwd LIKE \'%shop-api\' ORDER BY modified DESC LIMIT 3" })',
-    status: "ok",
-    result: [
-      '{"kind":"rows","columns":["title","assistant_turns"],"rows":[',
-      '  {"title":"rate-limit the public API","assistant_turns":41},',
-      '  {"title":"orders route pagination","assistant_turns":18},',
-      '  {"title":"webhook signature check","assistant_turns":12}',
-      '],"truncated":false}',
-    ].join("\n"),
-  },
-] as const;
+/**
+ * omp-sessions at work: an older shop-api session read through its URL (render.ts `renderTimeline`: header lines, then
+ * a turn header and its events). The renderer writes English; the session's title and prompt are in the person's language.
+ */
+const pastTimeline = (lang: Lang) => {
+  const en = lang === "en";
+  return [
+    "session 3f61d0b7-… · ~/code/shop-api",
+    `title ${en ? "Signature check for payment webhooks" : "支付 webhook 签名校验"}`,
+    "start 2026-10-21 10:12:40 +08:00 · 186 entries · 171 on the active branch (leaf #c4a)",
+    "…",
+    "── turn 1 · 2026-10-21 10:12:40→10:58:03 (45m23s) · 31 calls (read×12 edit×8 bash×7 todo×4)",
+    "10:12:40 user #0a3",
+    `  ${en ? "Verify the payment provider's signature on webhook callbacks before handling them." : "处理 webhook 回调前，先校验支付服务商的签名。"}`,
+    "…",
+  ];
+};
 
 const thinkingPanel = {
     kind: "thinking",
@@ -879,104 +910,54 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
     zh: { kind: "panel", panel: terminalsPanel("zh") },
   },
   "watchdog-cmd": {
-    en: {
-      kind: "code",
-      title: "/watchdog list",
-      lines: [
-        "RateLimitChecks: ON · global on · session — · target main · cwd any · inject system · every 30 · scope full · chat @advisor",
-        "  ~/code/shop-api/.omp/WATCHDOG-RateLimitChecks.md",
-      ],
-    },
-    zh: {
-      kind: "code",
-      title: "/watchdog list",
-      lines: [
-        "RateLimitChecks: 开启 · 全局 开启 · 会话 — · target main · cwd 不限 · inject system · 每 30 · 范围 全部 · 聊天 @advisor",
-        "  ~/code/shop-api/.omp/WATCHDOG-RateLimitChecks.md",
-      ],
-    },
+    en: { kind: "code", title: "/watchdog", lines: watchdogCommand.en },
+    zh: { kind: "code", title: "/watchdog", lines: watchdogCommand.zh },
   },
   "exec-tools": {
-    en: {
-      kind: "lines",
-      lines: [
-        {
-          kind: "call",
-          tool: "exec_command",
-          args: '"pnpm test --watch"',
-          status: "running",
-          result: execCommandResult,
-        },
-        { kind: "call", tool: "write_stdin", args: "session_id: 1 · \"webhooks\\n\"", status: "ok" },
-        { kind: "call", tool: "monitor", args: "session_id: 1 · condition: \"passed|failed\"", status: "running" },
-      ],
-    },
-    zh: {
-      kind: "lines",
-      lines: [
-        {
-          kind: "call",
-          tool: "exec_command",
-          args: '"pnpm test --watch"',
-          status: "running",
-          result: execCommandResult,
-        },
-        { kind: "call", tool: "write_stdin", args: "session_id: 1 · \"webhooks\\n\"", status: "ok" },
-        { kind: "call", tool: "monitor", args: "session_id: 1 · condition: \"passed|failed\"", status: "running" },
-      ],
-    },
+    en: { kind: "code", title: "exec_command", lines: ['cmd: "pnpm test --watch"', 'title: "pnpm test --watch"', "", ...execCommandResult] },
+    zh: { kind: "code", title: "exec_command", lines: ['cmd: "pnpm test --watch"', 'title: "pnpm test --watch"', "", ...execCommandResult] },
   },
+  /** A path the delete tool refuses before touching anything (delete-guard index.ts:242, targets.ts validateOne). */
   "delete-tool": {
     en: {
-      kind: "lines",
+      kind: "code",
+      title: "delete",
       lines: [
-        {
-          kind: "call",
-          tool: "delete",
-          args: "node_modules/.vite/vitest",
-          status: "ok",
-          result: "delete (trash): all 1 done\nok     node_modules/.vite/vitest: moved to /Users/dev/.Trash/vitest",
-        },
+        'paths: ["~/code/shop-api/coverage"]',
+        "",
+        "delete: nothing was deleted; refused:",
+        '- "~/code/shop-api/coverage": paths are literal: `~` is not expanded; give the full path',
       ],
     },
     zh: {
-      kind: "lines",
+      kind: "code",
+      title: "delete",
       lines: [
-        {
-          kind: "call",
-          tool: "delete",
-          args: "node_modules/.vite/vitest",
-          status: "ok",
-          result: "delete (trash): all 1 done\nok     node_modules/.vite/vitest: moved to /Users/dev/.Trash/vitest",
-        },
+        'paths: ["~/code/shop-api/coverage"]',
+        "",
+        "delete: nothing was deleted; refused:",
+        '- "~/code/shop-api/coverage": paths are literal: `~` is not expanded; give the full path',
       ],
     },
   },
+  /** harness_restart's queued result, then the message the restarted session opens with (harness-restart index.ts:209,167). */
   wt: {
     en: {
-      kind: "lines",
+      kind: "code",
+      title: "harness_restart",
       lines: [
-        {
-          kind: "call",
-          tool: "wt",
-          args: 'branch: "wt/webhooks-route"',
-          status: "ok",
-          result:
-            "Queued: a new worktree on branch `wt/webhooks-route` is created once this turn ends. End your turn now without further tool calls; the outcome arrives as the next message.",
-        },
+        "Queued: the omp harness restarts once this turn ends. End your turn now without further tool calls; after the restart the session opens with a restart-completed message.",
+        "",
+        "Harness restart completed (2026-11-09T06:31:07.412Z). No reason was recorded. Continue what you were doing.",
       ],
     },
     zh: {
-      kind: "lines",
+      kind: "code",
+      title: "harness_restart",
       lines: [
-        {
-          kind: "call",
-          tool: "wt",
-          args: 'branch: "wt/webhooks-route"',
-          status: "ok",
-          result:
-            "Queued: a new worktree on branch `wt/webhooks-route` is created once this turn ends. End your turn now without further tool calls; the outcome arrives as the next message.",
-        },
+        "Queued: the omp harness restarts once this turn ends. End your turn now without further tool calls; after the restart the session opens with a restart-completed message.",
+        "",
+        "Harness restart completed (2026-11-09T06:31:07.412Z). No reason was recorded. Continue what you were doing.",
       ],
     },
   },
@@ -1004,20 +985,20 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
     en: {
       kind: "hook",
       hook: {
-        kind: "block",
+        kind: "reminder",
         source: "tool-policy-nag",
-        at: "bash call",
-        label: "refused",
-        body: ptyRefusal,
+        at: "bash result",
+        label: "appended",
+        body: intentReminder,
         gloss: {
           label: "Translation",
-          text: "pty routing: this `bash` call did not run: `tail` does not end on its own, or waits on an outside condition (open-ended, rule `tailFollow`).",
+          text: "Your `bash` call belongs to “edit an existing file”. Use `edit` for it instead of working around it. The call follows, quoted.",
         },
       },
     },
     zh: {
       kind: "hook",
-      hook: { kind: "block", source: "tool-policy-nag", at: "bash 调用前", label: "拦下", body: ptyRefusal },
+      hook: { kind: "reminder", source: "tool-policy-nag", at: "bash 返回后", label: "追加", body: intentReminder },
     },
   },
   "watchdog-agent": {
@@ -1072,50 +1053,33 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
     },
   },
   sessions: {
-    en: { kind: "lines", lines: sessionLines },
-    zh: { kind: "lines", lines: sessionLines },
+    en: { kind: "code", title: "read session://3f61d0b7/timeline", lines: pastTimeline("en") },
+    zh: { kind: "code", title: "read session://3f61d0b7/timeline", lines: pastTimeline("zh") },
   },
+  /** A side question to the docs session found by peer_list; the answer opens with omp-peers' own English line. */
   peers: {
     en: {
-      kind: "lines",
+      kind: "code",
+      title: "peer_ask",
       lines: [
-        {
-          kind: "call",
-          tool: "peer_list",
-          args: "",
-          status: "ok",
-          result:
-            '2 omp process(es) reachable through omp-peers, 2 main session(s):\n- pid 68412 (this process)\n  - b8d2c4f9 "rate-limit the public API" — ~/code/shop-api — busy (you)\n- pid 59307\n  - 9c1e77a2 "docs sweep" — ~/code/handbook — idle',
-        },
-        {
-          kind: "call",
-          tool: "peer_ask",
-          args: 'to: 9c1e77a2 · "Does the handbook document the 429 response yet?"',
-          status: "ok",
-          result:
-            "Answer from session 9c1e77a2 (pid 59307):\n\nYes: handbook/api/errors.md lists 429 with Retry-After in seconds. It does not mention that signed webhooks are exempt.",
-        },
+        'to: "9c1e77a2"',
+        'question: "Does the handbook document the 429 response yet?"',
+        "",
+        "Answer from session 9c1e77a2 (pid 59307):",
+        "",
+        "Yes: handbook/api/errors.md lists 429 with Retry-After in seconds. It does not mention that signed webhooks are exempt.",
       ],
     },
     zh: {
-      kind: "lines",
+      kind: "code",
+      title: "peer_ask",
       lines: [
-        {
-          kind: "call",
-          tool: "peer_list",
-          args: "",
-          status: "ok",
-          result:
-            '2 omp process(es) reachable through omp-peers, 2 main session(s):\n- pid 68412 (this process)\n  - b8d2c4f9 "rate-limit the public API" — ~/code/shop-api — busy (you)\n- pid 59307\n  - 9c1e77a2 "docs sweep" — ~/code/handbook — idle',
-        },
-        {
-          kind: "call",
-          tool: "peer_ask",
-          args: "to: 9c1e77a2 · “手册里写了 429 响应吗？”",
-          status: "ok",
-          result:
-            "Answer from session 9c1e77a2 (pid 59307):\n\n写了：handbook/api/errors.md 列出了 429 和以秒计的 Retry-After，但没提签名 webhook 免限流。",
-        },
+        'to: "9c1e77a2"',
+        'question: "手册里写了 429 响应吗？"',
+        "",
+        "Answer from session 9c1e77a2 (pid 59307):",
+        "",
+        "写了：handbook/api/errors.md 列出了 429 和以秒计的 Retry-After，但没提签名 webhook 免限流。",
       ],
     },
   },
