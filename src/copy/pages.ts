@@ -103,12 +103,12 @@ export const productPage = {
 export const defaultsPage = {
   kicker: { en: "Defaults", zh: "默认策略" },
   title: {
-    en: "The mechanism is fixed; the author's defaults are files you can replace",
-    zh: "机制是固定的，作者的默认设定是可以替换的文件",
+    en: "What you can change in each component",
+    zh: "哪些可以改",
   },
   lede: {
-    en: "Run `/onboard-omp` to set up your own with a guide, or edit the files directly. Updates merge three ways and keep your changes.",
-    zh: "运行 `/onboard-omp` 按引导配好自己的一套，或者直接改这些文件；更新时做三方合并，保留你的改动。",
+    en: "Each component splits into a mechanism that ships with the repo and defaults the author chose; the defaults are yours to change. Run `/onboard-omp` to set up your own with a guide, or edit the files directly. Updates merge three ways and keep your changes.",
+    zh: "每个组件都分成随仓库发布的机制和作者选定的默认设定，默认设定归你改。运行 `/onboard-omp` 按引导配好自己的一套，或者直接改文件；更新时做三方合并，保留你的改动。",
   },
   exampleTitle: { en: "A default is a file", zh: "默认设定就是一个文件" },
   exampleLede: {
@@ -116,14 +116,19 @@ export const defaultsPage = {
     zh: "这条随 omp-config 发布的回合检查规则，会在 GPT 模型只宣布下一步就停下时把代理退回继续执行。模型匹配、判定问题和提示词都能改，也可以直接删掉这个文件。",
   },
   exampleNote: {
-    en: "The excerpt is the shipped file verbatim. Its question is written in English because the model reads it that way.",
+    en: "The excerpt is the shipped file verbatim, and its prompt is written in Chinese. It reads: “You stopped, but the work you were given is not finished. Do not just announce the next step or admit a mistake: use your tools now and keep going until there is a verifiable result. …” The line your machine adds in the merge, 先跑完测试再停, means “Run the tests before you stop.”",
     zh: "摘录取自仓库原文，未作改动。其中 `question.says_remaining` 问的是：“本轮回复”是否表明助手还有未完成、未运行、未提交、未推送或未验证的工作？",
   },
-  listTitle: { en: "Mechanism and default, component by component", zh: "逐个组件：机制与默认" },
+  exampleDocs: { en: "How to change it", zh: "修改说明" },
+  listTitle: { en: "Mechanism and default, component by component", zh: "机制与默认" },
   listLede: {
-    en: "Only components that separate the two are listed. Each row links to where the default is changed.",
-    zh: "下表仅列出机制与默认配置分离的组件，每行可直接跳转到对应默认文件的修改位置。",
+    en: "Only components that keep the two apart are listed, grouped by the seam where they act. Each row links to where its default is changed.",
+    zh: "这里只列出机制和默认设定分开的组件，按起作用的接缝分组，每一行都链接到修改默认设定的说明。",
   },
+  jumpLabel: { en: "Jump to a seam", zh: "跳到某道接缝" },
+  indexTitle: { en: "omomp · mechanism and defaults", zh: "omomp · 机制与默认设定" },
+  fixedTag: { en: "ships fixed", zh: "随仓库固定" },
+  replaceTag: { en: "yours to change", zh: "可以改" },
   component: { en: "Component", zh: "组件" },
   mechanism: { en: "Mechanism", zh: "机制" },
   policy: { en: "Author's default", zh: "作者默认" },
