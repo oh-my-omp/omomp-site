@@ -467,8 +467,14 @@
   color: var(--text);
   overflow-wrap: anywhere;
 }
-.hp-rb-wt span,
-.hp-rb-ct span {
+/* A path wraps only after a slash: each segment is an unbreakable box. */
+.hp-rb-wt code .seg {
+  display: inline-block;
+  font-size: inherit;
+  color: inherit;
+}
+.hp-rb-wt > span,
+.hp-rb-ct > span {
   font-size: 10.5px;
   color: var(--dim);
 }

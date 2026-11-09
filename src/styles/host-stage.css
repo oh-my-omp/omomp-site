@@ -202,21 +202,38 @@
   }
 }
 @media (max-width: 560px) {
-  .hs-tabs button {
-    padding: 6px 11px;
-    font-size: 13.5px;
+  /* The tabs wrap, so each one is its own pill rather than a shared track split over two rows. */
+  .hs-tabs {
+    gap: 8px;
+    padding: 0;
+    border: 0;
   }
-  /* Stacked boxes keep the relation as a caption over the hosts instead of side-by-side rails. */
-  .hs-links {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0;
+  .hs-tabs button {
+    padding: 6px 12px;
+    font-size: 13.5px;
+    border: 1px solid var(--line-strong);
+  }
+  .hs-tabs button.on {
+    border-color: var(--text);
+  }
+  /* Stacked hosts: each relation sits as a caption directly above the host it reaches. */
+  .hs-links,
+  .hs-hosts {
+    display: contents;
   }
   .hs-links span {
-    padding: 6px 0 6px 22px;
+    padding: 8px 0 8px 22px;
   }
-  .hs-hosts {
-    grid-template-columns: minmax(0, 1fr);
-    margin-top: 12px;
-    gap: 12px;
+  .hs-links span:nth-child(1) {
+    order: 1;
+  }
+  .hs-hosts > :nth-child(1) {
+    order: 2;
+  }
+  .hs-links span:nth-child(2) {
+    order: 3;
+  }
+  .hs-hosts > :nth-child(2) {
+    order: 4;
   }
 }

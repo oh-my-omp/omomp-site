@@ -178,7 +178,9 @@ function RemoteBuild(props: { lang: Lang }) {
         {(r) => (
           <div class="hp-rb-row" classList={{ live: r.live, none: r.container === null }}>
             <div class="hp-rb-wt">
-              <code>{r.path}</code>
+              <code>
+                <For each={r.path.split(/(?<=\/)/)}>{(seg) => <span class="seg">{seg}</span>}</For>
+              </code>
               <span>{r.role === "main" ? c().main : r.role}</span>
             </div>
             <div class="hp-rb-flow" aria-hidden="true">

@@ -141,7 +141,7 @@ export const home = {
     ],
   },
   principles: {
-    title: { en: "Four rules behind every repository", zh: "所有仓库遵循的四条规则" },
+    title: { en: "Four rules behind every repository", zh: "四条工程规则" },
     lede: {
       en: "They decide what each component may change, where its messages go, and what you can replace.",
       zh: "这四条规则决定每个组件能改什么、消息发到哪里，以及哪些部分由你替换。",
