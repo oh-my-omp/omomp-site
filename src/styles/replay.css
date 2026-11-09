@@ -1,0 +1,183 @@
+/* Replay player: the demo scenario as a split screen (src/islands/ReplayPlayer.tsx). */
+.rp {
+  display: grid;
+  gap: 20px;
+}
+
+/* Step bar: one group per seam, a numbered tick per step. */
+.rp-bar {
+  display: flex;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.rp-group {
+  flex: 1 0 auto;
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  background: var(--bg);
+}
+.rp-seam {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.rp-ticks {
+  display: flex;
+  gap: 6px;
+}
+.rp-ticks button {
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 12px;
+  width: 30px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--dim);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.rp-ticks button:hover {
+  color: var(--text);
+  border-color: var(--muted);
+}
+.rp-ticks button.past {
+  color: var(--muted);
+}
+.rp-ticks button.on {
+  color: var(--bg);
+  background: var(--text);
+  border-color: var(--text);
+}
+
+.rp-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 24px;
+}
+.rp-title {
+  display: grid;
+  gap: 4px;
+}
+.rp-n {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+.rp-of {
+  color: var(--dim);
+}
+.rp-title h3 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.rp-controls {
+  display: flex;
+  gap: 8px;
+}
+.rp-btn {
+  font: inherit;
+  font-size: 14px;
+  height: 34px;
+  min-width: 38px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--soft);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.rp-btn:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--muted);
+}
+.rp-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.rp-play {
+  min-width: 96px;
+  color: var(--bg);
+  background: var(--text);
+  border-color: var(--text);
+  font-weight: 500;
+}
+.rp-play:hover:not(:disabled) {
+  color: var(--bg);
+}
+.rp-caption {
+  max-width: 780px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+/* Split: the screen the person sees, and the messages that reached the model without showing there. */
+.rp-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+.rp-front,
+.rp-back {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.rp-side {
+  font-size: 12px;
+  color: var(--muted);
+}
+.rp-side::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--human);
+  vertical-align: 1px;
+}
+.rp-back .rp-side::before {
+  background: var(--silent);
+}
+.rp-panels {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+.rp-quiet {
+  padding: 18px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--dim);
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .rp-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .rp-group {
+    padding: 8px 10px 10px;
+  }
+  .rp-ticks button {
+    width: 28px;
+  }
+  .rp-panels {
+    padding: 12px;
+  }
+}

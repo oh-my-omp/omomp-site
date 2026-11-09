@@ -10,7 +10,7 @@ export interface TodoItem {
   readonly status: TodoStatus;
   readonly estimate: number;
   readonly explanation?: string;
-  readonly commit?: { readonly sha: string; readonly message: string };
+  readonly commit?: { readonly sha: string; readonly message: string } | undefined;
 }
 
 export interface TodoData {

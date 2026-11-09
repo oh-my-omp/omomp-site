@@ -5,7 +5,7 @@ import PageHead from "../components/PageHead.astro";
 import Pager from "../components/Pager.astro";
 import ReplayPlayer from "../islands/ReplayPlayer";
 import { replayPage as copy } from "../copy/pages";
-import { replayIds, replayLabels, shotsFor } from "../data/replay";
+import { playerLabels, scenario } from "../data/scenario";
 import { href, t, type Lang } from "../i18n";
 import { ui } from "../ui";
 
@@ -13,30 +13,23 @@ interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
-const shots = shotsFor(replayIds, lang);
 const delivery = await getEntry("seams", "delivery");
 if (!delivery) throw new Error("seam `delivery` missing from seams.yaml");
 ---
 
-<Base lang={lang} title={t(copy.eyebrow, lang)} description={t(copy.lede, lang)}>
-  <PageHead eyebrow={t(copy.eyebrow, lang)} title={t(copy.title, lang)} lede={t(copy.lede, lang)} />
+<Base lang={lang} title={t(copy.kicker, lang)} description={t(copy.lede, lang)}>
+  <PageHead kicker={t(copy.kicker, lang)} title={t(copy.title, lang)} lede={t(copy.lede, lang)} />
   <section class="wrap player">
-    <ReplayPlayer client:load shots={shots} labels={replayLabels(lang)} />
-    <p class="note">{t(copy.note, lang)}</p>
+    <ReplayPlayer client:load lang={lang} steps={scenario[lang]} labels={playerLabels[lang]} />
   </section>
   <Pager
-    prev={{ href: href("/lifeline/delivery/", lang), label: t(ui.previous, lang), title: delivery.data.name[lang] }}
+    prev={{ href: href("/lifeline/delivery/", lang), label: `${t(ui.previous, lang)} · 06`, title: delivery.data.name[lang] }}
     next={{ href: href("/products/playbooks/", lang), label: t(ui.next, lang), title: "omp-playbooks" }}
   />
 </Base>
 
 <style>
   .player {
-    display: grid;
-    gap: 16px;
-  }
-  .note {
-    font-size: 13px;
-    color: var(--dim);
+    padding-bottom: clamp(72px, 10vw, 128px);
   }
 </style>

@@ -5,12 +5,14 @@ export interface Hook {
   readonly kind: HookKind;
   /** Extension or plugin that produced the message, e.g. `isolation-nudge`. */
   readonly source: string;
-  /** Where in the turn it fired, already localized: "tool_call", "回合结束". */
+  /** Where in the turn it fired, already localized: "tool call", "回合结束". */
   readonly at: string;
-  /** Short label for the kind, already localized: "blocked", "已拦截". */
+  /** Short label for the kind, already localized: "refused", "已拦下". */
   readonly label: string;
-  /** Message text exactly as the model receives it. */
+  /** Message text exactly as the model receives it, in the one language its source template is written in. */
   readonly body: string;
+  /** A reading aid when the template's language is not the page's: label and translated text, both localized. */
+  readonly gloss?: { readonly label: string; readonly text: string } | undefined;
 }
 
 export default function HookMessage(props: { hook: Hook; class?: string }) {
@@ -22,6 +24,12 @@ export default function HookMessage(props: { hook: Hook; class?: string }) {
         <span class="sl-hook-at">{props.hook.at}</span>
       </div>
       <p class="sl-hook-body">{props.hook.body}</p>
+      {props.hook.gloss && (
+        <p class="sl-hook-gloss">
+          <span>{props.hook.gloss.label}</span>
+          {props.hook.gloss.text}
+        </p>
+      )}
     </div>
   );
 }
