@@ -2,9 +2,12 @@
 import { getCollection } from "astro:content";
 import Base from "../layouts/Base.astro";
 import PageHead from "../components/PageHead.astro";
+import SplitHead from "../components/SplitHead.astro";
+import Grid from "../components/Grid.astro";
+import Cell from "../components/Cell.astro";
 import Pager from "../components/Pager.astro";
 import LifelineMap from "../islands/LifelineMap";
-import { lifelinePage as copy, seamPage } from "../copy/pages";
+import { lifelinePage as copy, principlesPage } from "../copy/pages";
 import { href, t, type Lang } from "../i18n";
 import { ui } from "../ui";
 
@@ -14,168 +17,52 @@ interface Props {
 const { lang } = Astro.props;
 const seams = (await getCollection("seams")).sort((a, b) => a.data.order - b.data.order);
 const components = await getCollection("components");
-const layers = ["human", "agent", "silent"] as const;
+const pad = (n: number) => String(n).padStart(2, "0");
 ---
 
-<Base lang={lang} title={t(copy.eyebrow, lang)} description={t(copy.lede, lang)}>
-  <PageHead eyebrow={t(copy.eyebrow, lang)} title={t(copy.title, lang)} lede={t(copy.lede, lang)} />
+<Base lang={lang} title={t(copy.kicker, lang)} description={t(copy.lede, lang)}>
+  <PageHead kicker={t(copy.kicker, lang)} title={t(copy.title, lang)} lede={t(copy.lede, lang)} />
 
-  <section class="wrap layers reveal" aria-labelledby="layers">
-    <h2 id="layers" class="sr">{t(copy.layersTitle, lang)}</h2>
-    {
-      layers.map((l) => (
-        <div class={`layer layer-${l}`}>
-          <span class="tag">
-            <span class="layer-dot" />
-            {t(ui.layers[l], lang)}
-          </span>
-          <p>{t(copy[l], lang)}</p>
-        </div>
-      ))
-    }
+  <section class="section">
+    <SplitHead title={t(copy.mapTitle, lang)} lede={t(copy.mapLede, lang)} />
+    <div class="wrap body">
+      <LifelineMap
+        client:visible
+        seams={seams.map((s) => ({ id: s.id, order: s.data.order, name: s.data.short[lang], href: href(`/lifeline/${s.id}/`, lang) }))}
+        components={components.map((c) => ({
+          id: c.id,
+          name: c.data.name,
+          seam: c.data.seam,
+          layer: c.data.layer,
+          line: c.data.line[lang],
+          repo: c.data.repo,
+        }))}
+        labels={{
+          layers: { human: t(ui.layers.human, lang), agent: t(ui.layers.agent, lang), silent: t(ui.layers.silent, lang) },
+          repo: t(ui.repo, lang),
+          seamPage: t(copy.seamPage, lang),
+        }}
+      />
+    </div>
   </section>
 
-  <section class="wrap map reveal">
-    <h2>{t(copy.mapTitle, lang)}</h2>
-    <LifelineMap
-      client:visible
-      seams={seams.map((s) => ({ id: s.id, order: s.data.order, name: s.data.name[lang], href: href(`/lifeline/${s.id}/`, lang) }))}
-      components={components.map((c) => ({
-        name: c.data.name,
-        seam: c.data.seam,
-        layer: c.data.layer,
-        solves: c.data.solves[lang],
-        repo: c.data.repo,
-      }))}
-      labels={{
-        layers: { human: t(ui.layers.human, lang), agent: t(ui.layers.agent, lang), silent: t(ui.layers.silent, lang) },
-        all: t(copy.all, lang),
-        open: t(copy.open, lang),
-        seam: t(seamPage.eyebrow, lang),
-        hint: t(copy.mapHint, lang),
-      }}
-    />
-  </section>
-
-  <section class="wrap seams reveal">
-    <h2>{t(copy.seamsTitle, lang)}</h2>
-    <ol>
-      {
-        seams.map((s) => (
-          <li>
-            <a href={href(`/lifeline/${s.id}/`, lang)}>
-              <span class="n">{String(s.data.order).padStart(2, "0")}</span>
-              <span class="name">{s.data.name[lang]}</span>
-              <span class="claim">{s.data.claim[lang]}</span>
-              <span class="arrow" aria-hidden="true">→</span>
-            </a>
-          </li>
-        ))
-      }
-    </ol>
+  <section class="section">
+    <SplitHead title={t(copy.seamsTitle, lang)} lede={t(copy.seamsLede, lang)} />
+    <div class="wrap body">
+      <Grid cols={3} count={seams.length}>
+        {seams.map((s) => <Cell tag={pad(s.data.order)} title={s.data.name[lang]} text={s.data.claim[lang]} href={href(`/lifeline/${s.id}/`, lang)} />)}
+      </Grid>
+    </div>
   </section>
 
   <Pager
-    prev={{ href: href("/principles/", lang), label: t(ui.previous, lang), title: t({ en: "Principles", zh: "设计原则" }, lang) }}
-    next={{ href: href(`/lifeline/${seams[0]!.id}/`, lang), label: t(ui.next, lang), title: seams[0]!.data.name[lang] }}
+    prev={{ href: href("/principles/", lang), label: t(ui.previous, lang), title: t(principlesPage.kicker, lang) }}
+    next={{ href: href(`/lifeline/${seams[0]!.id}/`, lang), label: `${t(ui.next, lang)} · 01`, title: seams[0]!.data.name[lang] }}
   />
 </Base>
 
 <style>
-  .sr {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-  }
-  .layers {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-  }
-  .layer {
-    display: grid;
-    gap: 10px;
-    padding: 20px 22px;
-    border: 1px solid var(--line);
-    border-top: 2px solid var(--layer);
-    border-radius: var(--radius);
-    background: var(--bg-raised);
-  }
-  .tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    font-weight: 500;
-  }
-  .layer p {
-    color: var(--muted);
-    font-size: 15px;
-  }
-  .map,
-  .seams {
-    padding-top: clamp(64px, 9vw, 104px);
-    display: grid;
-    gap: 22px;
-  }
-  h2 {
-    font-size: clamp(24px, 3vw, 32px);
-  }
-  .seams ol {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    border-top: 1px solid var(--line);
-  }
-  .seams a {
-    display: grid;
-    grid-template-columns: 48px minmax(0, 0.9fr) minmax(0, 1.4fr) 24px;
-    gap: 20px;
-    align-items: baseline;
-    padding: 22px 4px;
-    border-bottom: 1px solid var(--line);
-    transition: background 0.15s;
-  }
-  .seams a:hover {
-    background: rgb(255 255 255 / 0.02);
-  }
-  .n {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--accent);
-  }
-  .name {
-    font-size: 19px;
-    font-weight: 500;
-  }
-  .claim {
-    color: var(--muted);
-  }
-  .arrow {
-    color: var(--dim);
-    transition: transform 0.15s, color 0.15s;
-  }
-  .seams a:hover .arrow {
-    color: var(--accent);
-    transform: translateX(4px);
-  }
-  @media (max-width: 760px) {
-    .layers {
-      grid-template-columns: 1fr;
-    }
-    .seams a {
-      grid-template-columns: 36px minmax(0, 1fr) 20px;
-      row-gap: 6px;
-    }
-    .claim {
-      grid-column: 2;
-      grid-row: 2;
-    }
-    .arrow {
-      grid-column: 3;
-      grid-row: 1;
-    }
+  .body {
+    margin-top: clamp(40px, 5vw, 64px);
   }
 </style>

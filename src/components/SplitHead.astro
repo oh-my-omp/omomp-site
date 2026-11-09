@@ -2,7 +2,7 @@
 import { inlineCode } from "../i18n";
 interface Props {
   title: string;
-  lede: string;
+  lede?: string;
   id?: string;
   /** Small grey line above the title, for a section that belongs to a named group. */
   kicker?: string;
@@ -16,7 +16,7 @@ const { title, lede, id, kicker } = Astro.props;
     <h2>{title}</h2>
   </div>
   <div class="r">
-    <p class="lede" set:html={inlineCode(lede)} />
+    {lede && <p class="lede" set:html={inlineCode(lede)} />}
     <slot />
   </div>
 </header>

@@ -1,0 +1,167 @@
+/* Lifeline map (src/islands/LifelineMap.tsx): seams as columns, layers as rows, on hairlines. */
+.lm {
+  display: grid;
+  gap: 16px;
+}
+.lm-tabs {
+  display: none;
+}
+.lm-grid {
+  display: grid;
+  grid-template-columns: 168px repeat(var(--n), minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.lm-grid > * {
+  background: var(--bg);
+  min-width: 0;
+}
+.lm-n {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim);
+  margin-right: 8px;
+}
+.lm-head {
+  padding: 14px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.lm-head:hover {
+  background: var(--bg-raised);
+}
+.lm-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  font-size: 13px;
+  color: var(--soft);
+}
+.lm-cell {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 6px;
+  padding: 14px 12px;
+}
+.lm-chip {
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.35;
+  text-align: left;
+  color: var(--soft);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  padding: 4px 8px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.lm-chip:hover {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--layer) 60%, transparent);
+}
+.lm-chip.on {
+  color: var(--text);
+  border-color: var(--layer);
+  background: color-mix(in srgb, var(--layer) 12%, transparent);
+}
+
+/* The sentence opens under the row of the selected component, three columns wide, starting at its column. */
+.lm-detail {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 168px repeat(var(--n), minmax(0, 1fr));
+  background: var(--bg-raised) !important;
+}
+.lm-box {
+  display: grid;
+  gap: 8px;
+  padding: 18px 16px 20px;
+  border-left: 2px solid var(--layer);
+}
+.lm-box code {
+  justify-self: start;
+  font-size: 13px;
+  color: var(--text);
+}
+.lm-box p {
+  color: var(--soft);
+  font-size: 15px;
+  line-height: 1.6;
+}
+.lm-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  font-size: 14px;
+}
+.lm-links a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.lm-links a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .lm-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .lm-tabs button {
+    flex: none;
+    font: inherit;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .lm-tabs button.on {
+    color: var(--bg);
+    background: var(--text);
+    border-color: var(--text);
+  }
+  .lm-tabs button.on .lm-n {
+    color: inherit;
+  }
+  .lm-grid,
+  .lm-detail {
+    grid-template-columns: 132px minmax(0, 1fr);
+  }
+  .lm-corner,
+  .lm-head,
+  .lm-cell.off {
+    display: none;
+  }
+  .lm-box {
+    grid-column: 1 / -1 !important;
+  }
+}
+@media (max-width: 480px) {
+  .lm-grid,
+  .lm-detail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .lm-row {
+    padding: 12px 14px 0;
+  }
+  .lm-cell {
+    padding: 10px 14px 14px;
+  }
+}

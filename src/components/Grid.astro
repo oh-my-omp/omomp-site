@@ -1,12 +1,16 @@
 ---
 interface Props {
-  cols?: 2 | 3 | 4;
+  cols?: 1 | 2 | 3 | 4;
+  /** Number of cells inside, so the last row is closed with blank cells instead of showing the line colour. */
+  count?: number;
 }
-const { cols = 3 } = Astro.props;
+const { cols = 3, count } = Astro.props;
+const blanks = count === undefined ? 0 : (cols - (count % cols)) % cols;
 ---
 
-<div class="grid" style={`--cols:${cols}`}>
+<div class:list={["grid", { multi: cols > 1 }]} style={`--cols:${cols}`}>
   <slot />
+  {Array.from({ length: blanks }, () => <div class="blank" aria-hidden="true" />)}
 </div>
 
 <style>
@@ -20,14 +24,25 @@ const { cols = 3 } = Astro.props;
     border-radius: 14px;
     overflow: hidden;
   }
+  .blank {
+    background: var(--bg);
+  }
   @media (max-width: 960px) {
     .grid {
       grid-template-columns: repeat(min(var(--cols), 2), minmax(0, 1fr));
     }
   }
+  @media (min-width: 641px) and (max-width: 960px) {
+    .multi > :global(:last-child:nth-child(odd)) {
+      grid-column: span 2;
+    }
+  }
   @media (max-width: 640px) {
     .grid {
       grid-template-columns: minmax(0, 1fr);
+    }
+    .blank {
+      display: none;
     }
   }
 </style>

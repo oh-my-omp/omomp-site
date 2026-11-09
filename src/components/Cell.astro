@@ -6,16 +6,19 @@ interface Props {
   /** Small line above the title, such as a component name or a figure number. */
   tag?: string;
   href?: string;
+  /** Title is a code name (a plugin, tool or extension) and is set in the monospace face. */
+  mono?: boolean;
 }
-const { title, text, tag, href } = Astro.props;
+const { title, text, tag, href, mono } = Astro.props;
 const Tag = href ? "a" : "div";
+const hasArt = Astro.slots.has("default");
 ---
 
-<Tag class:list={["cell", { link: href }]} href={href}>
-  <div class="art"><slot /></div>
+<Tag class:list={["cell", { link: href, bare: !hasArt }]} href={href}>
+  {hasArt && <div class="art"><slot /></div>}
   <div class="txt">
     {tag && <span class="tag" set:html={inlineCode(tag)} />}
-    <h3>{title}</h3>
+    <h3 class:list={{ mono }}>{title}</h3>
     <p set:html={inlineCode(text)} />
   </div>
 </Tag>
@@ -26,6 +29,9 @@ const Tag = href ? "a" : "div";
     grid-template-rows: minmax(240px, 1fr) auto;
     background: var(--bg);
     min-width: 0;
+  }
+  .bare {
+    grid-template-rows: auto;
   }
   .link {
     transition: background 0.15s;
@@ -55,6 +61,12 @@ const Tag = href ? "a" : "div";
     border: 0;
     background: none;
     font-size: inherit;
+  }
+  h3.mono {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0;
   }
   p {
     color: var(--muted);
