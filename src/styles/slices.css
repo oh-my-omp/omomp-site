@@ -447,7 +447,8 @@
 .sl-art .sl-todo {
   justify-items: stretch;
 }
-.sl-art .sl-todo-pop {
+.sl-art .sl-todo-pop,
+.sl-win-body .sl-todo-pop {
   width: 100%;
 }
 .sl-todo-pop {

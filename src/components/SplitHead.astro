@@ -8,17 +8,23 @@ interface Props {
   kicker?: string;
 }
 const { title, lede, id, kicker } = Astro.props;
+// Without a right column the heading takes the width the lede would have shared, instead of wrapping beside an empty half.
+const solo = !lede && !Astro.slots.has("default");
 ---
 
 <header class="split wrap" id={id}>
-  <div class="l">
+  <div class:list={["l", { solo }]}>
     {kicker && <p class="kicker">{kicker}</p>}
     <h2>{title}</h2>
   </div>
-  <div class="r">
-    {lede && <p class="lede" set:html={inlineCode(lede)} />}
-    <slot />
-  </div>
+  {
+    !solo && (
+      <div class="r">
+        {lede && <p class="lede" set:html={inlineCode(lede)} />}
+        <slot />
+      </div>
+    )
+  }
 </header>
 
 <style>
@@ -33,6 +39,9 @@ const { title, lede, id, kicker } = Astro.props;
     grid-column: 1 / span 5;
     display: grid;
     gap: 14px;
+  }
+  .l.solo {
+    grid-column: 1 / span 9;
   }
   .r {
     grid-column: 7 / span 6;
@@ -49,6 +58,7 @@ const { title, lede, id, kicker } = Astro.props;
   }
   @media (max-width: 860px) {
     .l,
+    .l.solo,
     .r {
       grid-column: 1 / -1;
     }
