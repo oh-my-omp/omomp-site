@@ -1,15 +1,13 @@
 import type { Text } from "../i18n";
 
 export const principlesPage = {
-  eyebrow: { en: "Principles", zh: "设计原则" },
-  title: { en: "Four rules every repository follows", zh: "四条原则，每个仓库都遵循" },
+  kicker: { en: "Principles", zh: "设计原则" },
+  title: { en: "Four rules every repository follows", zh: "每个仓库都遵守的四条工程规则" },
   lede: {
-    en: "Each component on this site puts one of these rules into practice. Each rule names the problem it answers and the components that carry it.",
-    zh: "站上每个组件，都是其中一条原则的落地。每条原则写明它要解决的问题，以及由哪些组件来落实。",
+    en: "Each component on this site puts one of these rules into practice. Each rule below names the problem it answers, how it is carried out, and the components that carry it.",
+    zh: "站上每个组件都在落实其中一条。下面每条规则写明它针对的问题、具体做法，以及由哪些组件承担。",
   },
-  problem: { en: "The problem", zh: "问题" },
-  practice: { en: "In practice", zh: "做法" },
-  seen: { en: "Where it runs", zh: "落在哪些组件" },
+  seen: { en: "Components", zh: "落地组件" },
 } satisfies Record<string, Text>
 
 export const lifelinePage = {

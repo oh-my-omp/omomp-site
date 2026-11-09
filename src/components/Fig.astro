@@ -1,0 +1,273 @@
+---
+import type { Lang } from "../i18n";
+
+/**
+ * Line drawings for the four engineering rules on the principles page.
+ * `labels` adds the text; the overview grid draws the same geometry without it.
+ */
+interface Props {
+  fig: "append" | "signals" | "roles" | "policy";
+  lang: Lang;
+  labels?: boolean;
+}
+const { fig, lang, labels = false } = Astro.props;
+const zh = lang === "zh";
+const L = (en: string, cn: string) => (zh ? cn : en);
+---
+
+<svg class:list={["fig", { bare: !labels }]} viewBox="0 0 520 280" role="img" aria-hidden={labels ? undefined : "true"}>
+  {
+    fig === "append" && (
+      <g>
+        <text class="t" x="20" y="44">{L("Hook rewrites the system prompt", "钩子改写 system prompt")}</text>
+        <rect class="b bad" x="20" y="56" width="132" height="34" rx="4" />
+        <path class="hatch" d="M30 90 54 56M48 90 72 56M66 90 90 56M84 90 108 56M102 90 126 56M120 90 144 56" />
+        <rect class="b" x="158" y="56" width="78" height="34" rx="4" />
+        <rect class="b" x="242" y="56" width="62" height="34" rx="4" />
+        <rect class="b" x="310" y="56" width="62" height="34" rx="4" />
+        <rect class="b" x="378" y="56" width="62" height="34" rx="4" />
+        <text class="c" x="86" y="77">system</text>
+        <text class="c" x="197" y="77">tools</text>
+        <text class="c" x="273" y="77">msg</text>
+        <text class="c" x="341" y="77">msg</text>
+        <text class="c" x="409" y="77">msg</text>
+        <path class="miss" d="M20 104H440" />
+        <text class="t bad-t" x="20" y="124">{L("prefix changed: cache misses, everything is billed again", "前缀变了：缓存失效，全部重新计费")}</text>
+
+        <text class="t" x="20" y="174">{L("omomp appends a message instead", "omomp 改为追加一条消息")}</text>
+        <rect class="b" x="20" y="186" width="132" height="34" rx="4" />
+        <rect class="b" x="158" y="186" width="78" height="34" rx="4" />
+        <rect class="b" x="242" y="186" width="62" height="34" rx="4" />
+        <rect class="b" x="310" y="186" width="62" height="34" rx="4" />
+        <rect class="b" x="378" y="186" width="62" height="34" rx="4" />
+        <rect class="b new" x="446" y="186" width="56" height="34" rx="4" />
+        <text class="c" x="86" y="207">system</text>
+        <text class="c" x="197" y="207">tools</text>
+        <text class="c" x="273" y="207">msg</text>
+        <text class="c" x="341" y="207">msg</text>
+        <text class="c" x="409" y="207">msg</text>
+        <text class="c new-t" x="474" y="207">+</text>
+        <path class="hit" d="M20 234H440" />
+        <path class="fresh" d="M446 234H502" />
+        <text class="t ok-t" x="20" y="254">{L("same prefix: cache hit", "前缀不变：缓存命中")}</text>
+        <text class="t new-t" x="502" y="254" text-anchor="end">{"<system-reminder>"}</text>
+      </g>
+    )
+  }
+  {
+    fig === "signals" && (
+      <g>
+        <text class="t" x="20" y="182">{L("agent turn", "代理回合")}</text>
+        <path class="axis" d="M20 160H500" />
+        <path class="arrow-head" d="M494 155 500 160 494 165" />
+        {[
+          { x: 104, at: "tool_call", kind: "bad", out: L("block", "阻断") },
+          { x: 228, at: "tool_result", kind: "ok", out: L("reminder", "提醒") },
+          { x: 352, at: L("subagent yield", "子代理交付"), kind: "warn", out: L("judge", "判定") },
+          { x: 460, at: L("turn end", "回合结束"), kind: "warn", out: L("judge", "判定") },
+        ].map((p) => (
+          <g>
+            <circle class="node" cx={p.x} cy="160" r="5" />
+            <path class="link" d={`M${p.x} 154V96`} />
+            <rect class:list={["b", p.kind]} x={p.x - 44} y="58" width="88" height="34" rx="17" />
+            <text class:list={["c", `${p.kind}-t`]} x={p.x} y="79">{p.out}</text>
+            <path class:list={["back", p.kind]} d={`M${p.x + 30} 92C${p.x + 30} 126 ${p.x + 34} 140 ${p.x + 40} 156`} />
+            <text class="t" x={p.x} y="206" text-anchor="middle">{p.at}</text>
+          </g>
+        ))}
+        <text class="t" x="20" y="250">{L("Each drift signal is answered at the step where it shows up.", "每个偏离信号在它出现的那一步处理。")}</text>
+      </g>
+    )
+  }
+  {
+    fig === "roles" && (
+      <g>
+        <circle class="b" cx="52" cy="140" r="22" />
+        <text class="c" x="52" y="144">{L("you", "你")}</text>
+        <path class="link solid" d="M76 140H156" />
+        <rect class="b" x="160" y="114" width="118" height="52" rx="6" />
+        <text class="c" x="219" y="137">{L("main agent", "主代理")}</text>
+        <text class="t" x="219" y="155" text-anchor="middle">{L("plans, dispatches", "编排、派发")}</text>
+
+        <rect class="zone" x="330" y="22" width="174" height="128" rx="8" />
+        <text class="t" x="342" y="42">{L("isolated worktrees", "隔离的 worktree")}</text>
+        <rect class="b" x="346" y="56" width="142" height="24" rx="4" />
+        <rect class="b" x="346" y="86" width="142" height="24" rx="4" />
+        <rect class="b" x="346" y="116" width="142" height="24" rx="4" />
+        <text class="c" x="417" y="72">task:mid</text>
+        <text class="c" x="417" y="102">task:mid</text>
+        <text class="c" x="417" y="132">task:low</text>
+        <path class="link solid" d="M278 132C306 132 312 98 340 98" />
+        <text class="t" x="292" y="108">{L("brief", "派工")}</text>
+
+        <rect class="b ro" x="346" y="196" width="142" height="52" rx="6" />
+        <text class="c" x="417" y="218">discuss:* · mentor</text>
+        <text class="t ok-t" x="417" y="236" text-anchor="middle">{L("read-only / no tools", "只读或无工具")}</text>
+        <path class="link" d="M278 152C306 152 312 222 340 222" />
+        <path class="inject" d="M52 164C52 246 200 262 340 238" />
+        <text class="t new-t" x="96" y="250">{L("your own words, via user-prompt-inject", "你的原话，经 user-prompt-inject")}</text>
+      </g>
+    )
+  }
+  {
+    fig === "policy" && (
+      <g>
+        {[
+          { x: 24, name: L("shipped upstream", "仓库新版"), mark: false },
+          { x: 192, name: L("common base", "共同基线"), mark: false },
+          { x: 360, name: L("your machine", "你的本机"), mark: true },
+        ].map((f) => (
+          <g>
+            <rect class="b" x={f.x} y="24" width="136" height="84" rx="6" />
+            <path class="row" d={`M${f.x + 14} 46H${f.x + 110}M${f.x + 14} 62H${f.x + 96}M${f.x + 14} 78H${f.x + 116}M${f.x + 14} 94H${f.x + 84}`} />
+            {f.mark && <path class="mark" d={`M${f.x + 14} 62H${f.x + 96}M${f.x + 14} 78H${f.x + 116}`} />}
+            <text class="t" x={f.x + 68} y="126" text-anchor="middle">{f.name}</text>
+          </g>
+        ))}
+        <path class="link" d="M92 134C92 160 230 152 252 166M260 134V164M428 134C428 160 290 152 268 166" />
+        <rect class="b merge" x="246" y="160" width="28" height="28" rx="4" transform="rotate(45 260 174)" />
+        <text class="t" x="292" y="178">{L("three-way merge", "三方合并")}</text>
+        <path class="link" d="M260 194V206" />
+        <rect class="b" x="192" y="208" width="136" height="30" rx="6" />
+        <path class="mark" d="M206 223H262" />
+        <text class="t ok-t" x="340" y="227">{L("your edits kept", "保留你的改动")}</text>
+        <path class="base" d="M24 260H496" />
+        <text class="t" x="24" y="276">{L("extension mechanism: fixed, ships with the repo", "扩展机制：固定，随仓库发布")}</text>
+      </g>
+    )
+  }
+</svg>
+
+<style>
+  .fig {
+    width: 100%;
+    height: auto;
+    display: block;
+    overflow: visible;
+  }
+  .b {
+    fill: rgb(255 255 255 / 0.025);
+    stroke: rgb(255 255 255 / 0.22);
+    stroke-width: 1;
+  }
+  .b.bad {
+    stroke: color-mix(in srgb, var(--danger) 70%, transparent);
+    fill: color-mix(in srgb, var(--danger) 6%, transparent);
+  }
+  .b.ok,
+  .b.ro {
+    stroke: color-mix(in srgb, var(--silent) 60%, transparent);
+  }
+  .b.warn {
+    stroke: color-mix(in srgb, var(--warn) 60%, transparent);
+  }
+  .b.new,
+  .b.merge {
+    stroke: var(--accent);
+    fill: var(--accent-soft);
+  }
+  .hatch {
+    stroke: color-mix(in srgb, var(--danger) 40%, transparent);
+    stroke-width: 1;
+  }
+  .t,
+  .c {
+    font-family: var(--mono);
+    font-size: 11px;
+    fill: var(--muted);
+  }
+  :lang(zh) .t,
+  :lang(zh) .c {
+    font-family: var(--sans);
+    font-size: 12px;
+  }
+  .c {
+    text-anchor: middle;
+    fill: var(--soft);
+  }
+  .bad-t {
+    fill: var(--danger);
+  }
+  .ok-t {
+    fill: var(--silent);
+  }
+  .warn-t {
+    fill: var(--warn);
+  }
+  .new-t {
+    fill: var(--accent);
+  }
+  .miss {
+    stroke: var(--danger);
+    stroke-dasharray: 4 4;
+  }
+  .hit {
+    stroke: var(--silent);
+    stroke-width: 2;
+  }
+  .fresh {
+    stroke: var(--accent);
+    stroke-width: 2;
+  }
+  .axis,
+  .arrow-head {
+    stroke: rgb(255 255 255 / 0.35);
+    fill: none;
+  }
+  .node {
+    fill: var(--bg);
+    stroke: var(--text);
+  }
+  .link {
+    stroke: rgb(255 255 255 / 0.25);
+    fill: none;
+    stroke-dasharray: 3 3;
+  }
+  .link.solid {
+    stroke-dasharray: none;
+  }
+  .back {
+    fill: none;
+    stroke-width: 1.2;
+  }
+  .back.bad {
+    stroke: var(--danger);
+  }
+  .back.ok {
+    stroke: var(--silent);
+  }
+  .back.warn {
+    stroke: var(--warn);
+  }
+  .zone {
+    fill: none;
+    stroke: rgb(255 255 255 / 0.14);
+    stroke-dasharray: 2 4;
+  }
+  .inject {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.2;
+    stroke-dasharray: 5 4;
+  }
+  .row {
+    stroke: rgb(255 255 255 / 0.18);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  .mark {
+    stroke: var(--accent);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  .base {
+    stroke: rgb(255 255 255 / 0.35);
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+  /* Overview: geometry only. */
+  .bare .t,
+  .bare .c {
+    display: none;
+  }
+</style>
