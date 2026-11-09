@@ -101,7 +101,7 @@ const example = {
                 <span class="v">你停下了，但交代的工作还没做完。先跑完测试再停。<span class="from">{t(copy.fromMachine, lang)}</span></span>
               </p>
             </div>
-            <p class="mech">{t(copy.mergeMechanism, lang)}</p>
+            <p class="merge-mech">{t(copy.mergeMechanism, lang)}</p>
           </div>
         </div>
       </Stage>
@@ -259,7 +259,7 @@ const example = {
     flex: 1;
     border-top: 1px dashed rgb(255 255 255 / 0.22);
   }
-  .mech {
+  .merge-mech {
     margin-top: 2px;
     padding-top: 8px;
     border-top: 3px solid rgb(255 255 255 / 0.32);
@@ -268,7 +268,7 @@ const example = {
   }
   :lang(zh) .who,
   :lang(zh) .via,
-  :lang(zh) .mech {
+  :lang(zh) .merge-mech {
     font-family: var(--sans);
   }
   @media (max-width: 900px) {
