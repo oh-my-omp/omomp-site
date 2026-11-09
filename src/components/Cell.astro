@@ -1,0 +1,64 @@
+---
+import { inlineCode } from "../i18n";
+interface Props {
+  title: string;
+  text: string;
+  /** Small line above the title, such as a component name or a figure number. */
+  tag?: string;
+  href?: string;
+}
+const { title, text, tag, href } = Astro.props;
+const Tag = href ? "a" : "div";
+---
+
+<Tag class:list={["cell", { link: href }]} href={href}>
+  <div class="art"><slot /></div>
+  <div class="txt">
+    {tag && <span class="tag" set:html={inlineCode(tag)} />}
+    <h3>{title}</h3>
+    <p set:html={inlineCode(text)} />
+  </div>
+</Tag>
+
+<style>
+  .cell {
+    display: grid;
+    grid-template-rows: minmax(240px, 1fr) auto;
+    background: var(--bg);
+    min-width: 0;
+  }
+  .link {
+    transition: background 0.15s;
+  }
+  .link:hover {
+    background: #0c0d0e;
+  }
+  .art {
+    display: grid;
+    place-items: center;
+    padding: 32px 28px 8px;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .txt {
+    display: grid;
+    gap: 6px;
+    padding: 20px 28px 30px;
+  }
+  .tag {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--dim);
+  }
+  .tag :global(code) {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: inherit;
+  }
+  p {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 30em;
+  }
+</style>

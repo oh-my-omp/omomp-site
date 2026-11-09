@@ -1,0 +1,52 @@
+---
+interface Props {
+  /** Optional caption under the interface: one bold line and one or two grey lines. */
+  title?: string;
+  text?: string;
+  class?: string;
+}
+const { title, text, class: extra } = Astro.props;
+---
+
+<div class:list={["stage", extra]}>
+  <div class="canvas">
+    <slot />
+  </div>
+  {
+    title && (
+      <div class="cap">
+        <h3>{title}</h3>
+        {text && <p>{text}</p>}
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .stage {
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background:
+      radial-gradient(120% 70% at 50% 0%, rgb(255 255 255 / 0.06), transparent 60%),
+      var(--bg-raised);
+    overflow: hidden;
+  }
+  .canvas {
+    padding: clamp(20px, 4.5vw, 64px) clamp(16px, 4.5vw, 72px) 0;
+    display: grid;
+  }
+  .cap {
+    padding: 28px clamp(20px, 3vw, 32px) 32px;
+    display: grid;
+    gap: 6px;
+    max-width: 34em;
+  }
+  .cap p {
+    color: var(--muted);
+    font-size: 15px;
+  }
+  .stage:not(:has(.cap)) .canvas {
+    padding-bottom: clamp(20px, 4.5vw, 64px);
+  }
+</style>
