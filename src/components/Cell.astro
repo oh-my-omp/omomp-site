@@ -8,7 +8,7 @@ interface Props {
   href?: string;
   /** Title is a code name (a plugin, tool or extension) and is set in the monospace face. */
   mono?: boolean;
-  /** The only cell in a one-column grid: text on the left, art on the right. */
+  /** The only cell in a one-column grid: text in the left three tenths, art in the right seven. */
   wide?: boolean;
 }
 const { title, text, tag, href, mono, wide } = Astro.props;
@@ -21,32 +21,24 @@ const hasArt = Astro.slots.has("default");
   <div class="txt">
     {tag && <span class="tag" set:html={inlineCode(tag)} />}
     <h3 class:list={{ mono }}>{title}</h3>
-    <p set:html={inlineCode(text)} />
+    {text && <p set:html={inlineCode(text)} />}
   </div>
 </Tag>
 
 <style>
-  /* Each cell spans two rows of its grid and shares them, so art and text line up across a row. */
+  /*
+   * The Linear cell: the interface slice takes the upper seven tenths, one bold title and at most two grey lines the rest.
+   * The art region has a floor tall enough that a title plus two lines stays under three tenths of the cell; copy longer
+   * than two lines breaks the ratio and has to be shortened at its source, it is never clipped here.
+   * Each cell spans two rows of its grid and shares them, so art and text line up across a row.
+   */
   .cell {
+    --art-floor: 340px;
     grid-row: span 2;
     display: grid;
     grid-template-rows: subgrid;
     background: var(--bg);
     min-width: 0;
-  }
-  @media (min-width: 761px) {
-    .wide {
-      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-    }
-    .wide .txt {
-      order: -1;
-      align-content: center;
-      padding: 32px 28px 32px 36px;
-    }
-    .wide .art {
-      align-items: center;
-      padding: 32px 28px;
-    }
   }
   .link {
     transition: background 0.15s;
@@ -54,24 +46,29 @@ const hasArt = Astro.slots.has("default");
   .link:hover {
     background: #0c0d0e;
   }
-  /* Slices start at the same height in a row; a short one leaves room below it, not on both sides. */
+  /* Cells in a row share the art row's height; each slice sits in the middle of it, as on Linear's feature grids. */
   .art {
     display: grid;
-    align-items: start;
+    align-items: center;
     justify-items: center;
-    padding: 32px 28px 8px;
+    min-height: var(--art-floor);
+    padding: 36px 32px 20px;
     min-width: 0;
     overflow: hidden;
   }
   .txt {
     display: grid;
     align-content: start;
-    gap: 6px;
-    padding: 20px 28px 30px;
+    gap: 4px;
+    padding: 4px 32px 30px;
+  }
+  .bare .txt {
+    padding-top: 28px;
   }
   .tag {
     font-family: var(--mono);
     font-size: 12px;
+    line-height: 1.5;
     color: var(--dim);
   }
   .tag :global(code) {
@@ -80,15 +77,49 @@ const hasArt = Astro.slots.has("default");
     background: none;
     font-size: inherit;
   }
+  h3 {
+    font-size: 15px;
+    line-height: 1.45;
+  }
   h3.mono {
     font-family: var(--mono);
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
     letter-spacing: 0;
   }
   p {
     color: var(--muted);
     font-size: 15px;
+    line-height: 1.55;
     max-width: 30em;
+  }
+  @media (min-width: 761px) {
+    /* A lone cell lies on its side: the art keeps seven tenths of the area, as the stacked cell does. */
+    .wide {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 7fr);
+    }
+    .wide .txt {
+      order: -1;
+      align-content: end;
+      padding: 32px 28px 32px 32px;
+      border-right: 1px solid var(--line);
+    }
+    .wide .art {
+      padding: 36px 32px;
+    }
+  }
+  @media (max-width: 640px) {
+    .cell {
+      --art-floor: 300px;
+    }
+    .art {
+      padding: 28px 20px 16px;
+    }
+    .txt {
+      padding: 4px 20px 24px;
+    }
+    .bare .txt {
+      padding-top: 24px;
+    }
   }
 </style>

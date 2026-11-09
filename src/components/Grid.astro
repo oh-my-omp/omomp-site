@@ -14,14 +14,14 @@ const blanks = count === undefined ? 0 : (cols - (count % cols)) % cols;
 </div>
 
 <style>
-  /* The cells sit on the line colour with a 1px gap, so every inner divider is one hairline. */
+  /* The cells sit on the line colour with a 1px gap, so every inner divider is one 1px hairline across the canvas. */
   .grid {
     display: grid;
     grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
     gap: 1px;
     background: var(--line);
     border: 1px solid var(--line);
-    border-radius: 14px;
+    border-radius: var(--radius);
     overflow: hidden;
   }
   .blank {

@@ -3,12 +3,25 @@ interface Props {
   /** Optional caption under the interface: one bold line and one or two grey lines. */
   title?: string;
   text?: string;
+  /**
+   * Where the `switch` slot sits when it is filled: a column of feature buttons on the left, or a row along the top
+   * (Linear's plan page, "Meeting notes"). Narrow screens always put it on top.
+   */
+  switchAt?: "left" | "top";
   class?: string;
 }
-const { title, text, class: extra } = Astro.props;
+const { title, text, switchAt = "top", class: extra } = Astro.props;
+const hasSwitch = Astro.slots.has("switch");
 ---
 
-<div class:list={["stage", extra]}>
+<div class:list={["stage", extra, hasSwitch && `sw-${switchAt}`]}>
+  {
+    hasSwitch && (
+      <div class="switch">
+        <slot name="switch" />
+      </div>
+    )
+  }
   <div class="canvas">
     <slot />
   </div>
@@ -23,23 +36,25 @@ const { title, text, class: extra } = Astro.props;
 </div>
 
 <style>
+  /* The full-width interface stage under a section head: one 1px structural frame with a faint highlight along its top edge. */
   .stage {
     position: relative;
+    width: 100%;
     border: 1px solid var(--line);
-    border-radius: 14px;
-    background:
-      radial-gradient(120% 70% at 50% 0%, rgb(255 255 255 / 0.06), transparent 60%),
-      var(--bg-raised);
+    border-radius: var(--radius);
+    background: linear-gradient(rgb(255 255 255 / 0.025), transparent 180px), var(--bg-raised);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
     overflow: hidden;
   }
   .canvas {
     padding: clamp(20px, 4.5vw, 64px) clamp(16px, 4.5vw, 72px) 0;
     display: grid;
+    min-width: 0;
   }
   .cap {
     padding: 28px clamp(20px, 3vw, 32px) 32px;
     display: grid;
-    gap: 6px;
+    gap: 4px;
     max-width: 34em;
   }
   .cap p {
@@ -48,5 +63,54 @@ const { title, text, class: extra } = Astro.props;
   }
   .stage:not(:has(.cap)) .canvas {
     padding-bottom: clamp(20px, 4.5vw, 64px);
+  }
+  .switch {
+    display: flex;
+    gap: 4px;
+    padding: 12px;
+    border-bottom: 1px solid var(--line);
+    overflow-x: auto;
+  }
+  /* Feature buttons in the switcher: quiet until current (`aria-selected`/`aria-current` or class `on`). */
+  .switch > :global(*) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    color: var(--muted);
+    font: inherit;
+    font-size: 14px;
+    text-align: left;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .switch > :global(*:hover) {
+    color: var(--text);
+  }
+  .switch > :global(:is(.on, [aria-selected="true"], [aria-current])) {
+    background: var(--bg-hover);
+    color: var(--text);
+  }
+  @media (min-width: 761px) {
+    .sw-left {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+    }
+    .sw-left .switch {
+      flex-direction: column;
+      padding: 20px 12px;
+      border-bottom: 0;
+      border-right: 1px solid var(--line);
+      overflow-x: visible;
+    }
+    .sw-left:has(.cap) .switch {
+      grid-row: span 2;
+    }
+    .sw-left .cap {
+      grid-column: 2;
+    }
   }
 </style>
