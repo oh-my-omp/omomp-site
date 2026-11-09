@@ -58,15 +58,6 @@
   min-height: 260px;
   align-content: start;
 }
-/* Call lines wrap rather than cut off what was called. */
-.hs-screen .sl-tx-sig {
-  flex-wrap: wrap;
-}
-.hs-screen .sl-tx-sig .a {
-  white-space: normal;
-  overflow-wrap: break-word;
-  min-width: 0;
-}
 .hs-map {
   display: grid;
 }

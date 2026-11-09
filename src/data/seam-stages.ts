@@ -77,11 +77,6 @@ const hookOf = (id: ComponentId, lang: Lang): Hook => {
   if (art.kind !== "hook") throw new Error(`component \`${id}\` art is ${art.kind}, the stage needs its hook`);
   return art.hook;
 };
-const linesOf = (id: ComponentId, lang: Lang): readonly TLine[] => {
-  const art = componentArt[id][lang];
-  if (art.kind !== "lines") throw new Error(`component \`${id}\` art is ${art.kind}, the stage needs its transcript lines`);
-  return art.lines;
-};
 const panelOf = (id: ComponentId, lang: Lang): Panel => {
   const art = componentArt[id][lang];
   if (art.kind !== "panel") throw new Error(`component \`${id}\` art is ${art.kind}, the stage needs its panel`);
@@ -352,7 +347,7 @@ const sessionTitles = {
 } as const;
 
 /** One session query from a Python eval cell (omp-sessions `session_query`, action `sql`), with the rows it returned. */
-const sessionQuery = (lang: Lang): Panel => {
+export const sessionQuery = (lang: Lang): Panel => {
   const t = sessionTitles[lang];
   return {
     kind: "sql",

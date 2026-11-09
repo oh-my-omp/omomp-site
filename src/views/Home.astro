@@ -14,6 +14,7 @@ import type { HookKind } from "../slices/HookMessage";
 import { home } from "../copy/home";
 import { componentArt, type ComponentId } from "../data/component-art";
 import { repos, repoUrl, type Repo } from "../data/repos";
+import { sessionQuery } from "../data/seam-stages";
 import { href, inlineCode, t, type Lang } from "../i18n";
 import { ui } from "../ui";
 
@@ -79,7 +80,7 @@ const routeHref = (route: string) => (route.startsWith("https://") ? route : hre
 
 /** What each way of installing looks like at work. */
 const tabArts: Readonly<Record<string, readonly Art[]>> = {
-  plugin: [componentArt.sessions[lang]],
+  plugin: [componentArt.sessions[lang], { kind: "panel", panel: sessionQuery(lang) }],
   config: [componentArt["isolation-nudge"][lang]],
   tern: [componentArt["todo-panel"][lang]],
 };
@@ -286,15 +287,6 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
   .card[data-repo="omp-ask-more"] .ca :global(.sl-ask-brief) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1.4em;
-  }
-  /* Call lines wrap in a card instead of cutting off what was asked. */
-  .card .ca :global(.sl-tx-sig) {
-    flex-wrap: wrap;
-  }
-  .card .ca :global(.sl-tx-sig .a) {
-    white-space: normal;
-    overflow-wrap: break-word;
-    min-width: 0;
   }
   .ct {
     display: grid;
