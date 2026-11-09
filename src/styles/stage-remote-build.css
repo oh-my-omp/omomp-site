@@ -1,0 +1,218 @@
+/* omp-remote-build stage: three linked zones (this machine → one-way sync → remote build host). */
+
+.st-rb {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  font-size: 13px;
+  text-align: left;
+}
+.st-rb-zone {
+  min-width: 0;
+  padding: 0 18px;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+.st-rb-zone + .st-rb-zone {
+  border-left: 1px solid var(--line);
+}
+.st-rb-zone > :first-child {
+  margin-left: -1px; /* keep titles aligned across hairlines */
+}
+.st-rb-title {
+  margin: 0 0 2px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--soft);
+}
+.st-rb-cap {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+/* Zone 1: checkouts and worktree environments */
+.st-rb-roots {
+  display: grid;
+}
+.st-rb-root {
+  padding: 9px 12px;
+  display: grid;
+  gap: 3px;
+}
+.st-rb-root + .st-rb-root {
+  border-top: 1px solid var(--line);
+}
+.st-rb-root-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.st-rb-path {
+  font-family: var(--mono);
+  font-size: 0.92em;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.st-rb-role {
+  margin-left: auto;
+  font-size: 0.85em;
+  color: var(--dim);
+  white-space: nowrap;
+}
+.st-rb-env {
+  font-family: var(--mono);
+  font-size: 0.82em;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.st-rb-env code {
+  color: var(--soft);
+}
+.st-rb-tree {
+  list-style: none;
+  margin: 2px 0 0;
+  padding: 0;
+  font-family: var(--mono);
+  font-size: 0.8em;
+  line-height: 1.7;
+  color: var(--dim);
+}
+.st-rb-tree li {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.st-rb-tree li.cfg {
+  color: var(--muted);
+}
+.st-rb-note {
+  border-top: 1px solid var(--line);
+  padding: 8px 12px;
+  font-size: 0.82em;
+  line-height: 1.5;
+  color: var(--dim);
+}
+.st-rb-ready {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.82em;
+  color: var(--soft);
+}
+
+/* Zone 2: Mutagen session */
+.st-rb-eps {
+  display: grid;
+  gap: 4px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 0.82em;
+}
+.st-rb-ep {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.st-rb-ep-k {
+  width: 3.4em;
+  flex: none;
+  color: var(--dim);
+}
+.st-rb-ep code {
+  color: var(--soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.st-rb-flow {
+  padding-left: calc(3.4em + 8px);
+  color: var(--dim);
+  font-size: 0.94em;
+}
+.st-rb-flow-arrow {
+  color: var(--muted);
+}
+.st-rb-flush {
+  display: grid;
+  gap: 3px;
+  padding: 8px 12px 10px;
+  border-top: 1px solid var(--line);
+  font-size: 0.82em;
+}
+.st-rb-flush code {
+  font-family: var(--mono);
+  color: var(--soft);
+}
+.st-rb-flush span {
+  color: var(--dim);
+}
+
+/* Zone 3: remote container and tools */
+.st-rb-tools {
+  list-style: none;
+  margin: 0;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 4px;
+}
+.st-rb-tools li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+  font-size: 0.82em;
+}
+.st-rb-tools code {
+  color: var(--soft);
+  white-space: nowrap;
+}
+.st-rb-tools span {
+  margin-left: auto;
+  color: var(--dim);
+  white-space: nowrap;
+}
+.st-rb-report {
+  border-bottom: 1px solid var(--line);
+}
+.st-rb-call {
+  padding: 8px 12px 2px;
+}
+.st-rb-result {
+  padding: 4px 12px 10px;
+  font-size: 0.8em;
+  color: var(--muted);
+  overflow-x: auto;
+}
+.st-rb-result .by-agent {
+  color: var(--agent);
+}
+
+/* Narrow: one column, hairline becomes horizontal */
+@media (max-width: 880px) {
+  .st-rb {
+    grid-template-columns: 1fr;
+  }
+  .st-rb-zone {
+    padding: 0;
+  }
+  .st-rb-zone + .st-rb-zone {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+    margin-top: 4px;
+  }
+  .st-rb-zone > :first-child {
+    margin-left: 0;
+  }
+}
