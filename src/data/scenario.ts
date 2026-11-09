@@ -56,7 +56,7 @@ const items = {
   },
   zh: {
     bucket: { title: "Redis 令牌桶", explanation: "一段 Lua 脚本原子地补充和取用令牌", estimate: 40 },
-    tests: { title: "补充与 429 的测试", explanation: "覆盖补充速率、429 响应体和 Retry-After", estimate: 25 },
+    tests: { title: "令牌补充与 429 测试", explanation: "覆盖补充速率、429 响应体和 Retry-After", estimate: 25 },
     orders: { title: "改 orders 路由", explanation: "用中间件替换它自己写的计数器", estimate: 10 },
     search: { title: "改 search 路由", explanation: "改法同 orders，额度更高", estimate: 10 },
     webhooks: { title: "签名 webhook 免限流", explanation: "服务商签名校验通过后跳过限流", estimate: 20 },

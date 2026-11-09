@@ -88,7 +88,7 @@ const items = {
   },
   zh: {
     bucket: { title: "Redis 令牌桶", explanation: "一段 Lua 脚本原子地补充和取用令牌", estimate: 40 },
-    tests: { title: "补充与 429 的测试", explanation: "覆盖补充速率、429 响应体和 Retry-After", estimate: 25 },
+    tests: { title: "令牌补充与 429 测试", explanation: "覆盖补充速率、429 响应体和 Retry-After", estimate: 25 },
     orders: { title: "改 orders 路由", explanation: "用中间件替换它自己写的计数器", estimate: 10 },
     search: { title: "改 search 路由", explanation: "改法同 orders，额度更高", estimate: 10 },
     webhooks: { title: "签名 webhook 免限流", explanation: "服务商签名校验通过后跳过限流", estimate: 20 },
@@ -408,12 +408,12 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
     en: {
       kind: "code",
       title: "README.md · shell commands",
-      lines: ["# full mode", "omp", "", "# light mode: skips the governance extensions listed in config-light.yml", "omp-light"],
+      lines: ["# full mode", "omp", "", "# light mode (config-light.yml)", "omp-light"],
     },
     zh: {
       kind: "code",
       title: "README.md · shell commands",
-      lines: ["# 完整模式", "omp", "", "# 轻量模式：跳过 config-light.yml 列出的治理扩展", "omp-light"],
+      lines: ["# 完整模式", "omp", "", "# 轻量模式（config-light.yml）", "omp-light"],
     },
   },
   "tool-topics": {
@@ -648,8 +648,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
           tool: "task",
           args: "OrdersRoute · task:low · isolated: true",
           status: "ok",
-          result:
-            "Done. src/routes/orders.ts now calls the limiter from src/middleware/rate-limit.ts; orders.test.ts passes (4 tests). Changed: src/routes/orders.ts.",
+          result: "已完成。src/routes/orders.ts 改用 src/middleware/rate-limit.ts 的限流器；orders.test.ts 通过（4 个测试）。改动文件：src/routes/orders.ts。",
         },
         { kind: "call", tool: "task", args: "SearchRoute · task:low · isolated: true", status: "running" },
         { kind: "call", tool: "task", args: "WebhooksRoute · task:low · isolated: true", status: "running" },
@@ -725,7 +724,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
         body: userGoalInject("zh"),
         gloss: {
           label: "译文",
-          text: "以下是人类用户给根会话的原话，逐字、按先后排列。你辅导的代理替这个用户干活；它对你说的是自己的理解。用户也通过 ask 工具做决定。拿这些原话和回答衡量代理，不要拿它的复述。",
+          text: "以下是人类用户给根会话的原话，逐字照录，按先后排列，最早的在前。",
         },
       },
     },
