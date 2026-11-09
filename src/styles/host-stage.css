@@ -181,8 +181,13 @@
     padding: 6px 11px;
     font-size: 13.5px;
   }
+  /* Stacked boxes keep the relation as a caption over the hosts instead of side-by-side rails. */
   .hs-links {
-    display: none;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .hs-links span {
+    padding: 6px 0 6px 22px;
   }
   .hs-hosts {
     grid-template-columns: minmax(0, 1fr);

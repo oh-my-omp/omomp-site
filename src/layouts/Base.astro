@@ -197,8 +197,10 @@ const alternate = (l: Lang) => new URL(href(route, l), Astro.site).href;
   }
   @media (max-width: 480px) {
     .foot-nav {
-      gap: 8px 14px;
-      font-size: 13px;
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      justify-content: start;
+      gap: 10px 24px;
     }
   }
   .menu {

@@ -194,6 +194,10 @@ const routeHref = (route: string) => (route.startsWith("https://") ? route : hre
   .hr-screen {
     padding: 14px;
   }
+  /* The hero names all three workers; the call line wraps instead of cutting the last one off. */
+  .hr-screen :global(.sl-tx-sig .a) {
+    white-space: normal;
+  }
   .side {
     font-size: 12px;
     color: var(--muted);
@@ -288,9 +292,11 @@ const routeHref = (route: string) => (route.startsWith("https://") ? route : hre
     line-height: 1.55;
     max-width: 36em;
   }
+  /* The last slice stretches to the bottom of the card, so a bordered box in a short card does not end mid-row. */
   .ca {
     display: grid;
-    align-content: start;
+    grid-auto-rows: auto;
+    align-content: stretch;
     gap: 10px;
     min-height: 0;
     max-height: 300px;
@@ -298,8 +304,15 @@ const routeHref = (route: string) => (route.startsWith("https://") ? route : hre
     mask-image: linear-gradient(to bottom, #000 78%, transparent);
     pointer-events: none;
   }
-  /* The pipeline is drawn whole: all six seams fit, so it is neither cut nor faded. */
-  .card[data-repo="omp-config"] .ca {
+  .ca > :global(:last-child) {
+    align-self: stretch;
+  }
+  .ca :global(.sl-art-code) {
+    height: 100%;
+  }
+  /* Drawn whole at every width: the pipeline shows all six seams, and the peers card ends on the answer it is about. */
+  .card[data-repo="omp-config"] .ca,
+  .card[data-repo="omp-peers"] .ca {
     max-height: none;
     mask-image: none;
   }
@@ -315,10 +328,6 @@ const routeHref = (route: string) => (route.startsWith("https://") ? route : hre
       grid-column: span 6;
       grid-row: auto;
     }
-    .card[data-repo="omp-config"] .ca {
-      max-height: 300px;
-      mask-image: linear-gradient(to bottom, #000 78%, transparent);
-    }
   }
   @media (max-width: 900px) {
     .hero {
@@ -333,7 +342,7 @@ const routeHref = (route: string) => (route.startsWith("https://") ? route : hre
       padding-bottom: 4px;
     }
     .ca {
-      max-height: 240px;
+      max-height: 320px;
     }
   }
 </style>

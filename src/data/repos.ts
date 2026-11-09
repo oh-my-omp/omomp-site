@@ -15,7 +15,7 @@ const remoteBuildArt: readonly Art[] = [
         tool: "container_exec",
         args: rb.execArgs,
         status: "ok",
-        result: [rb.resultHead[0], "---", ...rb.screen.slice(2, 9).map((l) => l.text)].join("\n"),
+        result: [rb.resultHead[0], "---", ...rb.screen.slice(2, 4).map((l) => l.text), "…"].join("\n"),
       },
     ],
   },
