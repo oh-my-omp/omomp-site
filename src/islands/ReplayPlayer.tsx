@@ -39,7 +39,7 @@ export default function ReplayPlayer(props: {
 
   let timer: number | undefined;
   const stop = () => {
-    window.clearInterval(timer);
+    if (timer !== undefined) window.clearInterval(timer);
     timer = undefined;
     setPlaying(false);
   };
