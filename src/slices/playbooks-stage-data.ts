@@ -226,7 +226,8 @@ const sectionArt: readonly [Art, Art, Art] = [
     title: "notice",
     lines: [
       "This is a Playbook document service notice, not a user message",
-      '{"doc":"/work/shop-api/rate-limit.yaml",',
+      '{"doc":',
+      ' "/work/rate-limit.yaml",',
       ' "event":"launch_requested",',
       ' "data":{"blocks":["b3"]}}',
     ],

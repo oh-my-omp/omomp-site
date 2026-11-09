@@ -335,10 +335,11 @@ const { hub, around } = product.data.roles;
       bottom: auto;
       transform: translate(-6px, -3.5px) rotate(-45deg);
     }
+    /* The chevron's tip touches the spine from the right, so nothing crosses into the margin. */
     .edge .head {
       left: 7px;
       top: 100%;
-      transform: translate(-1px, -3.5px) rotate(-45deg);
+      transform: translate(2.5px, -3.5px) rotate(-45deg);
     }
     .edge[data-dir="in"] .head {
       display: block;

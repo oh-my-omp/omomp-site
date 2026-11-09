@@ -154,10 +154,9 @@
   color: var(--dim);
 }
 .st-rb-ep code {
+  min-width: 0;
   color: var(--soft);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
 }
 .st-rb-flow {
   padding-left: calc(3.4em + 8px);
