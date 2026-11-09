@@ -180,6 +180,30 @@
   scrollbar-width: thin;
   scrollbar-color: var(--line-strong) transparent;
 }
+/* A pane with more below fades at its bottom edge; the fade is gone once it is scrolled to the end or fits. */
+@property --rp-fade {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@keyframes rp-fade {
+  from {
+    --rp-fade: 36px;
+  }
+  to {
+    --rp-fade: 0px;
+  }
+}
+@supports (animation-timeline: scroll()) {
+  .rp-scroll {
+    mask-image: linear-gradient(to bottom, #000 calc(100% - var(--rp-fade)), transparent);
+    animation: rp-fade linear both;
+  }
+  /* Kept apart from the shorthand above: a minifier folds it into `animation`, where browsers reject it. */
+  .rp-split .rp-scroll {
+    animation-timeline: scroll(self);
+  }
+}
 .rp-hooks {
   display: grid;
   align-content: start;
