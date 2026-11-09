@@ -13,7 +13,7 @@ ask-more-panel:
       zh: 结构化提问、全屏页面、可读性检查和路由规则。
     policy:
       en: "Timeout, notification and expiry handling, and the readability check. Shipped: a terminal notification when a question waits too long, the model decides if it still goes unanswered, and the readability check is on."
-      zh: 超时、通知与到期处理，以及可读性检查。随附设定：问题等太久时发终端通知，仍无人回答则交给模型决定，可读性检查开启。
+      zh: 超时、通知与到期处理，以及可读性检查。默认配置：问题等太久时发终端通知，仍无人回答则交给模型决定，可读性检查开启。
     customize: https://github.com/oh-my-omp/omp-ask-more#readme
 
 input-polish:
@@ -30,7 +30,7 @@ input-polish:
       zh: 快捷键、辅助改写、采用或丢弃的浮层。
     policy:
       en: The key and the rewrite instruction. The shipped instruction makes the draft read with more conviction.
-      zh: 快捷键和改写指令。随附的指令让草稿读起来更有说服力。
+      zh: 快捷键和改写指令。默认指令让草稿读起来更有说服力。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#input-polish
 
 ask-tool:
@@ -65,7 +65,7 @@ omp-modes:
       zh: 按启动叠加的配置，不改磁盘上的文件。
     policy:
       en: "Which extensions light mode turns off. Shipped: the dispatch, handoff, advisor and reminder hooks, `fork_task`, and bash interception."
-      zh: 轻量模式关掉哪些扩展。随附设定：关掉派发、交付、顾问和提醒类钩子，以及 `fork_task` 和 bash 拦截。
+      zh: 轻量模式关掉哪些扩展。默认配置：关掉派发、交付、顾问和提醒类钩子，以及 `fork_task` 和 bash 拦截。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/plugins-and-modes.md#full-mode-omp-vs-light-mode-omp-light
 
 tool-topics:
@@ -82,7 +82,7 @@ tool-topics:
       zh: 专题协议、说明替换和按需送达。
     policy:
       en: "Which host tools are covered and what each topic says. Shipped: omp's own tools only; plugin tools keep their own docs."
-      zh: 覆盖哪些宿主工具，每个专题写什么。随附设定：只覆盖 omp 自带的工具，插件工具沿用自己的文档。
+      zh: 覆盖哪些宿主工具，每个专题写什么。默认配置：只覆盖 omp 自带的工具，插件工具沿用自己的文档。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#tool-topics
 
 system-template:
@@ -108,7 +108,7 @@ system-prompt-replace:
       zh: 按会话、模型或模式条件匹配，以追加消息声明替换。
     policy:
       en: The shipped rules remove a sentence that conflicts with subagent todos and forbid file lookup inside eval.
-      zh: 随附规则删掉与子代理待办冲突的句子，并禁止在 eval 里检索文件。
+      zh: 默认规则删掉与子代理待办冲突的句子，并禁止在 eval 里检索文件。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/prompts-and-context.md#system-prompt-replace
 
 append-system-model:
@@ -151,7 +151,7 @@ todo-panel:
       zh: 计划文档、时间预算、提醒、完成即提交。
     policy:
       en: "Whether stop reminders fire, how often, and whether a plan is requested up front. Shipped: reminders on, capped per stop, no plan required at the first prompt."
-      zh: 是否发出停止提醒、发几次，以及开场是否要求列计划。随附设定：提醒开启、每次停下有上限，开场不强制列计划。
+      zh: 是否发出停止提醒、发几次，以及开场是否要求列计划。默认配置：提醒开启、每次停下有上限，开场不强制列计划。
     customize: https://github.com/oh-my-omp/omp-todo-more#readme
 
 todo-tool:
@@ -195,7 +195,7 @@ model-compaction:
       zh: 规则发现，以及只作用于当前会话的设置。
     policy:
       en: None shipped. Every rule is yours.
-      zh: 不随附任何规则，全部由你决定。
+      zh: 默认留空，全部由你决定。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/prompts-and-context.md#model-compaction
 
 subagent-usage-cmd:
@@ -256,7 +256,7 @@ user-prompt-inject:
       zh: 从根会话收集用户原话，并为选定的代理渲染。
     policy:
       en: Which agents receive them. The shipped template targets the two discussion partners and the mentor.
-      zh: 哪些代理收到。随附模板发给两位讨论伙伴和导师。
+      zh: 哪些代理收到。默认模板发给两位讨论伙伴和导师。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/agents.md#user-prompt-inject
 
 isolation-nudge:
@@ -282,7 +282,7 @@ task-split-check:
       zh: 每次派发都经过的两项判定。
     policy:
       en: "Which worker definitions opt in to the topic check, and which model judges. Shipped: `task:free`, `task:low` and `task:mid` opt in."
-      zh: 哪些执行者定义启用主题检查，由哪个模型判定。随附设定：`task:free`、`task:low`、`task:mid` 启用。
+      zh: 哪些子代理档位启用主题检查，由哪个模型判定。默认配置：`task:free`、`task:low`、`task:mid` 启用。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#task-split-check
 
 terminals-hud:
@@ -353,7 +353,7 @@ tool-policy-nag:
       zh: 调用前的阻断通道，调用后的提醒通道。
     policy:
       en: "Which detector runs, how often reminders fire, how they read, and how risky a command chain may be. Shipped: a rule-based detector with no model calls, reminding only after repeated misuse."
-      zh: 用哪种检测、提醒频率和措辞，以及命令链能有多冒险。随附设定：基于规则的检测，不调用模型，同类问题反复出现后才提醒。
+      zh: 用哪种检测、提醒频率和措辞，以及命令链能有多冒险。默认配置：基于规则的检测，不调用模型，同类问题反复出现后才提醒。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#tool-policy-nag
 
 watchdog-agent:
@@ -370,7 +370,7 @@ watchdog-agent:
       zh: 配置发现、动作计数、审查与注入。
     policy:
       en: None shipped. A watchdog exists only once you write its spec.
-      zh: 不随附规则文件；写下 WATCHDOG 规则，看门狗才启用。
+      zh: 默认留空；写下 WATCHDOG 规则，看门狗才启用。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#watchdog-agent
 
 thinking-translator:
@@ -387,7 +387,7 @@ thinking-translator:
       zh: 逐行翻译与渲染，带模型回退。
     policy:
       en: Target language and model chain. None shipped; you create them on first run.
-      zh: 目标语言和模型链。不随附，首次运行时由你创建。
+      zh: 目标语言和模型链。默认留空，首次运行时由你创建。
     customize: https://github.com/oh-my-omp/omp-thinking-translator#readme
 
 omomp-lang:
@@ -431,7 +431,7 @@ task-completion-judge:
       zh: 每次交付的判定，外加待办检查。
     policy:
       en: "Which worker definitions are judged, and which model judges. Shipped: `task:free`, `task:low` and `task:mid` are judged."
-      zh: 哪些执行者定义受判定，由哪个模型判定。随附设定：`task:free`、`task:low`、`task:mid` 受判定。
+      zh: 哪些子代理档位接受交付判定，由哪个模型判定。默认配置：`task:free`、`task:low`、`task:mid` 接受判定。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#task-completion-judge
 
 turn-judge:
@@ -448,7 +448,7 @@ turn-judge:
       zh: 会话过滤条件、是/否判定问题，以及规则成立时发出的提示。
     policy:
       en: The shipped rule catches GPT main sessions that list remaining work and stop.
-      zh: 随附规则针对 GPT 主会话：列出剩余工作却停下。
+      zh: 默认规则针对 GPT 主会话：列出剩余工作却停下。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#turn-judge
 
 lang-nag:
@@ -465,5 +465,5 @@ lang-nag:
       zh: 语言判定，以及下一轮的纠正。
     policy:
       en: "The target language and the wording of the correction. Shipped: Chinese, with a one-line reminder to answer in it."
-      zh: 目标语言和纠正措辞。随附设定：中文，外加一句提醒改用中文作答。
+      zh: 目标语言和纠正措辞。默认配置：中文，外加一句提醒改用中文作答。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#lang-nag

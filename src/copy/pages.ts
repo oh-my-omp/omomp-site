@@ -74,16 +74,35 @@ export const defaultsPage = {
   exampleTitle: { en: "A default is a file", zh: "默认设定就是一个文件" },
   exampleLede: {
     en: "This turn check ships with omp-config. When a GPT model announces its next step and stops, it sends the agent back to work. Change the model pattern, the questions or the prompt, or delete the file.",
-    zh: "这条回合判定随 omp-config 发布：GPT 模型说完下一步就停下时，它把代理送回去接着做。模型匹配、判定问题和提示词都可以改，也可以直接删掉这个文件。",
+    zh: "这条随 omp-config 发布的回合检查规则，会在 GPT 模型只宣布下一步就停下时把代理退回继续执行。模型匹配、判定问题和提示词都能改，也可以直接删掉这个文件。",
+  },
+  exampleNote: {
+    en: "The excerpt is the shipped file verbatim. Its question is written in English because the model reads it that way.",
+    zh: "摘录取自仓库原文，未作改动。其中 `question.says_remaining` 问的是：“本轮回复”是否表明助手还有未完成、未运行、未提交、未推送或未验证的工作？",
   },
   listTitle: { en: "Mechanism and default, component by component", zh: "逐个组件：机制与默认" },
   listLede: {
     en: "Only components that separate the two are listed. Each row links to where the default is changed.",
-    zh: "只列出把两者分开的组件，每一行都链接到修改默认的地方。",
+    zh: "下表仅列出机制与默认配置分离的组件，每行可直接跳转到对应默认文件的修改位置。",
   },
   component: { en: "Component", zh: "组件" },
   mechanism: { en: "Mechanism", zh: "机制" },
   policy: { en: "Author's default", zh: "作者默认" },
   customize: { en: "Change it", zh: "去改" },
+  upstreamLabel: { en: "Shipped upstream", zh: "仓库新版" },
+  baseLabel: { en: "Common base", zh: "共同基线" },
+  machineLabel: { en: "Your machine", zh: "你的本机" },
+  mergedLabel: { en: "Merged", zh: "合并结果" },
+  fromUpstream: { en: "upstream", zh: "上游" },
+  fromMachine: { en: "yours", zh: "你的" },
+  mergeStep: { en: "Three-way merge", zh: "三方合并" },
+  mergeMechanism: {
+    en: "Extension mechanism: fixed, ships with the repo",
+    zh: "扩展机制：固定，随仓库发布",
+  },
+  mergeAlt: {
+    en: "Three-way merge: the model pattern from the upstream release is combined with your edited prompt.",
+    zh: "三方合并：上游版本更新的模型匹配与你改过的提示词合并保留。",
+  },
   start: { en: "Get started", zh: "开始使用" },
 } satisfies Record<string, Text>
