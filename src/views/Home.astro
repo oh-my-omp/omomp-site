@@ -310,9 +310,10 @@ const routeHref = (route: string) => (route.startsWith("https://") ? route : hre
   .ca :global(.sl-art-code) {
     height: 100%;
   }
-  /* Drawn whole at every width: the pipeline shows all six seams, and the peers card ends on the answer it is about. */
+  /* Drawn whole at every width: the pipeline shows all six seams, and the peers and image cards end on the result they are about. */
   .card[data-repo="omp-config"] .ca,
-  .card[data-repo="omp-peers"] .ca {
+  .card[data-repo="omp-peers"] .ca,
+  .card[data-repo="omp-codex-image-gen"] .ca {
     max-height: none;
     mask-image: none;
   }
