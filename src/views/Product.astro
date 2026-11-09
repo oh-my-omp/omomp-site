@@ -14,7 +14,7 @@ import { playbooksLinks, playbooksSectionArt } from "../slices/playbooks-stage-d
 import { dispatchLinks, dispatchSectionArt } from "../slices/dispatch-stage-data";
 import { remoteBuildLinks, remoteBuildSectionArt } from "../slices/remote-build-stage-data";
 import { productPage as copy, replayPage, defaultsPage } from "../copy/pages";
-import { href, inlineCode, t, type Lang } from "../i18n";
+import { href, t, type Lang } from "../i18n";
 import { ui } from "../ui";
 
 interface Props {
@@ -39,25 +39,18 @@ const { hub, around } = product.data.roles;
 
 <Base lang={lang} title={product.data.name} description={product.data.tagline[lang]}>
   <section class="lead">
-    <header class="split wrap">
-      <div class="l">
-        <p class="kicker">{`${t(copy.kicker, lang)} · ${product.data.name}`}</p>
-        <h1>{product.data.headline[lang]}</h1>
+    <SplitHead level={1} kicker={`${t(copy.kicker, lang)} · ${product.data.name}`} title={product.data.headline[lang]} lede={product.data.intro[lang]}>
+      <div class="top">
+        <a class="btn" href={product.data.repo}>{t(copy.repo, lang)} ↗</a>
+        <nav class="switch" aria-label={t(copy.all, lang)}>
+          {all.map((p) => (
+            <a href={href(`/products/${p.id}/`, lang)} aria-current={p.id === product.id ? "page" : undefined}>
+              {p.data.name}
+            </a>
+          ))}
+        </nav>
       </div>
-      <div class="r">
-        <p class="lede" set:html={inlineCode(product.data.intro[lang])} />
-        <div class="top">
-          <a class="btn" href={product.data.repo}>{t(copy.repo, lang)} ↗</a>
-          <nav class="switch" aria-label={t(copy.all, lang)}>
-            {all.map((p) => (
-              <a href={href(`/products/${p.id}/`, lang)} aria-current={p.id === product.id ? "page" : undefined}>
-                {p.data.name}
-              </a>
-            ))}
-          </nav>
-        </div>
-      </div>
-    </header>
+    </SplitHead>
     <div class="wrap body">
       <Stage>
         <StageView lang={lang} />
@@ -125,43 +118,9 @@ const { hub, around } = product.data.roles;
 </Base>
 
 <style>
-  /* Page top: the same asymmetric split as SplitHead (title 5 columns, right column 6), with the page's h1. */
+  /* Page top: a split head whose title is the page's h1, with the product's stage below. */
   .lead {
     padding-block: clamp(72px, 11vw, 140px) clamp(72px, 10vw, 128px);
-  }
-  .split {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: 24px;
-    row-gap: 20px;
-    align-items: start;
-  }
-  .l {
-    grid-column: 1 / span 5;
-    display: grid;
-    gap: 14px;
-  }
-  .r {
-    grid-column: 7 / span 6;
-    display: grid;
-    gap: 22px;
-    justify-items: start;
-    padding-top: 6px;
-  }
-  .lede {
-    font-size: clamp(17px, 1.6vw, 21px);
-    line-height: 1.5;
-    color: var(--soft);
-    letter-spacing: -0.01em;
-  }
-  @media (max-width: 860px) {
-    .l,
-    .r {
-      grid-column: 1 / -1;
-    }
-    .r {
-      padding-top: 0;
-    }
   }
   .top {
     display: flex;

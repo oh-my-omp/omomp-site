@@ -1,7 +1,7 @@
 import { For, Show } from "solid-js";
 import type { Lang } from "../i18n";
 import { labels } from "./labels";
-import { dispatchStage, type DispatchIssue } from "./dispatch-stage-data";
+import { dispatchScene, dispatchStage, type DispatchIssue } from "./dispatch-stage-data";
 import "../styles/home-slices.css";
 
 /** Which product a large home card draws; each is a compressed view of that product's page stage. */
@@ -134,15 +134,15 @@ function Dispatch(props: { lang: Lang }) {
       <div class="hp-gate">
         <div class="hp-gate-head">{d().driftCaption}</div>
         <div class="hp-gate-row old">
-          {d().oldFingerprintLabel} <code>{d().oldSha}</code>
-        </div>
-        <div class="hp-gate-row">
-          {d().newFingerprintLabel} <code>{d().newSha}</code>
+          {d().oldFingerprintLabel} <code>{dispatchScene.oldSha}</code>
         </div>
         <div class="hp-gate-row old">
-          {d().oldVerdictsLabel} <span>{d().oldVerdictsText}</span>
+          <span>{d().voided}</span>
         </div>
-        <For each={d().verdicts}>
+        <div class="hp-gate-row">
+          {d().newFingerprintLabel} <code>{dispatchScene.newSha}</code>
+        </div>
+        <For each={dispatchScene.newVerdicts}>
           {(v) => (
             <div class="hp-gate-row">
               {v.role} <em>{v.status}</em>

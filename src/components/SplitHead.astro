@@ -6,8 +6,11 @@ interface Props {
   id?: string;
   /** Small grey line above the title, for a section that belongs to a named group. */
   kicker?: string;
+  /** 1 when the split head opens the page and its title is the page's h1. */
+  level?: 1 | 2;
 }
-const { title, lede, id, kicker } = Astro.props;
+const { title, lede, id, kicker, level = 2 } = Astro.props;
+const Heading = level === 1 ? "h1" : "h2";
 // Without a right column the heading takes the width the lede would have shared, instead of wrapping beside an empty half.
 const solo = !lede && !Astro.slots.has("default");
 ---
@@ -15,7 +18,7 @@ const solo = !lede && !Astro.slots.has("default");
 <header class="split wrap" id={id}>
   <div class:list={["l", { solo }]}>
     {kicker && <p class="kicker">{kicker}</p>}
-    <h2>{title}</h2>
+    <Heading>{title}</Heading>
   </div>
   {
     !solo && (

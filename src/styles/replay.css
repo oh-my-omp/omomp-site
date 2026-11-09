@@ -300,13 +300,12 @@
     padding: 8px 10px 10px;
   }
   .rp-ticks {
+    flex-wrap: wrap;
     gap: 4px;
   }
   .rp-ticks button {
-    width: auto;
-    flex: 1 1 0;
-    min-width: 0;
-    max-width: 30px;
+    width: 30px;
+    flex: 0 0 auto;
   }
 }
 @media (max-width: 640px) {
