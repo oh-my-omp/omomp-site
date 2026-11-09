@@ -127,8 +127,8 @@ export const productPage = {
   how: { en: "How it works", zh: "运作方式" },
   mechanics: { en: "Mechanics", zh: "机制" },
   howLede: {
-    en: "Three mechanisms, each shown by the file, message or state it produces.",
-    zh: "三个机制，分别用它们产出的文件、消息或状态来说明。",
+    en: "Each mechanism is shown by the file, message or state it leaves behind.",
+    zh: "每个机制都用它留下的文件、消息或状态来说明。",
   },
   who: { en: "Who does what", zh: "谁负责什么" },
   roles: { en: "Roles", zh: "角色分工" },
