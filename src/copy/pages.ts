@@ -106,7 +106,7 @@ export const seamPage = {
   demoKicker: { en: "Demo", zh: "演示" },
   demoLede: {
     en: "The steps that pass through this seam: what you see, and what reached the model.",
-    zh: "经过这道接缝的几步：你看到的界面，和送到模型的内容。",
+    zh: "演示里经过这道接缝的几步：你看到的界面，以及发给模型的消息。",
   },
   demoAll: { en: "Whole demo", zh: "完整演示" },
 } satisfies Record<string, Text>

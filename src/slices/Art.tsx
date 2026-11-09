@@ -12,8 +12,16 @@ export type Art =
   | { readonly kind: "lines"; readonly lines: readonly TLine[] }
   /** A plugin panel the person sees. */
   | { readonly kind: "panel"; readonly panel: Panel }
-  /** A file, command or tool call as written, under its name: config, a prompt file, a slash command or a tool's arguments, and the output. */
-  | { readonly kind: "code"; readonly title: string; readonly lines: readonly string[] };
+  /**
+   * A file, command or tool call as written, under its name: config, a prompt file, a slash command or a tool's arguments,
+   * and the output. Text the model reads in a language other than the page's carries a translation underneath.
+   */
+  | {
+      readonly kind: "code";
+      readonly title: string;
+      readonly lines: readonly string[];
+      readonly gloss?: { readonly label: string; readonly text: string };
+    };
 
 export default function ArtView(props: { lang: Lang; art: Art }) {
   const a = props.art;
@@ -34,6 +42,12 @@ export default function ArtView(props: { lang: Lang; art: Art }) {
                 <pre>
                   <For each={a.lines}>{(line) => <span>{line + "\n"}</span>}</For>
                 </pre>
+                {a.gloss && (
+                  <p class="sl-hook-gloss">
+                    <span>{a.gloss.label}</span>
+                    {a.gloss.text}
+                  </p>
+                )}
               </div>
             );
         }

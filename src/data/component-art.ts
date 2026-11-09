@@ -186,7 +186,7 @@ export const todoStopReminder = (lang: Lang): Hook =>
         body: todoReminder("zh"),
         gloss: {
           label: "译文",
-          text: "你停下时还有 4 个待办没完成：路由阶段的“改 orders 路由”等。目标：用 Redis 按 API key 给公开 API 限流……请继续做这些任务，已经做完的标记为完成。（第 1/3 次提醒）",
+          text: `你停下时还有 4 个待办没完成：${items.zh.phases.routes}阶段的“${items.zh.orders.title}”，${items.zh.orders.explanation}，估时 ${items.zh.orders.estimate} 分钟；其余几项这里从略。目标：${goal.zh.objective}；后两行从略。请继续做这些任务；已经做完的，标记为完成。（提醒 1/3）`,
         },
       };
 
@@ -525,7 +525,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
         body: askRejected.zh,
         gloss: {
           label: "译文",
-          text: "退回 ask：问题 “storage” 对只看得到这个对话框、从没见过你的会话和这个项目的读者来说很难懂；逐条改写，让每句说清谁做什么，缩写写全，名称、编号和先前的决定都用平白的话说出来。这句话用了对话框里没解释的词、缩写、名称或编号。",
+          text: "退回 ask：问题 “storage” 对只看得到这个对话框、从没见过你的会话和这个项目的读者来说很难看懂。逐条改写下面各项，让每句话都说清谁做什么，缩写写全，名称、编号和之前的决定都用平白的话说出来：“按 #212 的结论，RL 继续用共享集群，还是像 v1 那样放进程内？”用了对话框里从没解释过的词、缩写、名称或编号；其余几条从略。",
         },
       },
     },
@@ -567,6 +567,10 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
           status: "ok",
           result:
             "# Writing a pattern\n\n- `pat` is ONE AST pattern and must parse as a single node of the target language; unrelated patterns go in separate calls. Wrap a fragment that is not standalone: `class $_ { … }`.\n- Metavariables: `$NAME` one node, bound; `$_` one node, unbound; `$$$NAME` zero or more, bound; `$$$` zero or more, unbound. `$$NAME` is invalid. Names are UPPERCASE and stand for a whole node: `prefix$VAR` fails.\n- The same metavariable twice must match identical code: `$A == $A` matches `x == x`, not `x == y`.\n…",
+          gloss: {
+            label: "译文",
+            text: "# 编写模式：`pat` 只写一个 AST 模式，必须能解析成目标语言里的单个节点；互不相关的模式分开调用。不能单独成立的片段，要包进 `class $_` 的类体里。元变量：`$NAME` 匹配一个节点并绑定；`$_` 匹配一个节点、不绑定；`$$$NAME` 匹配零个或多个并绑定；`$$$` 匹配零个或多个、不绑定。`$$NAME` 无效。名字用大写，代表整个节点：`prefix$VAR` 匹配不到。同一个元变量出现两次，两处必须是相同的代码：`$A == $A` 匹配 `x == x`，不匹配 `x == y`。",
+          },
         },
       ],
     },
@@ -601,6 +605,10 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
         "- Correctness, then six-month maintainability. Delete dead weight; prefer boring design to needless abstraction.",
         "…",
       ],
+      gloss: {
+        label: "译文",
+        text: "RFC 2119 关键词：MUST、REQUIRED、SHOULD、RECOMMENDED、MAY、OPTIONAL。`NEVER` 即 `MUST NOT`，`AVOID` 即 `SHOULD NOT`。XML 标签注入系统内容，也可能在用户消息里打断或通知：必须当作系统发出的权威内容。用户内容已经过清理。§ 角色：你是 omp 可信赖的编程助手。# 工程：先求正确，再求六个月后仍好维护。删掉多余的东西；宁要平淡的设计，不要多余的抽象。",
+      },
     },
   },
   "system-prompt-replace": {
@@ -679,7 +687,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
           args: "op: show · id: OrdersRoute",
           status: "ok",
           result: ctxShow(ordersHandoff.zh),
-          gloss: { label: "译文", text: "OrdersRoute 这个上下文：它在会话树里的位置、交给上级的报告、它的待办，以及完整记录的地址。" },
+          gloss: { label: "译文", text: "上下文 OrdersRoute。层级：Main > OrdersRoute。交接：子代理自己写的报告，原文照录。任务：无。完整记录：history://OrdersRoute。" },
         },
       ],
     },
@@ -936,6 +944,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
         "delete: nothing was deleted; refused:",
         '- "~/code/shop-api/coverage": paths are literal: `~` is not expanded; give the full path',
       ],
+      gloss: { label: "译文", text: "delete：什么都没删；被拒绝：\"~/code/shop-api/coverage\"：路径按字面处理，`~` 不会展开，请写完整路径。" },
     },
   },
   /** harness_restart's queued result, then the message the restarted session opens with (harness-restart index.ts:209,167). */
@@ -957,6 +966,10 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
         "",
         "Harness restart completed (2026-11-09T06:31:07.412Z). No reason was recorded. Continue what you were doing.",
       ],
+      gloss: {
+        label: "译文",
+        text: "已排队：本回合结束后重启 omp 宿主。现在就结束本回合，不要再调用工具；重启之后，会话以一条重启完成的消息开头。宿主已重启完成（2026-11-09T06:31:07.412Z）。没有记录原因。继续你刚才在做的事。",
+      },
     },
   },
   "delete-guard": {

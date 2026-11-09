@@ -42,7 +42,7 @@ const pipeline: readonly PipeSeam[] = seams.map((s) => ({
   name: s.data.short[lang],
   items: components
     .filter((c) => c.data.seam === s.id && c.data.repo.includes("/oh-my-omp/omp-config"))
-    .map((c) => ({ name: c.data.name, layer: c.data.layer, hook: hookOf(c.id) })),
+    .map((c) => ({ name: c.data.name, layer: c.data.layer, hook: c.data.layer === "silent" ? hookOf(c.id) : null })),
 }));
 const pipeLabels = {
   layers: { human: t(ui.layers.human, lang), agent: t(ui.layers.agent, lang), silent: t(ui.layers.silent, lang) },
@@ -446,12 +446,11 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     }
     /* Stacked on a phone, these slices need their full height to reach the element the caption names. */
     .card[data-repo="omp-dispatch"] .ca,
-    .card[data-repo="omp-playbooks"] .ca {
+    .card[data-repo="omp-playbooks"] .ca,
+    .card[data-repo="omp-todo-more"] .ca,
+    .card[data-repo="omp-remote-build"] .ca {
       height: auto;
       mask-image: none;
-    }
-    .card[data-repo="omp-todo-more"] {
-      --art-h: 300px;
     }
     .card[data-repo="omp-unified-exec"] {
       --art-h: 350px;

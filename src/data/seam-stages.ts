@@ -449,7 +449,27 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
         case "human":
           return { kind: "files", files: [fullConfig, lightConfig] };
         case "agent":
-          return { kind: "files", files: [taskTopics, isolationTopic] };
+          return {
+            kind: "files",
+            files: en
+              ? [taskTopics, isolationTopic]
+              : [
+                  {
+                    ...taskTopics,
+                    gloss: {
+                      label: "译文",
+                      text: "Topics——调用前只读这次需要的那一篇：`tool://task/batch`，按模板派发多项或分波次派发之前；`tool://task/follow-up`，给已有的代理追加工作、发消息或读回结果之前；`tool://task/isolation`，设置 `isolated: true` 之前，或隔离项启动、合并失败之后；`tool://task/judge`，读一批短文本（标题、行、发现、摘要）只为对每条回答同一个固定问题或归类之前；`tool://task/limits`，规划大范围并发、嵌套委派或长时间运行的子代理之前。",
+                    },
+                  },
+                  {
+                    ...isolationTopic,
+                    gloss: {
+                      label: "译文",
+                      text: "# 隔离执行：`isolated: true` 让这一项有自己的检出；不写或写 `false`，就在你的检出里运行。每一项各自设置。给隔离的子代理传仓库内的相对路径，并告诉它们你的检出里已经有哪些未提交的改动：它们从这份检出的快照起步。保持存活（idle/parked）的隔离代理保留自己的工作区，释放时记下最终的补丁或分支状态。",
+                    },
+                  },
+                ],
+          };
         case "silent":
           return {
             kind: "context",
@@ -649,6 +669,9 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
                     status: "ok",
                     result:
                       "Queued: a new worktree on branch `wt/webhooks-route` is created once this turn ends. End your turn now without further tool calls; the outcome arrives as the next message.",
+                    ...(en
+                      ? {}
+                      : { gloss: { label: "译文", text: "已排队：本回合结束后创建分支为 `wt/webhooks-route` 的新工作树。现在就结束本回合，不要再调用工具；结果作为下一条消息送达。" } }),
                   },
                 ],
               },

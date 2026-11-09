@@ -12,17 +12,14 @@ interface Props {
   stage: SeamStage;
   /** Pane labels: what the person sees, and what reached the model. */
   sides: { screen: string; model: string };
-  /**
-   * The single component of a layer: its name captions the stage and the stage carries its anchor id. Its one-line
-   * description is left out, because the section heading above already says the same thing.
-   */
-  only?: { id: string; title: string } | undefined;
+  /** The single component of a layer: the stage is that component and carries its anchor id, so the section's pill lands on it. */
+  anchor?: string | undefined;
 }
-const { lang, stage, sides, only } = Astro.props;
+const { lang, stage, sides, anchor } = Astro.props;
 ---
 
-<div class="seam-stage" id={only?.id}>
-  <Stage {...(only ? { title: only.title } : {})}>
+<div class="seam-stage" id={anchor}>
+  <Stage>
     {
       (() => {
         switch (stage.kind) {
@@ -197,6 +194,10 @@ const { lang, stage, sides, only } = Astro.props;
     color: var(--soft);
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+  }
+  /* The translation sits inside the file's frame, under its text and on the same inset. */
+  .ss-file .sl-hook-gloss {
+    margin: 0 14px 14px;
   }
   /* A plugin's full-screen terminal page: the rounded frame, title in its top edge, status and key hints at the foot. */
   .ss-term {

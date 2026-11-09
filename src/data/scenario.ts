@@ -293,7 +293,7 @@ function steps(lang: Lang): readonly Step[] {
           gloss: en
             ? undefined
             : gloss(
-                "退回 ask：问题 “storage” 对只看得到这个对话框、从没见过你的会话和这个项目的读者来说很难看懂。逐条改写下面各项，让每句话都说清谁做什么，缩写写全，名称、编号和之前的决定都用平白的话说出来：这句话用了对话框里从没解释过的词、缩写、名称或编号；`RL` 和 `#212` 既不是常识，对话框里也没有解释。",
+                "退回 ask：问题 “storage” 对只看得到这个对话框、从没见过你的会话和这个项目的读者来说很难看懂。逐条改写下面各项，让每句话都说清谁做什么，缩写写全，名称、编号和之前的决定都用平白的话说出来：“按 #212 的结论，RL 继续用共享集群，还是像 v1 那样放进程内？”用了对话框里从没解释过的词、缩写、名称或编号；`RL` 和 `#212` 既不是常识，对话框里也没有解释。",
               ),
         }),
       ],
@@ -415,7 +415,14 @@ function steps(lang: Lang): readonly Step[] {
                 ? "The three routes can change in parallel. Before dispatching writers, I'll read how isolated workers behave here."
                 : "三个路由可以并行改。派发写文件的执行者之前，先看看隔离执行在这里怎么运作。",
             },
-            { kind: "call", tool: "read", args: "tool://task/isolation", status: "ok", result: isolationTopic },
+            {
+              kind: "call",
+              tool: "read",
+              args: "tool://task/isolation",
+              status: "ok",
+              result: isolationTopic,
+              ...(en ? {} : { gloss: gloss("# 隔离执行：`isolated: true` 让这一项有自己的检出；不写或写 `false`，就在你的检出里运行。每一项各自设置。") }),
+            },
           ],
         },
         {
@@ -513,7 +520,9 @@ function steps(lang: Lang): readonly Step[] {
           body: stopReminder(lang),
           gloss: en
             ? undefined
-            : gloss("你停下时还有 1 个待办没完成（见上）。请继续做这些任务；已经做完的，把它们标记为完成。（提醒 1/3）"),
+            : gloss(
+                `你停下时还有 1 个待办没完成：${items.zh.phase}阶段的“${items.zh.tests.title}”，${items.zh.tests.explanation}，估时 ${items.zh.tests.estimate} 分钟。目标：${goal.zh.objective}；衡量方式：${goal.zh.measure}；完成条件：${goal.zh.doneWhen}。请继续做这些任务；已经做完的，标记为完成。（提醒 1/3）`,
+              ),
         }),
       ],
     },
@@ -775,7 +784,7 @@ function steps(lang: Lang): readonly Step[] {
       title: en ? "A worker reports done" : "执行者报告完成",
       caption: en
         ? "WebhooksRoute reports success without running the test that was failing. The completion judge compares the report with the worker's latest tool calls and returns the yield once. The worker fixes the signature check and runs the test before reporting again."
-        : "WebhooksRoute 报告完成，但没有重跑之前失败的测试。完成度判定把报告和它最近的工具调用对照后，把这次 yield 退回一次。执行者修好签名校验、跑过测试，才再次汇报。",
+        : "WebhooksRoute 报告完成，却没有重跑之前失败的测试。完成度鉴定对照这份报告和它最近的工具调用，退回了这次 yield。执行者修好签名校验、跑过测试，才再次汇报。",
       front: [
         {
           kind: "transcript",

@@ -157,7 +157,7 @@ execution:
         zh: 长驻终端留在屏幕上
       lede:
         en: omp-unified-exec lists the agent's long-running terminals in Tern; open one to watch it or type into the same process. /watchdog turns periodic reviews on and off.
-        zh: omp-unified-exec 在 Tern 里列出代理的长驻终端，打开就能旁观或向同一个进程输入。/watchdog 开关定期复查。
+        zh: omp-unified-exec 在 Tern 里列出代理的长驻终端，打开就能旁观或向同一个进程输入。/watchdog 启停定期复查。
     agent:
       title:
         en: Long commands and deletion have their own tools
@@ -206,4 +206,4 @@ delivery:
         zh: 收尾时检查是否完成
       lede:
         en: Unverified subagent work is returned at handoff, a main agent that announces the next step and stops is sent back, and a reply in the wrong language is corrected.
-        zh: 没验证过的子代理交付会被退回，主代理只宣布下一步就停下会被送回，用错语言的回复会被纠正。
+        zh: 子代理交付前没验证就退回；主代理只宣布下一步就停下，会被送回去接着做；回复用错了语言，会收到纠正。

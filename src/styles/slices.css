@@ -24,6 +24,9 @@
   font-size: 11px;
   color: var(--dim);
 }
+.sl-art-code .sl-hook-gloss {
+  margin: 0 12px 10px;
+}
 .sl-art-code pre {
   margin: 0;
   padding: 10px 12px;
@@ -786,10 +789,14 @@
   gap: 0.35em;
   min-width: 0;
 }
-/* A call signature wraps at its spaces rather than cutting off what was called. */
+/*
+ * A call signature wraps at its spaces rather than cutting off what was called. Arguments that would get less than
+ * their basis beside the tool name move to their own line instead of being squeezed into a narrow column.
+ */
 .sl-tx-sig {
   display: flex;
-  gap: 0.6em;
+  flex-wrap: wrap;
+  gap: 0.15em 0.6em;
   align-items: baseline;
   font-family: var(--mono);
   font-size: 0.92em;
@@ -800,6 +807,7 @@
   color: var(--text);
 }
 .sl-tx-sig .a {
+  flex: 1 1 16em;
   color: var(--muted);
   overflow-wrap: break-word;
   min-width: 0;

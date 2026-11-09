@@ -204,7 +204,7 @@ subagent-usage-cmd:
   layer: human
   seam: delegation
   line:
-    en: It calibrates from this machine's session history without calling a model.
+    en: Calibrates from this machine's session history without calling a model.
     zh: 只用本机的会话历史校准，不调用任何模型。
 
 worker-tiers:
@@ -239,7 +239,7 @@ subagent-usage-tool:
   layer: agent
   seam: delegation
   line:
-    en: It estimates how many more dispatches each model's quota still covers.
+    en: Estimates how many more dispatches each model's quota still covers.
     zh: 估算每个模型的剩余额度还够派发几次。
 
 user-prompt-inject:
@@ -300,8 +300,8 @@ watchdog-cmd:
   layer: human
   seam: execution
   line:
-    en: It lists, toggles and drafts the watchdog specs on this machine.
-    zh: 列出、开关和起草本机的看门狗配置。
+    en: Lists, toggles and drafts the watchdog specs on this machine.
+    zh: 列出、启停和起草本机的看门狗配置。
 
 exec-tools:
   name: exec_command · write_stdin · monitor
@@ -318,7 +318,7 @@ delete-tool:
   layer: agent
   seam: execution
   line:
-    en: It takes literal paths and moves them to the trash unless you ask otherwise.
+    en: Takes literal paths and moves them to the trash unless you ask otherwise.
     zh: 只接受字面路径，默认移进回收站。
 
 wt:
@@ -414,7 +414,7 @@ peers:
   layer: agent
   seam: delivery
   line:
-    en: It finds live sessions in other omp processes to ask or message.
+    en: Finds live sessions in other omp processes to ask or message.
     zh: 发现其他 omp 进程里的在线会话，可以旁路提问或发消息。
 
 task-completion-judge:
