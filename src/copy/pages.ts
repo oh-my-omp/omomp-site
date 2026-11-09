@@ -11,65 +11,75 @@ export const principlesPage = {
 } satisfies Record<string, Text>
 
 export const lifelinePage = {
-  eyebrow: { en: "Lifeline", zh: "生命线" },
+  kicker: { en: "Lifeline", zh: "生命线" },
   title: { en: "Six handoffs between your words and the code", zh: "从你的一句话到代码，要转手六次" },
   lede: {
-    en: "Each handoff is a seam, and intent drifts at every seam. omomp guards each one on three layers: what you see, what the agent can call, and what runs unseen.",
-    zh: "每次转手都是一道接缝，意图在每道接缝都可能走样。omomp 在每道接缝设三层防护：你看得见的、代理能调用的、在后台运行的。",
-  },
-  layersTitle: { en: "Three layers at every seam", zh: "每道接缝的三层" },
-  human: {
-    en: "Panels and pages you read, click and answer, in the terminal or in Tern.",
-    zh: "你在终端或 Tern 里读、点、作答的面板和页面。",
-  },
-  agent: {
-    en: "Tools, URL schemes and agent roles the model gets on top of stock omp.",
-    zh: "原生 omp 之外，模型多得的工具、URL 协议和代理角色。",
-  },
-  silent: {
-    en: "Hooks you never see. They block a bad step or ask a judge, then step aside.",
-    zh: "你看不见的钩子：拦下出错的一步，或交给判定者裁决，随即退出。",
+    en: "Each handoff is a seam where intent can drift. At every seam omomp works on three layers: panels you see and answer, tools the agent calls, and hooks that run without showing on your screen.",
+    zh: "每次转手都是一道接缝，意图可能在这里走样。omomp 在每道接缝分三层起作用：你看得见、要作答的面板，代理调用的工具，以及不在你屏幕上出现的钩子。",
   },
   mapTitle: { en: "Every component, by seam and layer", zh: "全部组件，按接缝与层级排布" },
-  mapHint: { en: "Select a component to see what it solves.", zh: "选择任一组件，查看它解决的问题。" },
-  all: { en: "All layers", zh: "全部层级" },
-  open: { en: "Repository", zh: "仓库" },
+  mapLede: {
+    en: "Select a component to read what it does. Each seam's page shows its components at work and its part of the demo.",
+    zh: "选中一个组件，就能读到它做什么。每道接缝的页面会展示其中组件的实际样子，以及演示里对应的几步。",
+  },
+  seamPage: { en: "Seam", zh: "接缝" },
   seamsTitle: { en: "The six seams", zh: "六道接缝" },
+  seamsLede: {
+    en: "In the order a task passes through them, from the request to the delivered result.",
+    zh: "按一个任务经过的先后排列，从提出需求到交付结果。",
+  },
 } satisfies Record<string, Text>
 
 export const seamPage = {
-  eyebrow: { en: "Seam", zh: "接缝" },
-  drift: { en: "Where it drifts", zh: "在哪里走样" },
-  replay: { en: "Seen in a real session", zh: "真实会话里的样子" },
-  replayMore: { en: "Full replay", zh: "完整回放" },
-  toReplay: { en: "Replay", zh: "回放" },
+  kicker: { en: "Seam", zh: "接缝" },
+  seams: { en: "All seams", zh: "全部接缝" },
+  lifeline: { en: "Lifeline", zh: "生命线" },
+  demoKicker: { en: "Demo", zh: "演示" },
+  demoTitle: { en: "This seam in the demo", zh: "演示里的这一段" },
+  demoLede: {
+    en: "The steps of the rate-limit demo that pass through this seam. Your screen is on the left; what reached the model is on the right.",
+    zh: "限流演示中经过这道接缝的几步。左边是你的屏幕，右边是送到模型那里的内容。",
+  },
+  demoAll: { en: "Whole demo", zh: "完整演示" },
+  layer: { en: "Layer", zh: "层" },
 } satisfies Record<string, Text>
 
 export const replayPage = {
-  eyebrow: { en: "Replay", zh: "回放" },
-  title: { en: "What the hooks did in real sessions", zh: "真实会话里，钩子做了什么" },
+  kicker: { en: "Replay", zh: "回放" },
+  title: { en: "One task through all six seams", zh: "一个任务，走完六道接缝" },
   lede: {
-    en: "Silent governance has no interface, so here are the transcripts. Every reminder, block and judgment is shown as the model received it; switch to “What you saw” to keep only your screen.",
-    zh: "静默治理没有界面，所以这里直接给出会话记录。每条提醒、拦截和裁决都按模型收到的样子呈现；切到“你看到的”，就只剩你屏幕上的内容。",
-  },
-  note: {
-    en: "Excerpts are trimmed and redacted. Nothing is reworded or invented; every line comes from a session log on the author's machine.",
-    zh: "摘录经过删减和脱敏，但没有改写或编造；每一行都出自作者本机的会话记录。",
+    en: "A simulated session: rate limiting for a small API, then three routes moved onto it. The left side is what you would see. The right side is what reached the model without appearing on your screen, worded the way each extension actually sends it.",
+    zh: "一段模拟会话：给一个小型 API 加限流，再把三个路由改用它。左边是你会看到的画面；右边是送到模型那里、却不出现在你屏幕上的内容，措辞与各扩展实际发送的原文一致。",
   },
 } satisfies Record<string, Text>
 
 export const productPage = {
-  eyebrow: { en: "Product", zh: "产品" },
+  kicker: { en: "Product", zh: "产品" },
   all: { en: "All products", zh: "全部产品" },
-  repo: { en: "View repository", zh: "查看仓库" },
+  repo: { en: "Repository", zh: "仓库" },
+  how: { en: "How it works", zh: "运作方式" },
+  who: { en: "Who does what", zh: "谁负责什么" },
 } satisfies Record<string, Text>
 
 export const defaultsPage = {
-  eyebrow: { en: "Defaults", zh: "默认策略" },
-  title: { en: "What is fixed, what you choose, and where to change it", zh: "哪些固定不变，哪些由你决定，去哪里改" },
+  kicker: { en: "Defaults", zh: "默认策略" },
+  title: {
+    en: "The mechanism is fixed; the author's defaults are files you can replace",
+    zh: "机制是固定的，作者的默认设定是可以替换的文件",
+  },
   lede: {
-    en: "Every customizable component separates its mechanism from the author's default. Keep the mechanism, replace the default, or run `/onboard-omp` to set up your own.",
-    zh: "每个可定制组件都把机制和作者默认分开。机制保留，默认替换；也可以运行 `/onboard-omp`，按引导配好自己的一套。",
+    en: "Run `/onboard-omp` to set up your own with a guide, or edit the files directly. Updates merge three ways and keep your changes.",
+    zh: "运行 `/onboard-omp` 按引导配好自己的一套，或者直接改这些文件；更新时做三方合并，保留你的改动。",
+  },
+  exampleTitle: { en: "A default is a file", zh: "默认设定就是一个文件" },
+  exampleLede: {
+    en: "This turn check ships with omp-config. When a GPT model announces its next step and stops, it sends the agent back to work. Change the model pattern, the questions or the prompt, or delete the file.",
+    zh: "这条回合判定随 omp-config 发布：GPT 模型说完下一步就停下时，它把代理送回去接着做。模型匹配、判定问题和提示词都可以改，也可以直接删掉这个文件。",
+  },
+  listTitle: { en: "Mechanism and default, component by component", zh: "逐个组件：机制与默认" },
+  listLede: {
+    en: "Only components that separate the two are listed. Each row links to where the default is changed.",
+    zh: "只列出把两者分开的组件，每一行都链接到修改默认的地方。",
   },
   component: { en: "Component", zh: "组件" },
   mechanism: { en: "Mechanism", zh: "机制" },

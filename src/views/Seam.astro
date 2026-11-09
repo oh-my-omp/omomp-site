@@ -2,11 +2,16 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import Base from "../layouts/Base.astro";
 import PageHead from "../components/PageHead.astro";
+import SplitHead from "../components/SplitHead.astro";
+import Grid from "../components/Grid.astro";
+import Cell from "../components/Cell.astro";
 import Pager from "../components/Pager.astro";
 import ReplayPlayer from "../islands/ReplayPlayer";
-import { replayPage, seamPage as copy } from "../copy/pages";
-import { shotsFor, replayLabels } from "../data/replay";
-import { href, inlineCode, t, type Lang } from "../i18n";
+import ArtView from "../slices/Art";
+import { seamPage as copy, replayPage } from "../copy/pages";
+import { componentArt, type ComponentId } from "../data/component-art";
+import { playerLabels, scenario } from "../data/scenario";
+import { href, t, type Lang } from "../i18n";
 import { ui } from "../ui";
 
 interface Props {
@@ -20,186 +25,124 @@ const prev = seams[index - 1];
 const next = seams[index + 1];
 const components = (await getCollection("components")).filter((c) => c.data.seam === seam.id);
 const layers = ["human", "agent", "silent"] as const;
-const order = String(seam.data.order).padStart(2, "0");
-const shots = shotsFor(seam.data.replay ?? [], lang);
+const pad = (n: number) => String(n).padStart(2, "0");
+const isComponent = (id: string): id is ComponentId => id in componentArt;
+const artOf = (id: string) => {
+  if (!isComponent(id)) throw new Error(`component \`${id}\` has no art in component-art.ts`);
+  return componentArt[id][lang];
+};
+const all = scenario[lang];
+const first = all.findIndex((s) => s.seam === seam.id);
+const steps = all.filter((s) => s.seam === seam.id);
+if (first < 0) throw new Error(`seam \`${seam.id}\` has no step in the demo scenario`);
+const colsFor = (n: number) => (n === 1 ? 1 : n === 2 || n === 4 ? 2 : 3);
 ---
 
 <Base lang={lang} title={seam.data.name[lang]} description={seam.data.claim[lang]}>
-  <PageHead eyebrow={`${t(copy.eyebrow, lang)} ${order} · ${seam.data.name[lang]}`} title={seam.data.claim[lang]} lede={seam.data.drift[lang]}>
-    <ol class="rail" aria-hidden="true">
-      {seams.map((s) => <li class:list={[{ on: s.id === seam.id, past: s.data.order < seam.data.order }]} />)}
-    </ol>
+  <PageHead kicker={`${t(copy.kicker, lang)} ${pad(seam.data.order)} · ${seam.data.name[lang]}`} title={seam.data.claim[lang]} lede={seam.data.drift[lang]}>
+    <nav class="seams" aria-label={t(copy.seams, lang)}>
+      {
+        seams.map((s) => (
+          <a
+            href={href(`/lifeline/${s.id}/`, lang)}
+            class:list={{ on: s.id === seam.id, past: s.data.order < seam.data.order }}
+            aria-current={s.id === seam.id ? "page" : undefined}
+          >
+            <span class="n">{pad(s.data.order)}</span>
+            {s.data.short[lang]}
+          </a>
+        ))
+      }
+    </nav>
   </PageHead>
+
+  <section class="section">
+    <SplitHead kicker={t(copy.demoKicker, lang)} title={t(copy.demoTitle, lang)} lede={t(copy.demoLede, lang)}>
+      <a class="more" href={href("/replay/", lang)}>{t(copy.demoAll, lang)} →</a>
+    </SplitHead>
+    <div class="wrap demo">
+      <ReplayPlayer client:visible lang={lang} steps={steps} labels={playerLabels[lang]} firstNumber={first + 1} />
+    </div>
+  </section>
 
   {
     layers.map((l) => {
-      const cards = components.filter((c) => c.data.layer === l);
-      const cols = cards.length === 1 ? 1 : cards.length % 3 === 0 ? 3 : 2;
+      const cells = components.filter((c) => c.data.layer === l);
+      const cols = colsFor(cells.length);
       return (
-        <section class={`wrap layer layer-${l} reveal`}>
-          <div class="head">
-            <span class="tag">
-              <span class="layer-dot" />
-              {t(ui.layers[l], lang)}
-            </span>
-          </div>
-          <div class="body">
-            <p class="lead" set:html={inlineCode(seam.data.sections[l][lang])} />
-            <div class="cards" style={`--cols:${cols}`}>
-              {cards.map((c) => (
-                <a class="card" href={c.data.repo}>
-                  <code class="name">{c.data.name}</code>
-                  <p class="solves">{c.data.solves[lang]}</p>
-                  <p class="does" set:html={inlineCode(c.data.does[lang])} />
-                </a>
+        <section class="section">
+          <SplitHead kicker={t(copy.layer, lang)} title={t(ui.layers[l], lang)} lede={seam.data.sections[l][lang]} />
+          <div class="wrap cells">
+            <Grid cols={cols} count={cells.length}>
+              {cells.map((c) => (
+                <Cell title={c.data.name} text={c.data.line[lang]} href={c.data.repo} mono>
+                  <ArtView lang={lang} art={artOf(c.id)} />
+                </Cell>
               ))}
-            </div>
+            </Grid>
           </div>
         </section>
       );
     })
   }
 
-  {
-    shots.length > 0 && (
-      <section class="wrap replay reveal">
-        <div class="replay-head">
-          <h2>{t(copy.replay, lang)}</h2>
-          <a href={href("/replay/", lang)}>{t(copy.replayMore, lang)} →</a>
-        </div>
-        <ReplayPlayer client:visible shots={shots} labels={replayLabels(lang)} compact />
-        <p class="note">{t(replayPage.note, lang)}</p>
-      </section>
-    )
-  }
-
   <Pager
     prev={prev
-      ? { href: href(`/lifeline/${prev.id}/`, lang), label: `${t(ui.previous, lang)} · ${t(copy.eyebrow, lang)} ${String(prev.data.order).padStart(2, "0")}`, title: prev.data.name[lang] }
-      : { href: href("/lifeline/", lang), label: t(ui.previous, lang), title: t({ en: "The lifeline", zh: "生命线" }, lang) }}
+      ? { href: href(`/lifeline/${prev.id}/`, lang), label: `${t(ui.previous, lang)} · ${pad(prev.data.order)}`, title: prev.data.name[lang] }
+      : { href: href("/lifeline/", lang), label: t(ui.previous, lang), title: t(copy.lifeline, lang) }}
     next={next
-      ? { href: href(`/lifeline/${next.id}/`, lang), label: `${t(ui.next, lang)} · ${t(copy.eyebrow, lang)} ${String(next.data.order).padStart(2, "0")}`, title: next.data.name[lang] }
-      : { href: href("/replay/", lang), label: t(ui.next, lang), title: t(copy.toReplay, lang) }}
+      ? { href: href(`/lifeline/${next.id}/`, lang), label: `${t(ui.next, lang)} · ${pad(next.data.order)}`, title: next.data.name[lang] }
+      : { href: href("/replay/", lang), label: t(ui.next, lang), title: t(replayPage.kicker, lang) }}
   />
 </Base>
 
 <style>
-  .rail {
-    list-style: none;
-    margin: 12px 0 0;
-    padding: 0;
+  .seams {
     display: flex;
-    gap: 6px;
-  }
-  .rail li {
-    width: 36px;
-    height: 3px;
-    border-radius: 3px;
-    background: var(--line-strong);
-  }
-  .rail li.past {
-    background: rgb(247 168 35 / 0.4);
-  }
-  .rail li.on {
-    background: var(--accent);
-  }
-  .layer {
-    display: grid;
-    grid-template-columns: 200px minmax(0, 1fr);
-    gap: 32px;
-    padding-top: 48px;
-    padding-bottom: 48px;
-    border-top: 1px solid var(--line);
-  }
-  .tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-    font-weight: 500;
-    position: sticky;
-    top: 96px;
-  }
-  .body {
-    display: grid;
-    gap: 24px;
-  }
-  .lead {
-    font-size: clamp(18px, 1.8vw, 21px);
-    line-height: 1.5;
-    max-width: 760px;
-  }
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
-    gap: 12px;
-  }
-  @media (max-width: 1000px) {
-    .cards {
-      grid-template-columns: repeat(min(var(--cols), 2), minmax(0, 1fr));
-    }
-  }
-  @media (max-width: 600px) {
-    .cards {
-      grid-template-columns: 1fr;
-    }
-  }
-  .card {
-    display: grid;
-    align-content: start;
-    gap: 10px;
-    padding: 18px 20px;
+    flex-wrap: wrap;
+    gap: 1px;
+    margin-top: 12px;
+    background: var(--line);
     border: 1px solid var(--line);
-    border-left: 2px solid color-mix(in srgb, var(--layer) 60%, transparent);
-    border-radius: 10px;
-    background: var(--bg-raised);
-    transition: border-color 0.15s, background 0.15s;
+    border-radius: var(--radius);
+    overflow: hidden;
   }
-  .card:hover {
-    border-color: var(--line-strong);
-    border-left-color: var(--layer);
-    background: rgb(255 255 255 / 0.025);
-  }
-  .name {
-    justify-self: start;
-    font-size: 13px;
-  }
-  .solves {
-    font-weight: 500;
-  }
-  .does {
-    color: var(--muted);
-    font-size: 14.5px;
-  }
-  .replay {
-    padding-top: 64px;
-    display: grid;
-    gap: 20px;
-  }
-  .replay-head {
+  .seams a {
+    flex: 1 1 0;
+    min-width: max-content;
     display: flex;
-    justify-content: space-between;
+    gap: 10px;
     align-items: baseline;
-    gap: 16px;
-  }
-  .replay-head h2 {
-    font-size: clamp(24px, 3vw, 32px);
-  }
-  .replay-head a {
-    font-size: 14px;
-    color: var(--accent);
-  }
-  .note {
-    font-size: 13px;
+    padding: 10px 16px;
+    background: var(--bg);
     color: var(--dim);
+    font-size: 14px;
+    text-decoration: none;
+    transition: color 0.15s;
   }
-  @media (max-width: 760px) {
-    .layer {
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-    .tag {
-      position: static;
+  .seams a:hover {
+    color: var(--text);
+  }
+  .seams a.past {
+    color: var(--muted);
+  }
+  .seams a.on {
+    color: var(--text);
+    background: var(--bg-raised);
+    box-shadow: inset 0 -2px 0 var(--accent);
+  }
+  .n {
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .demo,
+  .cells {
+    margin-top: clamp(40px, 5vw, 64px);
+  }
+  @media (max-width: 640px) {
+    .seams a {
+      flex-basis: calc(50% - 1px);
+      padding: 9px 12px;
     }
   }
 </style>

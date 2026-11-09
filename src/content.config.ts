@@ -5,6 +5,7 @@ import { z } from "astro/zod";
 const text = z.object({ en: z.string().min(1), zh: z.string().min(1) }).strict();
 const layer = z.enum(["human", "agent", "silent"]);
 const seamId = z.enum(["intent", "prompt", "memory", "delegation", "execution", "delivery"]);
+const party = z.object({ name: text, role: text }).strict();
 
 /** A component: a plugin repo, an omp-config extension, or an agent role. */
 const components = defineCollection({
@@ -15,8 +16,8 @@ const components = defineCollection({
       repo: z.url(),
       layer,
       seam: seamId,
-      solves: text,
-      does: text,
+      /** One sentence: when the component acts, what it does, and what results. */
+      line: text,
       /** Present only for components whose docs separate fixed mechanism from shipped defaults. */
       defaults: z.object({ mechanism: text, policy: text, customize: z.url() }).strict().optional(),
     })
@@ -35,7 +36,6 @@ const seams = defineCollection({
       sections: z
         .object({ human: text, agent: text, silent: text })
         .strict(),
-      replay: z.array(z.string()).optional(),
     })
     .strict(),
 });
@@ -48,10 +48,15 @@ const products = defineCollection({
       name: z.string(),
       repo: z.url(),
       tagline: text,
-      claim: text,
       intro: text,
       sections: z.array(z.object({ title: text, points: z.array(text).min(1) }).strict()).min(1),
-      parties: z.array(z.object({ name: text, role: text }).strict()).min(2),
+      /** Who takes part: the party everything goes through, and the others around it. */
+      roles: z
+        .object({
+          hub: party,
+          around: z.array(party).min(2),
+        })
+        .strict(),
     })
     .strict(),
 });

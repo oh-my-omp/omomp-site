@@ -1,5 +1,120 @@
 /* Rendered interface slices (src/slices). Shared by static pages and the replay island. */
 
+/* Grid-cell art: one small slice of a component at work (src/slices/Art.tsx). */
+.sl-art {
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.sl-art .sl-hook-body {
+  font-size: 11.5px;
+}
+.sl-art-code {
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--bg-panel);
+  overflow: hidden;
+}
+.sl-art-file {
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+}
+.sl-art-code pre {
+  margin: 0;
+  padding: 10px 12px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--soft);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* omp-config hook points along the six seams (src/slices/ConfigPipeline.tsx). */
+.sl-pipe {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  font-size: 12px;
+}
+.sl-pipe li {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  padding: 0 0 14px 22px;
+}
+.sl-pipe li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 6px;
+  bottom: -6px;
+  border-left: 1px solid var(--line-strong);
+}
+.sl-pipe li:last-child::before {
+  display: none;
+}
+.sl-pipe li::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid var(--muted);
+  background: var(--bg);
+}
+.sl-pipe-seam {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+}
+.sl-pipe-seam .n {
+  margin-right: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+}
+.sl-pipe-stop {
+  --tone: var(--silent);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  padding: 6px 10px;
+  border: 1px solid color-mix(in srgb, var(--tone) 28%, transparent);
+  border-left: 2px solid var(--tone);
+  border-radius: 6px;
+  background: var(--bg-panel);
+}
+.sl-pipe-stop.k-block {
+  --tone: var(--danger);
+}
+.sl-pipe-stop.k-judge {
+  --tone: var(--warn);
+}
+.sl-pipe-kind {
+  color: var(--tone);
+  font-weight: 600;
+}
+.sl-pipe-at {
+  color: var(--muted);
+}
+.sl-pipe-stop code {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 11.5px;
+  color: var(--soft);
+}
+
 /* Window chrome */
 .sl-win {
   border: 1px solid var(--line-strong);
@@ -110,6 +225,20 @@
   color: var(--soft);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+.sl-hook-gloss {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.sl-hook-gloss span {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 11px;
+  color: var(--dim);
 }
 
 /* Shared inline controls */
