@@ -1,16 +1,32 @@
-import { createMemo, createSignal, For, onCleanup, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, For, on, onCleanup, Show } from "solid-js";
 import type { PlayerLabels, Step } from "../data/scenario";
 import type { Lang } from "../i18n";
-import HookMessage from "../slices/HookMessage";
+import HookMessage, { type HookKind } from "../slices/HookMessage";
 import PanelView from "../slices/Panel";
+import Transcript from "../slices/Transcript";
 import Window from "../slices/Window";
+import { anchorKey, beatsOf, dwell, keyOf, reveal } from "./replay-beats";
 import "../styles/replay.css";
 
-const STEP_MS = 6500;
+/** Pause after a step's last beat before the next step starts. */
+const STEP_GAP_MS = 1400;
+/** Under reduced motion a step appears whole and stays this long at least. */
+const REDUCED_STEP_MS = 6000;
+
+/**
+ * Where playback is. `shown` counts the beats of `step` on screen: a jump while paused shows the whole step,
+ * playing reveals them one by one, a pause keeps whatever is on screen.
+ */
+type Playback =
+  | { readonly kind: "paused"; readonly step: number; readonly shown: number }
+  | { readonly kind: "playing"; readonly step: number; readonly shown: number };
+
+const reducedMotion = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /**
  * The demo scenario as a split screen: on the left what the person sees, on the right what reached the model.
- * Opens on the first step; the step bar, arrows and play button move through the steps.
+ * Opens on the first step, fully shown. Play reveals each step beat by beat; when a hook fires, the hook and
+ * the front element it reacts to light up together.
  */
 export default function ReplayPlayer(props: {
   lang: Lang;
@@ -22,13 +38,36 @@ export default function ReplayPlayer(props: {
   total?: number;
   compact?: boolean;
 }) {
-  const [index, setIndex] = createSignal(0);
-  const [playing, setPlaying] = createSignal(false);
-  const step = createMemo(() => props.steps[index()]!);
+  const beats = createMemo(() => props.steps.map(beatsOf));
+  const beatCount = (step: number) => beats()[step]!.length;
   const last = () => props.steps.length - 1;
+
+  const [state, setState] = createSignal<Playback>({ kind: "paused", step: 0, shown: beatCount(0) });
+  const [hover, setHover] = createSignal<number | undefined>(undefined);
+
+  const step = createMemo(() => props.steps[state().step]!);
+  const rev = createMemo(() => reveal(step(), beats()[state().step]!, state().shown));
+  /** The hook lit up with its anchor: the one being pointed at, else the one that just fired. */
+  const paired = createMemo((): { hook: number; anchor: string; tone: HookKind } | undefined => {
+    const h = hover();
+    const timed = h === undefined ? undefined : step().hooks[h];
+    if (h !== undefined && timed && rev().hooks.has(h)) return { hook: h, anchor: anchorKey(timed.anchor), tone: timed.hook.kind };
+    return rev().firing;
+  });
+  const lit = (key: string) => paired()?.anchor === key;
+
   /** A slice cannot report its own length as the scenario total, so the total stays blank until the caller passes it. */
   const total = () => props.total ?? (props.firstNumber === undefined ? props.steps.length : undefined);
   const number = (i: number) => (props.firstNumber ?? 1) + i;
+  const atEnd = () => state().step === last() && state().shown >= beatCount(last());
+
+  const progress = createMemo(() => {
+    const all = beats().reduce((n, b) => n + b.length, 0);
+    const before = beats()
+      .slice(0, state().step)
+      .reduce((n, b) => n + b.length, 0);
+    return all === 0 ? 0 : (before + state().shown) / all;
+  });
 
   /** Steps grouped by seam in order, for the step bar. */
   const groups = createMemo(() => {
@@ -41,33 +80,109 @@ export default function ReplayPlayer(props: {
     return out;
   });
 
-  let timer: number | undefined;
-  const stop = () => {
-    if (timer !== undefined) window.clearInterval(timer);
-    timer = undefined;
-    setPlaying(false);
-  };
+  let root: HTMLDivElement | undefined;
+  let head: HTMLDivElement | undefined;
+
+  /** Whole steps under reduced motion, otherwise one beat. */
+  const firstShown = (s: number) => (reducedMotion() ? beatCount(s) : 1);
+
   const play = () => {
-    if (index() >= last()) setIndex(0);
-    setPlaying(true);
-    timer = window.setInterval(() => {
-      if (index() >= last()) stop();
-      else setIndex(index() + 1);
-    }, STEP_MS);
+    const s = state();
+    if (atEnd()) setState({ kind: "playing", step: 0, shown: firstShown(0) });
+    else if (s.shown >= beatCount(s.step)) setState({ kind: "playing", step: s.step, shown: firstShown(s.step) });
+    else setState({ kind: "playing", step: s.step, shown: s.shown + 1 });
+    bringIntoView();
+  };
+  const pause = () => {
+    const s = state();
+    setState({ kind: "paused", step: s.step, shown: s.shown });
   };
   const go = (i: number) => {
-    stop();
-    setIndex(Math.max(0, Math.min(last(), i)));
+    const target = Math.max(0, Math.min(last(), i));
+    setHover(undefined);
+    setState(
+      state().kind === "playing"
+        ? { kind: "playing", step: target, shown: firstShown(target) }
+        : { kind: "paused", step: target, shown: beatCount(target) },
+    );
   };
-  onCleanup(stop);
 
-  /** One numbered tick per step; shared by the seam bar and the inline picker of a single-seam page. */
+  /** One tick of playback: the next beat, else the next step, else stop on the last step. */
+  const advance = () => {
+    const s = state();
+    if (s.kind !== "playing") return;
+    if (s.shown < beatCount(s.step)) setState({ kind: "playing", step: s.step, shown: s.shown + 1 });
+    else if (s.step < last()) setState({ kind: "playing", step: s.step + 1, shown: firstShown(s.step + 1) });
+    else setState({ kind: "paused", step: s.step, shown: s.shown });
+  };
+
+  createEffect(() => {
+    const s = state();
+    if (s.kind !== "playing") return;
+    const stepBeats = beats()[s.step]!;
+    const done = s.shown >= stepBeats.length;
+    const current = stepBeats[s.shown - 1];
+    const delay = reducedMotion()
+      ? Math.max(REDUCED_STEP_MS, stepBeats.reduce((n, b) => n + dwell(props.steps[s.step]!, b), 0))
+      : (current ? dwell(props.steps[s.step]!, current) : 0) + (done ? STEP_GAP_MS : 0);
+    const timer = window.setTimeout(advance, delay);
+    onCleanup(() => window.clearTimeout(timer));
+  });
+
+  /** Keep the newest beat in view inside its pane; a new step starts both panes at the top. */
+  createEffect(
+    on(state, (s, prev) => {
+      if (!root) return;
+      const el = root;
+      requestAnimationFrame(() => {
+        const panes = [...el.querySelectorAll<HTMLElement>(".rp-scroll")];
+        if (!prev || prev.step !== s.step) for (const p of panes) p.scrollTop = 0;
+        if (s.kind !== "playing" || s.shown === 0) return;
+        const beat = beats()[s.step]![s.shown - 1];
+        if (!beat) return;
+        const find = (key: string) => el.querySelector<HTMLElement>(`[data-beat-key="${key}"]`);
+        if (beat.kind === "hook") {
+          const timed = props.steps[s.step]!.hooks[beat.hook];
+          if (timed) follow(find(anchorKey(timed.anchor)), "nearest");
+          follow(find(keyOf(beat)), "start");
+        } else follow(find(keyOf(beat)), "end");
+      });
+    }),
+  );
+
+  /** Scrolls the page so the controls and both panes are on screen, when they are not already. */
+  const bringIntoView = () => {
+    if (!head || !root) return;
+    const header = document.querySelector<HTMLElement>(".site-header");
+    const top = (header?.getBoundingClientRect().bottom ?? 0) + 12;
+    const h = head.getBoundingClientRect();
+    const split = root.querySelector<HTMLElement>(".rp-split")?.getBoundingClientRect();
+    if (h.top >= top && (!split || split.bottom <= window.innerHeight)) return;
+    window.scrollTo({ top: window.scrollY + h.top - top, behavior: reducedMotion() ? "auto" : "smooth" });
+  };
+
+  const onKey = (e: KeyboardEvent) => {
+    const t = e.target instanceof HTMLElement ? e.target : null;
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      go(state().step - 1);
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault();
+      go(state().step + 1);
+    } else if (e.key === " " && !t?.closest("button, a, input, textarea")) {
+      e.preventDefault();
+      state().kind === "playing" ? pause() : play();
+    }
+  };
+
+  /** One numbered tick per step; the current one fills as its beats appear. */
   const tick = ({ step: s, i }: { step: Step; i: number }) => (
     <button
       type="button"
-      classList={{ on: i === index(), past: i < index() }}
+      classList={{ on: i === state().step, past: i < state().step }}
+      style={i === state().step ? { "--p": `${Math.round((state().shown / Math.max(1, beatCount(i))) * 100)}%` } : undefined}
       aria-label={`${props.labels.step} ${number(i)}: ${s.title}`}
-      aria-current={i === index() ? "step" : undefined}
+      aria-current={i === state().step ? "step" : undefined}
       onClick={() => go(i)}
     >
       <span>{number(i)}</span>
@@ -75,7 +190,12 @@ export default function ReplayPlayer(props: {
   );
 
   return (
-    <div class="rp" classList={{ compact: !!props.compact }}>
+    <div
+      class="rp"
+      classList={{ compact: !!props.compact, playing: state().kind === "playing" }}
+      ref={root}
+      onKeyDown={onKey}
+    >
       <Show when={groups().length > 1}>
         <div class="rp-bar">
           <For each={groups()}>
@@ -91,22 +211,22 @@ export default function ReplayPlayer(props: {
         </div>
       </Show>
 
-      <div class="rp-head">
+      <div class="rp-head" ref={head}>
         <div class="rp-title">
           <span class="rp-n">
             {props.lang === "zh" ? (
               <>
-                第 {number(index())} 步
+                第 {number(state().step)} 步
                 {total() !== undefined && <span class="rp-of">，共 {total()} 步</span>}
               </>
             ) : (
               <>
-                {props.labels.step} {number(index())}
+                {props.labels.step} {number(state().step)}
                 {total() !== undefined && <span class="rp-of"> of {total()}</span>}
               </>
             )}
           </span>
-          <h3>{step().title}</h3>
+          <h3 aria-live="polite">{step().title}</h3>
         </div>
         <Show when={props.steps.length > 1}>
           <div class="rp-right">
@@ -116,37 +236,110 @@ export default function ReplayPlayer(props: {
               </div>
             </Show>
             <div class="rp-controls">
-              <button type="button" class="rp-btn" aria-label={props.labels.prev} disabled={index() === 0} onClick={() => go(index() - 1)}>
+              <button type="button" class="rp-btn" aria-label={props.labels.prev} disabled={state().step === 0} onClick={() => go(state().step - 1)}>
                 ←
               </button>
-              <button type="button" class="rp-btn rp-play" onClick={() => (playing() ? stop() : play())}>
-                {playing() ? props.labels.pause : index() >= last() ? props.labels.again : props.labels.play}
+              <button type="button" class="rp-btn rp-play" onClick={() => (state().kind === "playing" ? pause() : play())}>
+                {state().kind === "playing" ? props.labels.pause : atEnd() ? props.labels.again : props.labels.play}
               </button>
-              <button type="button" class="rp-btn" aria-label={props.labels.next} disabled={index() === last()} onClick={() => go(index() + 1)}>
+              <button type="button" class="rp-btn" aria-label={props.labels.next} disabled={state().step === last()} onClick={() => go(state().step + 1)}>
                 →
               </button>
             </div>
           </div>
         </Show>
       </div>
+      <div class="rp-progress" aria-hidden="true">
+        <span style={{ width: `${(progress() * 100).toFixed(2)}%` }} />
+      </div>
       <p class="rp-caption">{step().caption}</p>
 
       <div class="rp-split">
         <section class="rp-front" aria-label={props.labels.front}>
           <span class="rp-side">{props.labels.front}</span>
-          <Window tabs={["shop-api"]} meta="omp">
-            <div class="rp-panels">
-              <For each={step().front}>{(panel) => <PanelView lang={props.lang} panel={panel} compact={!!props.compact} />}</For>
+          <Window class="rp-win" tabs={["shop-api"]} meta="omp">
+            <div class="rp-scroll rp-panels">
+              <For each={step().front}>
+                {(panel, i) => (
+                  <Show when={rev().panels.has(i())}>
+                    {panel.kind === "transcript" ? (
+                      <div class="rp-beat rp-tx" data-beat-key={`p${i()}`} classList={{ lit: lit(`p${i()}`) }} data-tone={lit(`p${i()}`) ? paired()?.tone : undefined}>
+                        <For each={panel.lines.slice(0, rev().panels.get(i()) ?? 0)}>
+                          {(line, j) => (
+                            <div
+                              class="rp-beat"
+                              data-beat-key={`l${i()}.${j()}`}
+                              classList={{ lit: lit(`l${i()}.${j()}`) }}
+                              data-tone={lit(`l${i()}.${j()}`) ? paired()?.tone : undefined}
+                            >
+                              <Transcript lines={[line]} />
+                            </div>
+                          )}
+                        </For>
+                      </div>
+                    ) : (
+                      <div class="rp-beat" data-beat-key={`p${i()}`} classList={{ lit: lit(`p${i()}`) }} data-tone={lit(`p${i()}`) ? paired()?.tone : undefined}>
+                        <PanelView lang={props.lang} panel={panel} compact={!!props.compact} />
+                      </div>
+                    )}
+                  </Show>
+                )}
+              </For>
             </div>
           </Window>
         </section>
         <section class="rp-back" aria-label={props.labels.back}>
           <span class="rp-side">{props.labels.back}</span>
-          <Show when={step().hooks.length > 0} fallback={<p class="rp-quiet">{props.labels.quiet}</p>}>
-            <For each={step().hooks}>{(timed) => <HookMessage hook={timed.hook} />}</For>
-          </Show>
+          <div class="rp-scroll rp-hooks">
+            <Show when={step().hooks.length > 0} fallback={<p class="rp-quiet">{props.labels.quiet}</p>}>
+              <For each={step().hooks}>
+                {(timed, i) => (
+                  <Show when={rev().hooks.has(i())}>
+                    <div
+                      class="rp-beat"
+                      data-beat-key={`h${i()}`}
+                      classList={{ lit: paired()?.hook === i() }}
+                      data-tone={paired()?.hook === i() ? timed.hook.kind : undefined}
+                      onMouseEnter={() => setHover(i())}
+                      onMouseLeave={() => setHover(undefined)}
+                      onFocusIn={() => setHover(i())}
+                      onFocusOut={() => setHover(undefined)}
+                      tabIndex={0}
+                    >
+                      <HookMessage hook={timed.hook} />
+                    </div>
+                  </Show>
+                )}
+              </For>
+            </Show>
+          </div>
         </section>
       </div>
     </div>
   );
+}
+
+/** Scrolls an element's pane (not the page) so the element shows: its top for `start`, its bottom for `end`. */
+function follow(el: HTMLElement | null, align: "start" | "end" | "nearest") {
+  const pane = el?.closest<HTMLElement>(".rp-scroll");
+  if (!el || !pane) return;
+  const pr = pane.getBoundingClientRect();
+  const er = el.getBoundingClientRect();
+  const pad = 12;
+  const toStart = er.top - pr.top - pad;
+  const toEnd = er.bottom - pr.bottom + pad;
+  let delta = 0;
+  switch (align) {
+    case "start":
+      delta = toStart;
+      break;
+    case "end":
+      // An element taller than the pane shows from its top.
+      delta = er.height > pr.height - 2 * pad ? toStart : Math.max(0, toEnd);
+      break;
+    case "nearest":
+      delta = toStart < 0 ? toStart : toEnd > 0 ? Math.min(toEnd, toStart) : 0;
+      break;
+  }
+  if (delta !== 0) pane.scrollBy({ top: delta, behavior: reducedMotion() ? "auto" : "smooth" });
 }
