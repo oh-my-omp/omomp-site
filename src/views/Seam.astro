@@ -65,7 +65,7 @@ const colsFor = (n: number) => (n === 1 ? 1 : n === 2 || n === 4 ? 2 : 3);
       <a class="more" href={href("/replay/", lang)}>{t(copy.demoAll, lang)} →</a>
     </SplitHead>
     <div class="wrap demo">
-      <ReplayPlayer client:visible lang={lang} steps={steps} labels={playerLabels[lang]} firstNumber={first + 1} />
+      <ReplayPlayer client:visible lang={lang} steps={steps} labels={playerLabels[lang]} firstNumber={first + 1} total={all.length} />
     </div>
   </section>
 
