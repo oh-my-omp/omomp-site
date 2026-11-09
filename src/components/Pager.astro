@@ -13,54 +13,63 @@ const { prev, next } = Astro.props;
 const arrow = (l: Link) => (/^https?:\/\//.test(l.href) ? "↗" : "→");
 ---
 
-<nav class="pager wrap" aria-label="Pagination">
-  <a class="p prev" href={prev.href}>
-    <span class="k">← {prev.label}</span>
-    <span class="t">{prev.title}</span>
-  </a>
-  <a class="p next" href={next.href}>
-    <span class="k">{next.label} {arrow(next)}</span>
-    <span class="t">{next.title}</span>
-  </a>
+<nav class="pager" aria-label="Pagination">
+  <div class="wrap row">
+    <a class="p prev" href={prev.href}>
+      <span class="k">← {prev.label}</span>
+      <span class="t">{prev.title}</span>
+    </a>
+    <a class="p next" href={next.href}>
+      <span class="k">{next.label} {arrow(next)}</span>
+      <span class="t">{next.title}</span>
+    </a>
+  </div>
 </nav>
 
 <style>
   .pager {
+    border-top: 1px solid var(--line);
+  }
+  .row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-top: 96px;
   }
   .p {
     display: grid;
-    gap: 6px;
-    padding: 20px 22px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    background: var(--bg-raised);
-    transition: border-color 0.15s, background 0.15s;
+    gap: 4px;
+    padding-block: 40px;
+    color: var(--muted);
+    transition: color 0.15s;
   }
   .p:hover {
-    border-color: var(--line-strong);
-    background: rgb(255 255 255 / 0.03);
+    color: var(--text);
+  }
+  .prev {
+    padding-right: 24px;
   }
   .next {
     text-align: right;
-    grid-column: 2;
+    padding-left: 24px;
+    border-left: 1px solid var(--line);
   }
   .k {
     font-size: 13px;
     color: var(--dim);
   }
   .t {
+    font-size: 18px;
     font-weight: 500;
+    letter-spacing: -0.01em;
   }
   @media (max-width: 640px) {
-    .pager {
+    .row {
       grid-template-columns: 1fr;
     }
     .next {
-      grid-column: 1;
+      text-align: left;
+      padding-left: 0;
+      border-left: 0;
+      border-top: 1px solid var(--line);
     }
   }
 </style>
