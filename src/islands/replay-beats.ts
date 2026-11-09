@@ -52,7 +52,9 @@ export function beatsOf(step: Step): readonly Beat[] {
 }
 
 /** How long a beat stays the newest one before the next appears, in milliseconds. */
-export function dwell(step: Step, beat: Beat): number {
+export function dwell(step: Step, beat: Beat, next: Beat | undefined): number {
+  // A hook reacts to the element just revealed, so it lands right after it; reading time comes after the hook.
+  if (beat.kind !== "hook" && next?.kind === "hook") return 600;
   switch (beat.kind) {
     case "line": {
       const p = step.front[beat.panel];

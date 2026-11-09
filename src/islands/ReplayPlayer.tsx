@@ -123,8 +123,8 @@ export default function ReplayPlayer(props: {
     const done = s.shown >= stepBeats.length;
     const current = stepBeats[s.shown - 1];
     const delay = reducedMotion()
-      ? Math.max(REDUCED_STEP_MS, stepBeats.reduce((n, b) => n + dwell(props.steps[s.step]!, b), 0))
-      : (current ? dwell(props.steps[s.step]!, current) : 0) + (done ? STEP_GAP_MS : 0);
+      ? Math.max(REDUCED_STEP_MS, stepBeats.reduce((n, b, i) => n + dwell(props.steps[s.step]!, b, stepBeats[i + 1]), 0))
+      : (current ? dwell(props.steps[s.step]!, current, stepBeats[s.shown]) : 0) + (done ? STEP_GAP_MS : 0);
     const timer = window.setTimeout(advance, delay);
     onCleanup(() => window.clearTimeout(timer));
   });
