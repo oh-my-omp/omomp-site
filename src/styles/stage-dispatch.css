@@ -1,4 +1,4 @@
-/* omp-dispatch stage: coordinator entry, issue tree, one ticket's rail, drift. */
+/* omp-dispatch stage, read left to right: issue tree → one ticket's state track → what a new push does to its judges. */
 
 .st-dispatch {
   border: 1px solid var(--line-strong);
@@ -35,32 +35,36 @@
   white-space: nowrap;
 }
 
-/* entry | issues over the taller ticket rail | drift */
-.st-dispatch-grid {
+/* Three columns joined by arrows on the dividers. */
+.st-dispatch-cols {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  grid-template-areas:
-    "entry issues"
-    "ticket drift";
+  grid-template-columns: minmax(0, 1.05fr) 0 minmax(0, 1fr) 0 minmax(0, 1fr);
 }
-.st-dispatch-entry { grid-area: entry; }
-.st-dispatch-issues { grid-area: issues; }
-.st-dispatch-ticket { grid-area: ticket; }
-.st-dispatch-drift { grid-area: drift; }
-.st-dispatch-card {
+.st-dispatch-col {
   min-width: 0;
-  padding: 14px 16px;
-  border-top: 1px solid var(--line);
+  padding: 16px 18px 18px;
 }
-.st-dispatch-entry,
-.st-dispatch-issues {
-  border-top: 0;
+.st-dispatch-col + .st-dispatch-arrow + .st-dispatch-col {
+  border-left: 1px solid var(--line);
 }
-.st-dispatch-entry,
-.st-dispatch-ticket {
-  border-right: 1px solid var(--line);
+.st-dispatch-arrow {
+  position: relative;
+  z-index: 1;
+  align-self: start;
+  justify-self: center;
+  margin-top: 16px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--bg-panel);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1;
 }
-.st-dispatch-card h3 {
+.st-dispatch-col h3 {
   margin: 0 0 8px;
   font-size: 11px;
   font-weight: 560;
@@ -90,7 +94,7 @@
   color: var(--dim);
 }
 
-/* Entry: the issue body with the launcher badge, then the launcher outcome. */
+/* The parent issue carries the launcher badge; the launch outcome sits under it. */
 .st-dispatch-issue {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -98,13 +102,12 @@
   padding: 10px 12px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   align-items: flex-start;
 }
-.st-dispatch-issue-head {
-  display: flex;
-  gap: 8px;
-  align-items: baseline;
+.st-dispatch-issue .st-dispatch-row {
+  width: 100%;
+  padding: 0;
 }
 .st-dispatch-badge {
   display: inline-flex;
@@ -123,7 +126,6 @@
   height: 12px;
 }
 .st-dispatch-launch {
-  margin-top: 10px;
   display: flex;
   align-items: baseline;
   gap: 8px;
@@ -133,9 +135,7 @@
   min-width: 0;
 }
 .st-dispatch-launch code {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 .st-dispatch-outcome {
   color: var(--silent);
@@ -146,35 +146,56 @@
   display: flex;
   align-items: baseline;
   gap: 8px;
-  padding: 7px 0;
-  border-top: 1px solid var(--line);
 }
-.st-dispatch-row.is-umbrella {
-  border-top: 0;
-}
-.st-dispatch-row .st-dispatch-tag,
-.st-dispatch-row .st-dispatch-ticket {
+.st-dispatch-row .st-dispatch-tag {
   margin-left: auto;
   flex-shrink: 0;
 }
+/* Sub-issues hang off the parent on one tree line. */
 .st-dispatch-children {
-  margin: 0;
-  padding: 0;
+  margin: 10px 0 0 10px;
+  padding: 0 0 0 14px;
   list-style: none;
+  border-left: 1px solid var(--line-strong);
 }
-.st-dispatch-children .st-dispatch-row {
-  padding-left: 14px;
+.st-dispatch-child {
+  position: relative;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+}
+.st-dispatch-child:first-child {
+  border-top: 0;
+}
+.st-dispatch-child::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 16px;
+  width: 9px;
+  border-top: 1px solid var(--line-strong);
+}
+.st-dispatch-child.is-lit .st-dispatch-issue-title {
+  color: var(--text);
+}
+.st-dispatch-sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin-top: 4px;
+  padding-left: 30px;
 }
 .st-dispatch-ticket {
+  font-family: var(--mono);
   font-size: 10.5px;
-  color: var(--muted);
+  color: var(--accent);
 }
 .st-dispatch-ticket.waiting {
   color: var(--dim);
 }
-.st-dispatch-issues > .st-dispatch-tag {
-  display: block;
-  margin-top: 6px;
+.st-dispatch-dep {
+  font-size: 10.5px;
+  color: var(--muted);
 }
 
 /* State rail */
@@ -197,16 +218,40 @@
 }
 .st-dispatch-state {
   display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
+}
+.st-dispatch-state-main {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.st-dispatch-state-line {
+  display: flex;
   align-items: baseline;
   gap: 8px;
-  padding: 5px 0;
-  border-top: 1px solid var(--line);
+}
+/* The pull-request step a state carries, as a quiet tag on the right edge. */
+.st-dispatch-step {
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 1px 7px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+.st-dispatch-state.m-current .st-dispatch-step {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  color: var(--accent);
 }
 .st-dispatch-state:first-child {
   border-top: 0;
 }
 .st-dispatch-dot {
-  align-self: center;
+  margin-top: 6px;
   width: 7px;
   height: 7px;
   border-radius: 50%;
@@ -245,10 +290,14 @@
   color: var(--warn);
 }
 .st-dispatch-state-meta {
-  margin-left: auto;
   font-size: 10.5px;
   color: var(--muted);
-  flex-shrink: 0;
+}
+.st-dispatch-state.m-current {
+  margin-inline: -8px;
+  padding-inline: 8px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
 }
 
 /* Drift: the verbatim note, the retired fingerprint, the gate on the new head. */
@@ -295,10 +344,37 @@
   font-size: 11.5px;
   color: var(--soft);
 }
-.st-dispatch-fp.is-old .st-dispatch-fp-line code {
+.st-dispatch-fp.is-old .st-dispatch-fp-line code,
+.st-dispatch-fp.is-old .v-passed {
   color: var(--dim);
   text-decoration: line-through;
   text-decoration-color: var(--warn);
+}
+.st-dispatch-fp.is-new {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+}
+.st-dispatch-seats-label {
+  font-size: 11px;
+  color: var(--muted);
+}
+.st-dispatch-seats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.st-dispatch-seats code {
+  font-size: 11px;
+  color: var(--text);
+}
+.st-dispatch-checkout {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  line-height: 1.55;
+  color: var(--soft);
 }
 .st-dispatch-fp-target {
   color: var(--dim);
@@ -340,6 +416,20 @@
   color: var(--danger);
 }
 
+/* Narrow: the columns stack and the arrows turn downward on the dividers. */
+@media (max-width: 960px) {
+  .st-dispatch-cols {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .st-dispatch-col + .st-dispatch-arrow + .st-dispatch-col {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .st-dispatch-arrow {
+    margin: -11px 0 -11px;
+    transform: rotate(90deg);
+  }
+}
 @media (max-width: 640px) {
   .st-dispatch-head {
     display: grid;
@@ -348,20 +438,5 @@
   }
   .st-dispatch-meta {
     margin-left: 0;
-  }
-  .st-dispatch-grid {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "entry"
-      "issues"
-      "ticket"
-      "drift";
-  }
-  .st-dispatch-entry,
-  .st-dispatch-ticket {
-    border-right: 0;
-  }
-  .st-dispatch-issues {
-    border-top: 1px solid var(--line);
   }
 }
