@@ -1,57 +1,66 @@
-/* omp-playbooks stage: the Playbook YAML beside the Tern document pane that renders it. */
+/* omp-playbooks stage: the Tern Playbooks pane and the coordinator session handling one Launch request. */
 
 .st-pb {
   display: grid;
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) 104px minmax(0, 1fr);
+  align-items: stretch;
   font-size: 13px;
   line-height: 1.5;
   min-width: 0;
 }
-
-/* One window, two panes: file on the left, Playbooks document view on the right. */
+.st-pb-win {
+  min-width: 0;
+}
 .st-pb-win .sl-win-body {
   padding: 0;
 }
-.st-pb-split {
+
+/* --- connector: the request out of the pane, the status back into it --- */
+.st-pb-link {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 0 6px;
+}
+.st-pb-arrow {
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-  min-height: 0;
+  justify-items: center;
+  gap: 5px;
+  padding-bottom: 1px;
+  border-bottom: 1px solid var(--accent);
+}
+.st-pb-arrow em {
+  font-style: normal;
+  font-size: 10px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.st-pb-arrow::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  width: 0;
+  height: 0;
+  border-top: 3.5px solid transparent;
+  border-bottom: 3.5px solid transparent;
+}
+.st-pb-arrow-out::after {
+  right: -1px;
+  border-left: 6px solid var(--accent);
+}
+.st-pb-arrow-back {
+  border-bottom-color: var(--silent);
+}
+.st-pb-arrow-back em {
+  color: var(--silent);
+}
+.st-pb-arrow-back::after {
+  left: -1px;
+  border-right: 6px solid var(--silent);
 }
 
-/* --- left: the file itself --- */
-.st-pb-file {
-  padding: 14px 0 16px;
-  border-right: 1px solid var(--line);
-  font-family: var(--mono);
-  font-size: 11.5px;
-  line-height: 1.75;
-  overflow-x: hidden;
-  overflow-y: auto;
-  min-width: 0;
-}
-.st-pb-yl {
-  display: block;
-  padding: 0 16px 0 14px;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  hyphens: none;
-  color: var(--dim);
-}
-.st-pb-yl.mark {
-  box-shadow: inset 3px 0 0 var(--accent);
-  background: rgb(247 168 35 / 0.05);
-}
-.st-pb-y-k {
-  color: var(--dim);
-}
-.st-pb-y-s {
-  color: var(--soft);
-}
-.st-pb-y-v {
-  color: var(--agent);
-}
-
-/* --- right: the document pane (src/service/ui.ts card anatomy) --- */
+/* --- left: the document pane (src/service/ui.ts card anatomy) --- */
 .st-pb-pane {
   min-width: 0;
   padding: 12px 14px 0;
@@ -74,7 +83,11 @@
   overflow: hidden;
 }
 .st-pb-run {
-  border-color: color-mix(in srgb, var(--accent) 34%, var(--line));
+  border-color: color-mix(in srgb, var(--silent) 40%, var(--line));
+}
+.st-pb-asked {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 .st-pb-head {
   display: flex;
@@ -114,7 +127,7 @@
   position: relative;
 }
 .st-pb-ic-running {
-  border-color: var(--accent);
+  border-color: var(--silent);
   border-right-color: transparent;
   animation: st-pb-spin 0.9s linear infinite;
 }
@@ -161,38 +174,33 @@
   color: var(--dim);
   font-size: 12px;
 }
-.st-pb-chg i {
-  font-style: normal;
-  color: var(--dim);
-}
 
-/* task/orchestration body */
+/* task/orchestration body; a `((bN))` line renders as a link to that block */
 .st-pb-body {
+  display: grid;
+  justify-items: start;
+  gap: 4px;
   margin: 0;
   padding: 0 12px 10px;
-  font-family: var(--mono);
+  color: var(--soft);
+  font-size: 12.5px;
+  overflow-wrap: anywhere;
+}
+pre.st-pb-body {
+  display: block;
   font-size: 11.5px;
   line-height: 1.65;
-  color: var(--soft);
   white-space: pre-wrap;
-  overflow-wrap: anywhere;
 }
 .st-pb-body i {
   font-style: normal;
   color: var(--dim);
 }
-
-/* done card: collapsed completion-report row above the footer */
-.st-pb-report {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0 10px 8px;
-  padding: 6px 9px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  color: var(--muted);
-  font-size: 12px;
+.st-pb-ref {
+  color: var(--agent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--agent) 45%, transparent);
+  text-underline-offset: 3px;
 }
 
 /* task footer: SUBAGENT / ISOLATED WORKTREE columns and the launch button */
@@ -225,8 +233,8 @@
   margin-left: auto;
 }
 .st-pb-off {
-  color: var(--dim);
-  border-color: var(--line);
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
 }
 
 /* dock: coordinator left, progress right */
@@ -258,37 +266,168 @@
   color: var(--dim);
 }
 
-/* site annotations under the window; the tick matches the accent margin mark */
-.st-pb-notes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 22px;
-  padding: 0 4px;
+/* --- right: the coordinator session, one beat per section along a rail --- */
+.st-pb-flow {
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px 16px;
+}
+.st-pb-beat {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding-left: 16px;
+}
+.st-pb-beat::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-strong);
+  background: var(--bg-panel);
+}
+.st-pb-beat + .st-pb-beat::after {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: -12px;
+  height: 18px;
+  border-left: 1px solid var(--line);
+}
+.st-pb-in::before {
+  border-color: var(--accent);
+}
+.st-pb-out::before {
+  border-color: var(--silent);
+}
+.st-pb-beat h4 {
+  margin: 0;
   font-size: 12px;
+  font-weight: 540;
+  color: var(--muted);
+}
+.st-pb-notice,
+.st-pb-eval,
+.st-pb-yaml {
+  display: grid;
+  gap: 3px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg-raised);
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--soft);
+  overflow-wrap: anywhere;
+}
+.st-pb-notice {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.st-pb-nh {
   color: var(--dim);
 }
-.st-pb-notes span {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 7px;
+.st-pb-data {
+  color: var(--agent);
 }
-.st-pb-mark {
-  flex: none;
-  width: 3px;
-  height: 9px;
-  border-radius: 1px;
-  background: var(--accent);
-  transform: translateY(1px);
+.st-pb-cmd {
+  color: var(--text);
+}
+.st-pb-step {
+  color: var(--dim);
+}
+.st-pb-step::before {
+  content: "↳ ";
+}
+.st-pb-frozen {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.st-pb-fz-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--line);
+  font-size: 10.5px;
+  color: var(--dim);
+}
+.st-pb-frozen pre {
+  margin: 0;
+  padding: 8px 10px;
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--soft);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.st-pb-sub {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--soft);
+}
+.st-pb-sub-note {
+  color: var(--dim);
+}
+.st-pb-yaml {
+  white-space: pre;
+}
+.st-pb-y-dim {
+  color: var(--dim);
+}
+.st-pb-y-mark {
+  color: var(--silent);
+  margin: 0 -10px;
+  padding: 0 10px;
+  box-shadow: inset 3px 0 0 var(--silent);
 }
 
-@media (max-width: 780px) {
-  .st-pb-split {
+/* Narrow: the panes stack and the connector turns into a row of downward and upward arrows. */
+@media (max-width: 900px) {
+  .st-pb {
     grid-template-columns: minmax(0, 1fr);
   }
-  .st-pb-file {
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
-    max-height: 300px;
+  .st-pb-link {
+    flex-direction: row;
+    justify-content: center;
+    gap: 40px;
+    padding: 6px 0;
+  }
+  .st-pb-arrow {
+    grid-auto-flow: column;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0;
+    border-bottom: 0;
+    border-left: 1px solid var(--accent);
+    padding-left: 8px;
+  }
+  .st-pb-arrow-back {
+    border-left-color: var(--silent);
+  }
+  .st-pb-arrow::after {
+    left: -4px;
+    right: auto;
+    border: 0;
+    border-left: 3.5px solid transparent;
+    border-right: 3.5px solid transparent;
+  }
+  .st-pb-arrow-out::after {
+    bottom: -1px;
+    top: auto;
+    border-top: 6px solid var(--accent);
+  }
+  .st-pb-arrow-back::after {
+    top: -1px;
+    bottom: auto;
+    border-bottom: 6px solid var(--silent);
   }
 }
 
