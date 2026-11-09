@@ -28,6 +28,8 @@ interface Frame {
 export interface StageFile {
   readonly title: string;
   readonly lines: readonly string[];
+  /** A reading aid under a plugin's text when its language is not the page's. */
+  readonly gloss?: { readonly label: string; readonly text: string };
 }
 
 /**
@@ -72,7 +74,7 @@ const todoDocumentOf = (id: ComponentId, lang: Lang): StageFile => {
 const resultOf = (id: ComponentId, lang: Lang): StageFile => {
   const line = linesOf(id, lang)[0];
   if (line?.kind !== "call" || !line.result) throw new Error(`component \`${id}\` art has no call result`);
-  return { title: line.tool, lines: line.result.split("\n") };
+  return { title: line.tool, lines: line.result.split("\n"), ...(line.gloss && { gloss: line.gloss }) };
 };
 
 /** The count the todo stop reminder names, so the card on screen matches the reminder the model receives. */

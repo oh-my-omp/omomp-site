@@ -51,7 +51,7 @@ const example = {
   <PageHead kicker={t(copy.kicker, lang)} title={t(copy.title, lang)} lede={t(copy.lede, lang)} />
 
   <section class="section">
-    <SplitHead title={t(copy.exampleTitle, lang)} lede={t(copy.exampleLede, lang)}>
+    <SplitHead kicker={t(copy.exampleKicker, lang)} title={t(copy.exampleTitle, lang)} lede={t(copy.exampleLede, lang)}>
       <div class="chips">
         <a class={`chip layer-${exampleComponent.data.layer}`} href={href(`/lifeline/${exampleComponent.data.seam}/`, lang)}>
           <span class="layer-dot" />
@@ -121,7 +121,7 @@ const example = {
   </section>
 
   <section class="section">
-    <SplitHead title={t(copy.listTitle, lang)} lede={t(copy.listLede, lang)}>
+    <SplitHead kicker={t(copy.listKicker, lang)} title={t(copy.listTitle, lang)} lede={t(copy.listLede, lang)}>
       <nav class="chips" aria-label={t(copy.jumpLabel, lang)}>
         {groups.map((g) => (
           <a class="chip text-chip" href={`#${groupId(g.seam.id)}`}>{g.seam.data.short[lang]}</a>
@@ -452,6 +452,20 @@ const example = {
       font-size: 12px;
       color: var(--dim);
       margin-bottom: 2px;
+    }
+  }
+  /* A long component name and the link do not fit on one line here: the link closes the row instead. */
+  @media (max-width: 480px) {
+    .row {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        "name"
+        "mech"
+        "policy"
+        "go";
+    }
+    .go {
+      justify-self: start;
     }
   }
 </style>

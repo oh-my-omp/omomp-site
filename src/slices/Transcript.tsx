@@ -14,6 +14,8 @@ export type TLine =
       readonly status: "ok" | "blocked" | "error" | "running";
       /** Result text shown under the call. */
       readonly result?: string;
+      /** A reading aid under a plugin's result when its language is not the page's: label and translated text. */
+      readonly gloss?: { readonly label: string; readonly text: string };
     }
   /** A card the host draws for an extension message: a reminder header, an incoming IRC message. */
   | { readonly kind: "card"; readonly tone: "warn" | "info"; readonly head: string; readonly text?: string };
@@ -49,6 +51,14 @@ export default function Transcript(props: { lines: readonly TLine[]; class?: str
                   </div>
                   <Show when={line.result}>
                     <pre class="sl-pre">{line.result}</pre>
+                  </Show>
+                  <Show when={line.gloss}>
+                    {(g) => (
+                      <p class="sl-hook-gloss">
+                        <span>{g().label}</span>
+                        {g().text}
+                      </p>
+                    )}
                   </Show>
                 </div>
               );

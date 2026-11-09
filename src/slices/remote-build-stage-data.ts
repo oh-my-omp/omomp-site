@@ -181,9 +181,9 @@ export const remoteBuildStage: Record<Lang, RemoteBuildStageData> = {
     copy: {
       zones: ["本机", "单向同步", "远程构建主机"],
       captions: [
-        "每个 worktree 是一个独立的 remote-build 环境，并行的 agent 各改各的。",
+        "每个 worktree 是一个独立的 remote-build 环境，并行的代理各改各的。",
         "每个环境一条 one-way-replica 模式的 Mutagen 会话：改动只往外推，不回传。",
-        "构建主机上该环境的 Komodo 容器；agent 用容器工具在它的 shell 里敲命令。",
+        "构建主机上该环境的 Komodo 容器；代理用容器工具在它的 shell 里敲命令。",
       ],
       flushNote: "每次写入类工具调用后自动执行",
       clean: "没有 remote-build 环境",

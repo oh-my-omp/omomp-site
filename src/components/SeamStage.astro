@@ -63,6 +63,12 @@ const { lang, stage, sides, only } = Astro.props;
                   <div class="ss-file">
                     <div class="ss-file-title">{f.title}</div>
                     <pre>{f.lines.join("\n")}</pre>
+                    {f.gloss && (
+                      <p class="sl-hook-gloss">
+                        <span>{f.gloss.label}</span>
+                        {f.gloss.text}
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>

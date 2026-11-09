@@ -105,8 +105,8 @@ export const seamPage = {
   lifeline: { en: "Lifeline", zh: "生命线" },
   demoKicker: { en: "Demo", zh: "演示" },
   demoLede: {
-    en: "The steps that pass through this seam. Your screen is on the left; what reached the model is on the right.",
-    zh: "经过这道接缝的几步。左边是你的屏幕，右边是送到模型的内容。",
+    en: "The steps that pass through this seam: what you see, and what reached the model.",
+    zh: "经过这道接缝的几步：你看到的界面，和送到模型的内容。",
   },
   demoAll: { en: "Whole demo", zh: "完整演示" },
 } satisfies Record<string, Text>
@@ -115,8 +115,8 @@ export const replayPage = {
   kicker: { en: "Replay", zh: "回放" },
   title: { en: "One task through all six seams", zh: "六道接缝走一遍" },
   lede: {
-    en: "A simulated session: rate limiting for a small API, then three routes moved onto it. The left side is what you would see. The right side is what reached the model without appearing on your screen, worded the way each extension actually sends it.",
-    zh: "一段模拟会话：给一个小型 API 加限流，再把三个路由改用它。左边是你会看到的界面；右边是发给模型、但不出现在你屏幕上的消息，措辞与各扩展实际发送的原文一致。",
+    en: "A simulated session: rate limiting for a small API, then three routes moved onto it. One pane is what you would see. The other is what reached the model without appearing on your screen, worded the way each extension actually sends it.",
+    zh: "一段模拟会话：给一个小型 API 加限流，再把三个路由改用它。一栏是你会看到的界面；另一栏是发给模型、但不出现在你屏幕上的消息，措辞与各扩展实际发送的原文一致。",
   },
 } satisfies Record<string, Text>
 
@@ -128,7 +128,7 @@ export const productPage = {
   mechanics: { en: "Mechanics", zh: "机制" },
   howLede: {
     en: "Each mechanism is shown by the file, message or state it leaves behind.",
-    zh: "每个机制都用它留下的文件、消息或状态来说明。",
+    zh: "每格上方是这项机制写下的文件、发出的消息或留下的状态。",
   },
   who: { en: "Who does what", zh: "谁负责什么" },
   roles: { en: "Roles", zh: "角色分工" },
@@ -148,6 +148,7 @@ export const defaultsPage = {
     en: "Each component splits into a mechanism that ships with the repo and defaults the author chose; the defaults are yours to change. Run `/onboard-omp` to set up your own with a guide, or edit the files directly. Updates merge three ways and keep your changes.",
     zh: "每个组件都分成随仓库发布的机制和作者选定的默认设定，默认设定归你改。运行 `/onboard-omp` 按引导配好自己的一套，或者直接改文件；更新时做三方合并，保留你的改动。",
   },
+  exampleKicker: { en: "Three-way merge", zh: "三方合并" },
   exampleTitle: { en: "A default is a file", zh: "默认设定就是一个文件" },
   exampleLede: {
     en: "This turn check ships with omp-config. When a GPT model announces its next step and stops, it sends the agent back to work. Change the model pattern, the questions or the prompt, or delete the file.",
@@ -158,6 +159,7 @@ export const defaultsPage = {
     zh: "摘录取自仓库原文，未作改动。其中 `question.says_remaining` 问的是：“本轮回复”是否表明助手还有未完成、未运行、未提交、未推送或未验证的工作？",
   },
   exampleDocs: { en: "How to change it", zh: "修改说明" },
+  listKicker: { en: "By seam", zh: "按接缝" },
   listTitle: { en: "Mechanism and default, component by component", zh: "机制与默认" },
   listLede: {
     en: "Only components that keep the two apart are listed, grouped by the seam where they act. Each row links to where its default is changed.",

@@ -731,6 +731,10 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
           args: "",
           status: "ok",
           result: subagentUsageReport,
+          gloss: {
+            label: "译文",
+            text: "subagent_usage 报告，生成于 2026-11-09 06:12 UTC。单次派发均值从 2026-11-08 22:10 起算；额度换算取 2026-11-09 06:00 之前 21 天。opencode-go 池：额度共用，各档次数不要相加。task:low（deepseek-v4.1-flash）：约可再派 34 次，每次 $0.0430（本项目近 21 天 6 次派发的均值）；剩余额度 $1.46（1 个账号中有 1 个可用），最紧的小时窗口剩 41%，38 分钟后重置。",
+          },
         },
       ],
     },
