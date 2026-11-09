@@ -4,7 +4,7 @@ import type { Hook } from "../slices/HookMessage";
 import type { Panel } from "../slices/Panel";
 import type { TLine } from "../slices/Transcript";
 import { labels } from "../slices/labels";
-import { componentArt, type ComponentId } from "./component-art";
+import { askPanel, componentArt, type ComponentId } from "./component-art";
 import type { SeamId } from "./scenario";
 
 export type Layer = "human" | "agent" | "silent";
@@ -32,16 +32,43 @@ export interface StageFile {
   readonly gloss?: { readonly label: string; readonly text: string };
 }
 
+/** A run of terminal text and the colour role the plugin paints it with. */
+export interface TermSpan {
+  readonly text: string;
+  readonly tone?: "heading" | "strong" | "accent" | "muted" | "dim" | "success";
+}
+export type TermLine = readonly TermSpan[];
+
+/** A full-screen page a plugin draws in the terminal: framed, titled, with its status and key-hint rows. */
+export interface TermPage {
+  readonly title: string;
+  /** The body is scrolled to its end; the page's scrollbar thumb sits at the bottom of its track. */
+  readonly scrolled: boolean;
+  readonly lines: readonly TermLine[];
+  readonly status?: string;
+  readonly hint: string;
+}
+
+/** One part of a model request in order, named by what puts it there and when it arrives. */
+export interface RequestPart {
+  readonly kind: "system" | "tools" | "msg" | "delta" | "new";
+  readonly label: string;
+  readonly note: string;
+}
+
 /**
  * The primary stage under a layer's heading on a seam page: that layer's mechanism at work.
- * `screen` is what the person sees; `exchange` puts what the person sees beside what reached the model;
- * `files` shows the files or tool texts the mechanism reads; `context` draws the request the model receives.
+ * `screen` is what the person sees; `terminal` is a plugin's full-screen page in the terminal;
+ * `exchange` puts what the person sees beside what reached the model; `files` shows the files or tool
+ * texts the mechanism reads; `context` compares what the prompt cache keeps, then lays one request out
+ * part by part.
  */
 export type SeamStage =
   | { readonly kind: "screen"; readonly frame: Frame; readonly panels: readonly Panel[] }
+  | { readonly kind: "terminal"; readonly frame: Frame; readonly page: TermPage }
   | { readonly kind: "exchange"; readonly frame: Frame; readonly panels: readonly Panel[]; readonly hooks: readonly Hook[] }
   | { readonly kind: "files"; readonly files: readonly StageFile[] }
-  | { readonly kind: "context"; readonly rows: readonly ContextRow[]; readonly hooks: readonly Hook[] };
+  | { readonly kind: "context"; readonly rows: readonly ContextRow[]; readonly partsTitle: string; readonly parts: readonly RequestPart[] };
 
 const session: Frame = { tabs: ["shop-api"], meta: "omp" };
 
@@ -127,6 +154,83 @@ const askCall = {
 } as const;
 
 const askAnswer = { en: "Shared Redis, token bucket", zh: "共用的 Redis，令牌桶" } as const;
+
+/**
+ * omp-ask-more's full-screen page as the terminal draws it (omp-ask-more src/component.ts `render`, `#questionLines`,
+ * `#staticText`, `#hints`), scrolled down past the question and brief: the cursor on the second option with its
+ * tradeoff, the evidence the agent attached, and the countdown line of the shipped timeout policy
+ * (src/timeout.ts `idleNotice`, package.json defaults 1800 s idle and 1200 s to return).
+ */
+const askTerminal = (lang: Lang): TermPage => {
+  const en = lang === "en";
+  const ask = askPanel(lang).data;
+  const l = labels[lang].ask;
+  const cursor = 1;
+  const blank: TermLine = [];
+  const option = (o: (typeof ask.options)[number], i: number): TermLine => [
+    i === cursor ? { text: "› ", tone: "accent" } : { text: "  " },
+    { text: "○ ", tone: "muted" },
+    i === cursor ? { text: o.label, tone: "accent" } : { text: o.label },
+    ...("recommended" in o && o.recommended ? [{ text: en ? " (recommended)" : "（推荐）", tone: "success" as const }] : []),
+    { text: `  ${o.description}`, tone: "muted" },
+  ];
+  const picked = ask.options[cursor]!;
+  const evidence = [
+    "export const redis = createClient({ url: process.env.REDIS_URL });",
+    "await redis.connect();",
+    "",
+    'export const sessionStore = new RedisStore({ client: redis, prefix: "sess:" });',
+  ];
+  return {
+    title: ask.header,
+    scrolled: true,
+    lines: [
+      ...ask.options.map(option),
+      [{ text: "  " }, { text: "○ ", tone: "muted" }, { text: l.other }],
+      blank,
+      [{ text: `${l.tradeoff}  `, tone: "muted" }, { text: picked.tradeoff }],
+      blank,
+      [{ text: l.evidence, tone: "heading" }],
+      [{ text: "src/session/store.ts:3-6", tone: "muted" }],
+      [{ text: en ? "Login sessions already go through this Redis client." : "登录会话已经走这个 Redis 客户端。", tone: "muted" }],
+      ...evidence.map((code, i): TermLine => [{ text: `${String(3 + i).padStart(4)}  `, tone: "dim" }, { text: code }]),
+    ],
+    status: en
+      ? "No input for 30 min: you get notified, and 20 min later the model decides"
+      : "无操作 30 分钟 后通知你，再过 20 分钟 交给模型决定",
+    hint: en
+      ? "↑↓ choose · enter answer · o other · pgup/pgdn scroll · ctrl+o code · esc cancel all"
+      : "↑↓ 选择 · enter 作答 · o 其他 · pgup/pgdn 滚动 · ctrl+o 代码 · esc 全部取消",
+  };
+};
+
+/**
+ * One request of the demo session, part by part, with what put each part there (omp-config
+ * agent/extensions/_shared/context-delta.ts delivery points; system-prompt-replace loads from extensions-last;
+ * repo-rules sends `<path-scoped-rules>` with the result of the call that touched a matching file).
+ */
+const requestParts = {
+  en: [
+    { kind: "system", label: "system · SYSTEM_TEMPLATE.md", note: "Rendered once when the session starts" },
+    { kind: "tools", label: "tools", note: "Tool definitions, fixed for the session" },
+    { kind: "msg", label: "user", note: "Your request" },
+    { kind: "delta", label: '<system-reminder source="omp-config/append-system-model">', note: "Added at agent start: a fragment matched the model and mode" },
+    { kind: "delta", label: '<system-reminder source="omp-config/system-prompt-replace">', note: "Added at agent start, last of the extensions" },
+    { kind: "msg", label: "read src/routes/webhooks.ts", note: "The agent's call and its result" },
+    { kind: "delta", label: "<path-scoped-rules>", note: "Added with that result: the file matches a rule's paths" },
+    { kind: "new", label: "new", note: "The only part the provider has not seen" },
+  ],
+  zh: [
+    { kind: "system", label: "system · SYSTEM_TEMPLATE.md", note: "会话开始时渲染一次" },
+    { kind: "tools", label: "tools", note: "工具定义，整个会话不变" },
+    { kind: "msg", label: "user", note: "你的请求" },
+    { kind: "delta", label: '<system-reminder source="omp-config/append-system-model">', note: "代理启动时追加：有片段匹配当前模型和模式" },
+    { kind: "delta", label: '<system-reminder source="omp-config/system-prompt-replace">', note: "代理启动时追加，在所有扩展里最后加载" },
+    { kind: "msg", label: "read src/routes/webhooks.ts", note: "代理的调用和返回结果" },
+    { kind: "delta", label: "<path-scoped-rules>", note: "随这次结果追加：文件匹配了规则的 paths" },
+    { kind: "new", label: "new", note: "服务商唯一没见过的部分" },
+  ],
+} as const satisfies Record<Lang, readonly RequestPart[]>;
 
 /** agent/config.yml and agent/config-light.yml in omp-config, excerpted verbatim; `…` marks skipped lines. */
 const fullConfig: StageFile = {
@@ -285,30 +389,7 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
     case "intent":
       switch (layer) {
         case "human":
-          return {
-            kind: "screen",
-            frame: session,
-            panels: [
-              {
-                kind: "transcript",
-                lines: [
-                  {
-                    kind: "user",
-                    text: en
-                      ? "Add rate limiting to the public API, backed by Redis and counted per API key."
-                      : "给公开 API 加限流，计数放 Redis，按 API key 算。",
-                  },
-                  {
-                    kind: "say",
-                    text: en
-                      ? "Before I write the middleware I need you to decide where the counters live."
-                      : "写中间件之前，需要你定一下计数器放在哪里。",
-                  },
-                ],
-              },
-              panelOf("ask-more-panel", lang),
-            ],
-          };
+          return { kind: "terminal", frame: session, page: askTerminal(lang) };
         case "agent":
           return {
             kind: "files",
@@ -345,7 +426,12 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
         case "agent":
           return { kind: "files", files: [taskTopics, isolationTopic] };
         case "silent":
-          return { kind: "context", rows: prefixRows[lang], hooks: [hookOf("system-prompt-replace", lang)] };
+          return {
+            kind: "context",
+            rows: prefixRows[lang],
+            partsTitle: en ? "One request in this session, in order" : "这个会话里的一次请求，按先后排开",
+            parts: requestParts[lang],
+          };
       }
     case "memory":
       switch (layer) {

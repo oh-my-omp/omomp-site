@@ -33,6 +33,26 @@ const { lang, stage, sides, only } = Astro.props;
                 </div>
               </Window>
             );
+          case "terminal":
+            return (
+              <Window tabs={stage.frame.tabs} meta={stage.frame.meta} class="ss-win">
+                <div class="ss-term">
+                  <div class="ss-term-page">
+                    <span class="ss-term-title">{stage.page.title}</span>
+                    {stage.page.scrolled && <span class="ss-term-scroll" aria-hidden="true" />}
+                    <div class="ss-term-body">
+                      {stage.page.lines.map((line) => (
+                        <div class="ss-term-line">
+                          {line.length === 0 ? " " : line.map((s) => <span class={s.tone ? `t-${s.tone}` : undefined}>{s.text}</span>)}
+                        </div>
+                      ))}
+                    </div>
+                    {stage.page.status && <p class="ss-term-status">{stage.page.status}</p>}
+                    <p class="ss-term-hint">{stage.page.hint}</p>
+                  </div>
+                </div>
+              </Window>
+            );
           case "exchange":
             return (
               <div class="ss-pair">
@@ -78,11 +98,15 @@ const { lang, stage, sides, only } = Astro.props;
               <section class="ss-stack">
                 <span class="ss-side silent">{sides.model}</span>
                 <ContextBar rows={stage.rows} />
-                <div class="ss-hooks">
-                  {stage.hooks.map((h) => (
-                    <HookMessage hook={h} />
+                <span class="ss-parts-title">{stage.partsTitle}</span>
+                <ol class="ss-parts">
+                  {stage.parts.map((p) => (
+                    <li class={`k-${p.kind}`}>
+                      <code>{p.label}</code>
+                      <span>{p.note}</span>
+                    </li>
                   ))}
-                </div>
+                </ol>
               </section>
             );
         }
@@ -171,9 +195,141 @@ const { lang, stage, sides, only } = Astro.props;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
   }
+  /* A plugin's full-screen terminal page: the rounded frame, title in its top edge, status and key hints at the foot. */
+  .ss-term {
+    padding: 18px 16px;
+  }
+  .ss-term-page {
+    position: relative;
+    padding: 16px 18px 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+  .ss-term-title {
+    position: absolute;
+    top: -0.8em;
+    left: 14px;
+    padding: 0 6px;
+    background: var(--bg-panel);
+    color: var(--soft);
+  }
+  .ss-term-body {
+    color: var(--soft);
+  }
+  /* The page's scroll track, with the thumb at the bottom: the question and brief sit above, scrolled off. */
+  .ss-term-scroll {
+    position: absolute;
+    top: 16px;
+    right: 6px;
+    bottom: 56px;
+    width: 3px;
+    border-radius: 2px;
+    background: var(--line-strong);
+  }
+  .ss-term-scroll::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 55%;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+  .ss-term-line {
+    min-height: 1.6em;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .t-heading {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .t-strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .t-accent {
+    color: var(--accent);
+  }
+  .t-muted {
+    color: var(--dim);
+  }
+  .t-dim {
+    color: var(--dim);
+    opacity: 0.7;
+  }
+  .t-success {
+    color: var(--silent);
+  }
+  .ss-term-status,
+  .ss-term-hint {
+    margin: 10px 0 0;
+    font-size: 12px;
+    color: var(--dim);
+  }
+  .ss-term-hint {
+    margin-top: 4px;
+  }
+  /* One request, part by part: the parts omp-config adds carry the silent-layer colour. */
+  .ss-parts {
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+  }
+  .ss-parts li {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 4px 20px;
+    align-items: baseline;
+    padding: 9px 14px;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    background: rgb(255 255 255 / 0.03);
+    font-size: 13px;
+  }
+  .ss-parts-title {
+    margin-top: 8px;
+    font-size: 12.5px;
+    color: var(--soft);
+  }
+  .ss-parts code {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--soft);
+    overflow-wrap: anywhere;
+  }
+  .ss-parts span {
+    color: var(--dim);
+  }
+  .ss-parts .k-delta {
+    border-color: color-mix(in srgb, var(--silent) 55%, transparent);
+    background: color-mix(in srgb, var(--silent) 7%, transparent);
+  }
+  .ss-parts .k-delta code {
+    color: var(--silent);
+  }
+  .ss-parts .k-new {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .ss-parts .k-new code {
+    color: var(--accent);
+  }
   @media (max-width: 860px) {
     .ss-pair,
     .ss-files {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .ss-parts li {
       grid-template-columns: minmax(0, 1fr);
     }
   }

@@ -197,7 +197,8 @@ const watchdogNote =
 const completionJudgeBody =
   "完成度鉴定：对照最初的任务和你最近的 tool call，这次任务还没有真正完成，yield 被退回。\nwebhooks.test.ts 里的 “signed callbacks skip the limiter” 仍然失败（期望 200，实际 429），改完之后也没有重新跑这个测试。\n补完缺失的部分并实际验证后再 yield。之后不会再因完成度退回。";
 
-const askPanel = (lang: Lang) =>
+/** The decision the agent asks for in the demo, as omp-ask-more's Tern sheet shows it; the intent stage draws the same question in the terminal. */
+export const askPanel = (lang: Lang) =>
   ({
     kind: "ask",
     data: {

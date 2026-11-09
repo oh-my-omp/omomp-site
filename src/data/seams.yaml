@@ -62,7 +62,7 @@ prompt:
         zh: 每个宿主工具的说明末尾附一份专题目录。需要时代理在调用前读对应专题，例如隔离派发之前先读 tool://task/isolation。
     silent:
       title:
-        en: Changes are appended after the prefix
+        en: Changes go after the prefix
         zh: 修改追加在前缀之后
       lede:
         en: The rendered system prompt stays as it is. Rules, corrections and mode-specific fragments arrive as appended messages, so the provider keeps serving the prefix from cache.
