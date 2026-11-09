@@ -3,24 +3,27 @@
 
 :root {
   color-scheme: dark;
-  --bg: #0b0c0e;
-  --bg-raised: #111216;
-  --bg-sunken: #08090a;
-  --line: rgb(255 255 255 / 0.08);
-  --line-strong: rgb(255 255 255 / 0.14);
-  --text: #ededef;
-  --muted: #a0a1a9;
-  --dim: #6c6d75;
+  --bg: #08090a;
+  --bg-raised: #0f1011;
+  --bg-panel: #151617;
+  --bg-hover: rgb(255 255 255 / 0.04);
+  --line: rgb(255 255 255 / 0.07);
+  --line-strong: rgb(255 255 255 / 0.12);
+  --text: #f7f8f8;
+  --soft: #d0d6e0;
+  --muted: #8a8f98;
+  --dim: #62666d;
   --accent: #f7a823;
   --accent-soft: rgb(247 168 35 / 0.12);
   --human: #7cc4fa;
   --agent: #c3b1fb;
   --silent: #7fdba5;
   --danger: #f2837d;
+  --warn: #e8c46b;
   --sans: "Inter Variable", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
   --mono: "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo, monospace;
-  --radius: 12px;
-  --page: 1120px;
+  --radius: 10px;
+  --page: 1200px;
   --gutter: clamp(20px, 4vw, 40px);
 }
 
@@ -85,10 +88,10 @@ p a:hover,
 
 code {
   font-family: var(--mono);
-  font-size: 0.88em;
-  padding: 0.1em 0.35em;
-  border-radius: 5px;
-  background: rgb(255 255 255 / 0.06);
+  font-size: 0.86em;
+  padding: 0.08em 0.32em;
+  border-radius: 4px;
+  background: rgb(255 255 255 / 0.05);
   border: 1px solid var(--line);
 }
 
@@ -97,17 +100,33 @@ h2,
 h3,
 h4 {
   margin: 0;
-  font-weight: 600;
-  letter-spacing: -0.022em;
-  line-height: 1.15;
+  color: var(--text);
+  font-weight: 520;
   text-wrap: balance;
 }
 
-/* Chinese headings wrap only at the word boundaries src/middleware.ts marks with <wbr>, and at spaces and punctuation. */
-:lang(zh) :is(h1, h2, h3, h4) {
-  word-break: keep-all;
-  overflow-wrap: anywhere;
-  line-break: strict;
+h1 {
+  font-size: clamp(40px, 5.2vw, 64px);
+  letter-spacing: -0.032em;
+  line-height: 1.04;
+}
+
+h2 {
+  font-size: clamp(30px, 3.4vw, 44px);
+  letter-spacing: -0.026em;
+  line-height: 1.08;
+}
+
+h3 {
+  font-size: 16px;
+  font-weight: 560;
+  letter-spacing: -0.008em;
+  line-height: 1.35;
+}
+
+:lang(zh) :is(h1, h2) {
+  letter-spacing: 0;
+  line-height: 1.2;
 }
 
 p {
@@ -122,53 +141,59 @@ p {
   padding-inline: var(--gutter);
 }
 
-.eyebrow {
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent);
+/* Section kicker above a title: plain case, quiet grey. */
+.kicker {
+  font-size: 15px;
+  color: var(--muted);
 }
 
-:lang(zh) .eyebrow {
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-}
-
-.gradient-text {
-  background: linear-gradient(180deg, #fff 30%, rgb(255 255 255 / 0.55));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+/* A full-bleed hairline separates the major sections of a page. */
+.section {
+  border-top: 1px solid var(--line);
+  padding-block: clamp(72px, 10vw, 128px);
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 40px;
-  padding: 0 18px;
-  border-radius: 999px;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
   border: 1px solid var(--line-strong);
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  color: var(--text);
+  transition: border-color 0.15s, background 0.15s;
 }
 
 .btn:hover {
-  border-color: rgb(255 255 255 / 0.3);
+  border-color: rgb(255 255 255 / 0.24);
+  background: var(--bg-hover);
 }
 
 .btn-primary {
   background: var(--text);
-  color: #0b0c0e;
-  border-color: var(--text);
+  color: var(--bg);
+  border-color: transparent;
 }
 
 .btn-primary:hover {
   background: #fff;
+}
+
+/* A quiet text link that ends in an arrow, as under a section lede. */
+.more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  color: var(--muted);
+  transition: color 0.15s;
+}
+
+.more:hover {
+  color: var(--text);
 }
 
 .layer-human {
@@ -185,26 +210,16 @@ p {
 
 .layer-dot {
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--layer);
-  box-shadow: 0 0 12px var(--layer);
+  flex: none;
 }
 
-.reveal {
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-.reveal.is-visible {
-  opacity: 1;
-  transform: none;
-}
-
-:lang(zh) h1,
-:lang(zh) h2,
-:lang(zh) h3 {
-  letter-spacing: 0;
+/* Monospace text inside a rendered interface slice. */
+.mono {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.6;
 }

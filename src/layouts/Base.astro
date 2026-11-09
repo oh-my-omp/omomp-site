@@ -34,7 +34,7 @@ const alternate = (l: Lang) => new URL(href(route, l), Astro.site).href;
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta name="theme-color" content="#0b0c0e" />
+    <meta name="theme-color" content="#08090a" />
   </head>
   <body>
     <a class="skip" href="#main">{t(ui.skip, lang)}</a>
@@ -90,20 +90,6 @@ const alternate = (l: Lang) => new URL(href(route, l), Astro.site).href;
         </nav>
       </div>
     </footer>
-    <script>
-      const io = new IntersectionObserver(
-        (entries) => {
-          for (const e of entries) {
-            if (e.isIntersecting) {
-              e.target.classList.add("is-visible");
-              io.unobserve(e.target);
-            }
-          }
-        },
-        { rootMargin: "0px 0px -8% 0px" },
-      );
-      document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
-    </script>
   </body>
 </html>
 
@@ -127,14 +113,14 @@ const alternate = (l: Lang) => new URL(href(route, l), Astro.site).href;
     z-index: 50;
     backdrop-filter: saturate(180%) blur(14px);
     -webkit-backdrop-filter: saturate(180%) blur(14px);
-    background: rgb(11 12 14 / 0.72);
+    background: rgb(8 9 10 / 0.8);
     border-bottom: 1px solid var(--line);
   }
   .bar {
     display: flex;
     align-items: center;
     gap: 28px;
-    height: 60px;
+    height: 64px;
   }
   .brand {
     display: inline-flex;
@@ -146,7 +132,8 @@ const alternate = (l: Lang) => new URL(href(route, l), Astro.site).href;
   }
   .nav {
     display: flex;
-    gap: 4px;
+    gap: 2px;
+    margin-left: auto;
   }
   .nav a {
     font-size: 14px;
@@ -161,7 +148,7 @@ const alternate = (l: Lang) => new URL(href(route, l), Astro.site).href;
     background: rgb(255 255 255 / 0.05);
   }
   .tools {
-    margin-left: auto;
+    margin-left: 12px;
     display: flex;
     align-items: center;
     gap: 14px;
@@ -183,7 +170,6 @@ const alternate = (l: Lang) => new URL(href(route, l), Astro.site).href;
   }
   .site-footer {
     border-top: 1px solid var(--line);
-    margin-top: 120px;
   }
   .foot {
     display: flex;
@@ -249,6 +235,9 @@ const alternate = (l: Lang) => new URL(href(route, l), Astro.site).href;
     }
     .menu {
       display: block;
+    }
+    .tools {
+      margin-left: auto;
     }
   }
 </style>
