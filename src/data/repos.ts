@@ -2,6 +2,24 @@ import type { Lang, Text } from "../i18n";
 import type { Art } from "../slices/Art";
 import type { ComponentId } from "./component-art";
 import type { SeamId } from "./scenario";
+import { remoteBuildScene as rb } from "../slices/remote-build-stage-data";
+
+/** The remote-build card: environment init, then a test run in the worktree's container. */
+const remoteBuildArt: readonly Art[] = [
+  {
+    kind: "lines",
+    lines: [
+      { kind: "call", tool: "remote_env_init", args: "", status: "ok", result: rb.report.join("\n") },
+      {
+        kind: "call",
+        tool: "container_exec",
+        args: rb.execArgs,
+        status: "ok",
+        result: [rb.resultHead[0], "---", ...rb.screen.slice(2, 9).map((l) => l.text)].join("\n"),
+      },
+    ],
+  },
+];
 
 /** The slice a home-page card shows: the hook pipeline, a component's own art, or slices written for the card. */
 export type RepoArt =
@@ -188,8 +206,8 @@ export const repos: readonly Repo[] = [
     art: {
       from: "own",
       arts: {
-        en: [{ kind: "lines", lines: [{ kind: "call", tool: "container_exec", args: "pnpm test", status: "running", result: "[running] session_id: 3" }] }],
-        zh: [{ kind: "lines", lines: [{ kind: "call", tool: "container_exec", args: "pnpm test", status: "running", result: "[running] session_id: 3" }] }],
+        en: remoteBuildArt,
+        zh: remoteBuildArt,
       },
     },
     line: {
@@ -204,8 +222,24 @@ export const repos: readonly Repo[] = [
     art: {
       from: "own",
       arts: {
-        en: [{ kind: "lines", lines: [{ kind: "call", tool: "codex_generate_image", args: "rate-limit diagram for the README", status: "ok" }] }],
-        zh: [{ kind: "lines", lines: [{ kind: "call", tool: "codex_generate_image", args: "给 README 画一张限流示意图", status: "ok" }] }],
+        en: [
+          {
+            kind: "lines",
+            lines: [
+              { kind: "user", text: "Draw the rate-limit flow for the README: request, token bucket in Redis, 429 with Retry-After. Landscape, save it to docs/rate-limit.png." },
+              { kind: "call", tool: "codex_generate_image", args: 'size: "1536x1024" · outputPath: "docs/rate-limit.png"', status: "ok", result: "model: gpt-image-2\nsize: 1536x1024\nsavedPath: docs/rate-limit.png" },
+            ],
+          },
+        ],
+        zh: [
+          {
+            kind: "lines",
+            lines: [
+              { kind: "user", text: "给 README 画一张限流流程图：请求、Redis 里的令牌桶、带 Retry-After 的 429。横版，存到 docs/rate-limit.png。" },
+              { kind: "call", tool: "codex_generate_image", args: 'size: "1536x1024" · outputPath: "docs/rate-limit.png"', status: "ok", result: "model: gpt-image-2\nsize: 1536x1024\nsavedPath: docs/rate-limit.png" },
+            ],
+          },
+        ],
       },
     },
     line: {
