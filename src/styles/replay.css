@@ -153,8 +153,8 @@
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
   gap: 20px;
-  height: clamp(380px, calc(100vh - 300px), 700px);
-  height: clamp(380px, calc(100svh - 300px), 700px);
+  height: clamp(380px, calc(100vh - 380px), 700px);
+  height: clamp(380px, calc(100svh - 380px), 700px);
 }
 .rp-front,
 .rp-back {

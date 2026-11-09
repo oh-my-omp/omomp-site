@@ -150,15 +150,21 @@ export default function ReplayPlayer(props: {
     }),
   );
 
-  /** Scrolls the page so the controls and both panes are on screen, when they are not already. */
+  /**
+   * Scrolls the page so the controls and both panes are on screen, when they are not already.
+   * The step bar comes along when everything fits below the site header; otherwise the controls lead.
+   */
   const bringIntoView = () => {
     if (!head || !root) return;
     const header = document.querySelector<HTMLElement>(".site-header");
     const top = (header?.getBoundingClientRect().bottom ?? 0) + 12;
     const h = head.getBoundingClientRect();
+    const r = root.getBoundingClientRect();
     const split = root.querySelector<HTMLElement>(".rp-split")?.getBoundingClientRect();
-    if (h.top >= top && (!split || split.bottom <= window.innerHeight)) return;
-    window.scrollTo({ top: window.scrollY + h.top - top, behavior: reducedMotion() ? "auto" : "smooth" });
+    const bottom = split?.bottom ?? h.bottom;
+    const lead = bottom - r.top <= window.innerHeight - top ? r.top : h.top;
+    if (lead >= top && bottom <= window.innerHeight) return;
+    window.scrollTo({ top: window.scrollY + lead - top, behavior: reducedMotion() ? "auto" : "smooth" });
   };
 
   const onKey = (e: KeyboardEvent) => {

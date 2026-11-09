@@ -158,9 +158,9 @@ Playbook、Dispatch、Remote Build 自成体系，各有完整的使用流程和
 
 | 产品 | 定位 | 专题页主舞台 |
 |---|---|---|
-| [omp-playbooks](https://github.com/oh-my-omp/omp-playbooks) | 人机共创的可执行设计文档：设计块、执行块和编排块放在同一份 YAML 里，人在 Tern 面板中把块当卡片编辑，主会话负责编译和启动子代理 | 同一份 Playbook 的 YAML 与 Tern 卡片并排：设计块、执行块、编排块，已请求启动和运行中的块，协调者在线状态，以及写回 YAML 的状态 |
+| [omp-playbooks](https://github.com/oh-my-omp/omp-playbooks) | 人机共创的可执行设计文档：设计块、执行块和编排块放在同一份 YAML 里，人在 Tern 面板中把块当卡片编辑，主会话负责编译和启动子代理 | Tern 里的 Playbook 卡片与主会话并排、一一对应：人在执行块的卡片上请求启动，主会话依次出现协调者收到的通知、从 eval 启动该块、引用展开后冻结的提示词、在独立 worktree 里运行的子代理，以及子代理写回 YAML 的状态 |
 | [omp-dispatch](https://github.com/oh-my-omp/omp-dispatch) | GitHub issue 图交付引擎：持久票据按工作流状态机推进，每次交付由一次性 owner 会话完成，由全新的独立判定者把关 | issue 里的入口链接、issue 树、一张工单在默认工作流状态轨上的位置，以及新提交让旧批准作废、判定钉到新 head 的过程 |
-| [omp-remote-build](https://github.com/oh-my-omp/omp-remote-build) | 按 worktree 隔离的远端构建环境：本地照常编辑，Mutagen 单向同步到远端主机，在 Komodo 管理的容器里编译、测试 | 本机的几个 worktree 与各自的配置文件、单向同步、远端容器里由容器工具打开的测试终端 |
+| [omp-remote-build](https://github.com/oh-my-omp/omp-remote-build) | 按 worktree 隔离的远端构建环境：本地照常编辑，Mutagen 单向同步到远端主机，在 Komodo 管理的容器里编译、测试 | 本机的几个 worktree 与各自的远端环境、每个环境一条单向同步和留在本机不同步的文件、远端容器里由容器工具打开的构建测试终端 |
 
 主舞台之下，“运作方式”用一张细线网格写产品的几条关键机制，每格上部是该机制产出的文件、消息或状态，下部是标题和两句说明；“谁负责什么”在一个舞台框里画出一方居中、其余各方围绕它的关系，每条连线标明经过它的内容，箭头按实际方向画，不画成单向链条。两节都用左右分栏的节头。页首标题是一句短标题，不带句号；三个产品页的页头用一组分段切换器并列全部产品，可直接互相切换，仓库链接与它分开。
 
