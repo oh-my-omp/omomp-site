@@ -222,7 +222,7 @@ function steps(lang: Lang): readonly Step[] {
       title: en ? "The request" : "提出需求",
       caption: en
         ? "You describe the task. The agent needs one decision from you before it writes code, so it drafts a question. The readability check reads the draft as someone who has never seen this project would, finds two unexplained names, and sends it back. The draft never reaches your screen."
-        : "你交代任务。写代码之前，代理需要你做一个决定，于是起草了一个问题。可读性检查以从没见过这个项目的人的眼光读这份草稿，发现两个没解释的名称，把它退了回去。草稿没有出现在你的屏幕上。",
+        : "你交代了任务。动手写代码前有件事需要你拍板，代理起草了一个问题。可读性检查假设读者从没接触过这个项目，读下来发现两个没解释的名称，把草稿退回重写。这份草稿不会出现在你的屏幕上。",
       front: [
         {
           kind: "transcript",
@@ -322,10 +322,10 @@ function steps(lang: Lang): readonly Step[] {
     },
     {
       seam: "prompt",
-      title: en ? "Rules arrive with the file" : "规则随文件到达",
+      title: en ? "Rules arrive with the file" : "规则随文件送达",
       caption: en
         ? "The agent opens the webhooks route. A repository rule that applies to src/routes/ arrives right after the read, appended at the end of the context. The system prompt and the tool list stay byte for byte the same, so the provider still serves everything before the new rule from its prompt cache."
-        : "代理打开 webhooks 路由。适用于 src/routes/ 的仓库规则在读文件之后立刻送到，追加在上下文末尾。system prompt 和工具列表一个字节都没变，所以新规则之前的部分，服务商照样从提示缓存里取。",
+        : "代理打开 webhooks 路由。适用于 src/routes/ 的仓库规则在读完文件后立即送达，追加在上下文末尾。system prompt 和工具列表一个字节都没变，新规则之前的内容，服务商照样从提示缓存里读取。",
       front: [
         {
           kind: "transcript",
@@ -392,7 +392,7 @@ function steps(lang: Lang): readonly Step[] {
       title: en ? "The plan" : "计划",
       caption: en
         ? "The agent writes its plan into the todo list: a goal with how it will be measured, phases, and an estimate for each item. You see the same list in the panel and can edit the goal or any explanation."
-        : "代理把计划写进待办：目标和衡量方式、分阶段的条目、每项的时间估计。面板里是同一份清单，目标和每条说明你都能改。",
+        : "代理把计划写进待办：目标及其衡量方式、分阶段的条目和每一项的估时。面板里显示的是同一份清单，目标和每条说明你都可以改。",
       front: [{ kind: "todo", data: todo({ bucket: "active", tests: "pending" }) }],
       hooks: [],
     },
@@ -401,7 +401,7 @@ function steps(lang: Lang): readonly Step[] {
       title: en ? "Stopping early" : "提前停下",
       caption: en
         ? "Once the middleware tests pass, the agent reports progress and stops. Four items are still open, so the turn does not end: the reminder lists them with the goal, and the agent carries on. On your screen it is a one-line card."
-        : "中间件的测试通过后，代理汇报进度就停了。还有四项没做完，回合不会就此结束：提醒把它们连同目标一起列出来，代理接着干。你屏幕上只多了一行卡片。",
+        : "中间件的测试通过后，代理汇报完进度就停下了。还有四项没做完，回合不会就此结束：提醒把这四项连同目标一起列出来，代理接着做。你的屏幕上只多出一行卡片。",
       front: [
         {
           kind: "transcript",
@@ -438,10 +438,10 @@ function steps(lang: Lang): readonly Step[] {
     },
     {
       seam: "delegation",
-      title: en ? "Three writers, one checkout" : "三个写手，一个工作区",
+      title: en ? "Three writers, one checkout" : "三个执行者共用一个工作区",
       caption: en
         ? "The agent hands each route to its own worker. All three would edit files in the same checkout, so the call is held back once with a reminder to give each writer an isolated worktree. Nothing was dispatched yet."
-        : "代理把三个路由分给三个执行者。三个都会改文件，却挤在同一个工作区里，于是这次派发被拦下一次，提醒给每个写文件的执行者单独的 worktree。此时还什么都没派出去。",
+        : "代理把三个路由分别交给三个执行者。三个都要改文件，却共用同一个工作区，所以这次派发被拦下一次，提醒给每个改文件的执行者单独开一个 worktree。这时还没有派出任何执行者。",
       front: [
         {
           kind: "transcript",
@@ -480,7 +480,7 @@ function steps(lang: Lang): readonly Step[] {
       title: en ? "Workers and an advisor" : "执行者与顾问",
       caption: en
         ? "Re-dispatched with isolated worktrees, the three workers run side by side. The agent also asks an advisor whether skipping the limiter for signed webhooks is safe. Before every model call the advisor receives your own request and your answer to the question, word for word, so it judges against what you said rather than the agent's summary."
-        : "改成独立 worktree 重新派发后，三个执行者并排开工。代理还请顾问判断：签名 webhook 跳过限流是否安全。顾问每次调用模型前，都会收到你的原话和你对那个问题的回答，所以它对照的是你说了什么，而不是代理的转述。",
+        : "改用独立 worktree 重新派发后，三个执行者同时开工。代理还请顾问判断签名 webhook 跳过限流是否安全。顾问每次调用模型前都会收到你的原话和你对那个问题的回答，所以它依据你的原话判断，不靠代理转述。",
       front: [
         {
           kind: "agents",
@@ -522,7 +522,7 @@ function steps(lang: Lang): readonly Step[] {
       title: en ? "A command that never ends" : "不会结束的命令",
       caption: en
         ? "To watch the limiter hit Redis, the agent tries to follow the Redis log with bash. That command never exits on its own and would hold the turn until it timed out, so it is refused before it runs, with a pointer to exec_command."
-        : "为了看限流器有没有打到 Redis，代理想用 bash 跟踪 Redis 日志。这条命令自己不会退出，会把回合卡到超时，所以在执行前就被拒绝，并指向 exec_command。",
+        : "为了确认限流器确实在访问 Redis，代理想用 bash 持续跟踪 Redis 日志。这条命令不会自己退出，会把回合一直占到超时，所以执行前就被拒绝，并提示改用 exec_command。",
       front: [
         {
           kind: "transcript",
@@ -533,6 +533,12 @@ function steps(lang: Lang): readonly Step[] {
               args: "tail -f /usr/local/var/log/redis.log",
               status: "blocked",
               result: "pty 路由：这次 `bash` 调用没有执行",
+            },
+            {
+              kind: "say",
+              text: en
+                ? "tail -f never exits, so the bash call was refused. I'll start the Redis monitor with exec_command instead."
+                : "tail -f 不会自己退出，所以这次 bash 调用被拒绝了。我改用 exec_command 启动 Redis 监视。",
             },
           ],
         },
@@ -557,7 +563,7 @@ function steps(lang: Lang): readonly Step[] {
       title: en ? "Shared terminals" : "共用终端",
       caption: en
         ? "The agent starts the test watcher and a Redis monitor with exec_command. Both appear in the Terminals view; you can open either one and type into it. Here you narrow the watcher to the webhooks tests while the agent reads the same screen."
-        : "代理用 exec_command 启动测试监视和 Redis 监视。两个会话都出现在终端视图里，你可以打开任何一个直接输入。这里你把测试监视收窄到 webhooks 的测试，代理读的也是同一块屏幕。",
+        : "代理用 exec_command 启动了测试监视和 Redis 监视，两个会话都出现在终端视图里，你可以打开任意一个直接输入。这里你把测试监视的范围收窄到 webhooks 的测试，代理看到的也是同一块屏幕。",
       front: [
         {
           kind: "terminals",
@@ -593,10 +599,10 @@ function steps(lang: Lang): readonly Step[] {
     },
     {
       seam: "execution",
-      title: en ? "Deleting with a record" : "删除留下记录",
+      title: en ? "Deleting with a record" : "删除进回收站",
       caption: en
         ? "To clear a stale test cache the agent reaches for rm -rf. The shell deletion is refused; the agent calls the delete tool instead, which moves the folder to the system trash and names exactly what moved where."
-        : "为了清掉过期的测试缓存，代理顺手写了 rm -rf。shell 删除被拒绝；代理改用 delete 工具，文件夹进了系统回收站，结果里写明了什么挪到了哪里。",
+        : "为了清掉过期的测试缓存，代理顺手写了 rm -rf。shell 删除被拒绝后，代理改用 delete 工具：文件夹移进系统回收站，结果里写明了移动了什么、移到了哪里。",
       front: [
         {
           kind: "transcript",
@@ -635,10 +641,10 @@ function steps(lang: Lang): readonly Step[] {
     },
     {
       seam: "delivery",
-      title: en ? "A worker says it is done" : "执行者说做完了",
+      title: en ? "A worker says it is done" : "执行者报告完成",
       caption: en
         ? "WebhooksRoute reports success without running the test that was failing. The completion judge compares the report with the worker's latest tool calls and returns the yield once; the worker fixes the signature check and runs the test before reporting again."
-        : "WebhooksRoute 报告完成，却没有重跑那个失败的测试。完成度鉴定把报告和它最近的工具调用对照，把这次 yield 退回一次；执行者修好签名校验、跑过测试后才再次汇报。",
+        : "WebhooksRoute 报告完成，但没有重跑之前失败的测试。完成度判定把报告和它最近的工具调用对照后，把这次 yield 退回一次；执行者修好签名校验、跑过测试，才再次汇报。",
       front: [
         {
           kind: "agents",
@@ -671,7 +677,7 @@ function steps(lang: Lang): readonly Step[] {
       title: en ? "Announcing instead of doing" : "只说不做",
       caption: en
         ? "Back in the main session, the agent writes that the routes are switched and that it will run the suite and commit next, then stops. A judge reads the reply as work still missing, announced as a plan, and sends the agent back to do it. This shipped rule watches GPT models."
-        : "回到主会话，代理写下“路由都改好了，接下来跑测试并提交”，然后停了。判定模型认为这条回复是把没做完的事说成了计划，把代理送回去接着做。随附的这条规则只看 GPT 模型。",
+        : "回到主会话，代理写下“路由都改好了，接下来跑测试并提交”，然后就停了。判定模型认为这条回复把没做完的事写成了计划，让代理回去接着做。omp-config 自带的这条规则只针对 GPT 模型。",
       front: [
         {
           kind: "transcript",
@@ -703,10 +709,10 @@ function steps(lang: Lang): readonly Step[] {
     },
     {
       seam: "delivery",
-      title: en ? "Done, with evidence" : "完成，附证据",
+      title: en ? "Done, with evidence" : "完成并附上证据",
       caption: en
         ? "The agent runs the suite, commits, and reports with the test output as evidence. For a person who reads Chinese, each line of the model's English thinking appears translated beneath the original as it streams."
-        : "代理跑完测试、提交，并附上测试输出作为证据汇报。模型用英文思考时，每一行思考都在原文下方实时出现中文译文。",
+        : "代理跑完测试、提交，并附上测试输出作为证据。模型用英文思考时，每一行思考都会在原文下方实时出现中文译文。",
       front: [
         {
           kind: "thinking",
