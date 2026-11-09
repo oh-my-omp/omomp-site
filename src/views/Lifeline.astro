@@ -27,7 +27,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
     <SplitHead title={t(copy.seamsTitle, lang)} lede={t(copy.seamsLede, lang)} />
     <div class="wrap body">
       <Grid cols={3} count={seams.length}>
-        {seams.map((s) => <Cell tag={`${pad(s.data.order)} →`} title={s.data.name[lang]} text={s.data.claim[lang]} href={href(`/lifeline/${s.id}/`, lang)} />)}
+        {seams.map((s) => <Cell tag={`${pad(s.data.order)} →`} title={s.data.name[lang]} text={`${s.data.claim[lang]}${lang === "zh" ? "。" : "."}`} href={href(`/lifeline/${s.id}/`, lang)} />)}
       </Grid>
     </div>
   </section>
