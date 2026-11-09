@@ -32,7 +32,7 @@ const heroStep = scenario[lang].find((s) => s.hooks.some((h) => h.source === "is
 if (!heroStep) throw new Error("demo scenario has no isolation-nudge step");
 const heroFront = heroStep.front[0];
 if (heroFront?.kind !== "transcript") throw new Error("hero step must open with a transcript");
-const heroHook = { ...heroStep.hooks[0]!, gloss: undefined };
+const heroHook = heroStep.hooks[0]!;
 
 /** Art slices for a card; the hook pipeline is drawn separately. */
 const artsOf = (r: Repo) => {
