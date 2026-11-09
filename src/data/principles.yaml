@@ -50,7 +50,7 @@ roles:
     en: Separate roles
     zh: 职责与状态分离
   summary:
-    en: Workers keep no state; advisors read your own words.
+    en: Workers keep no state; advisors read your words.
     zh: 执行者不留状态，顾问读原话。
   title:
     en: One owner per state; planning, execution and advice kept apart
