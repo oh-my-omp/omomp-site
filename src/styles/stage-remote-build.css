@@ -137,6 +137,18 @@
   line-height: 1.5;
   color: var(--dim);
 }
+.st-rb-gloss {
+  display: block;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--line);
+  color: var(--muted);
+}
+.st-rb-gloss span {
+  display: block;
+  font-size: 0.9em;
+  color: var(--dim);
+}
 .st-rb-ready {
   margin: 0;
   font-family: var(--mono);
@@ -282,4 +294,12 @@
     height: 18px;
     transform: translateX(-50%);
   }
+}
+
+/* Paths and names inside the zones are plain monospace text, not inline-code chips. */
+.st-rb code {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: inherit;
 }

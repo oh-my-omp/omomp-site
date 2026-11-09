@@ -2,7 +2,7 @@ import { For, Show } from "solid-js";
 import type { Lang } from "../i18n";
 import { labels } from "./labels";
 import Window from "./Window";
-import { playbooksScene, playbooksStage, type PbBlock, type PbDesignBlock, type PbStatus } from "./playbooks-stage-data";
+import { joinNotice, playbooksScene, playbooksStage, type PbBlock, type PbDesignBlock, type PbStatus } from "./playbooks-stage-data";
 import "../styles/stage-playbooks.css";
 
 /**
@@ -171,7 +171,7 @@ function Coordinator(props: { lang: Lang }) {
           <h4>{c().beats.notice}</h4>
           <div class="st-pb-notice mono">
             <span class="st-pb-nh">{c().header}</span>
-            <span>{c().request}</span>
+            <span>{joinNotice(props.lang, [c().request, c().choose, "…"])}</span>
             <span class="st-pb-data">{playbooksScene.data}</span>
           </div>
         </section>

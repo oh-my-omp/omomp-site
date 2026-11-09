@@ -65,12 +65,10 @@
   line-height: 1;
 }
 .st-dispatch-col h3 {
-  margin: 0 0 8px;
-  font-size: 11px;
+  margin: 0 0 6px;
+  font-size: 12.5px;
   font-weight: 560;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--dim);
+  color: var(--soft);
 }
 .st-dispatch-cap {
   margin: 0 0 10px;
@@ -138,6 +136,8 @@
   overflow-wrap: anywhere;
 }
 .st-dispatch-outcome {
+  flex: none;
+  white-space: nowrap;
   color: var(--silent);
 }
 
@@ -301,9 +301,6 @@
 }
 
 /* Drift: the verbatim note, the retired fingerprint, the gate on the new head. */
-.st-dispatch-drift h3 {
-  color: var(--warn);
-}
 .st-dispatch-note {
   margin: 0 0 12px;
   padding: 8px 10px;
@@ -368,6 +365,19 @@
 .st-dispatch-seats code {
   font-size: 11px;
   color: var(--text);
+}
+.st-dispatch-gloss {
+  margin: 0;
+  padding-top: 5px;
+  border-top: 1px dashed var(--line);
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.st-dispatch-gloss span {
+  display: block;
+  font-size: 10px;
+  color: var(--dim);
 }
 .st-dispatch-checkout {
   margin: 0;

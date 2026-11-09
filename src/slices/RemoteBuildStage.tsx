@@ -49,7 +49,17 @@ export default function RemoteBuildStage(props: { lang: Lang }) {
                 )}
               </For>
             </div>
-            <div class="st-rb-note">{s.envNote}</div>
+            <div class="st-rb-note">
+              {s.envNote}
+              <Show when={copy().gloss}>
+                {(g) => (
+                  <span class="st-rb-gloss">
+                    <span>{g().label}</span>
+                    {g().envNote}
+                  </span>
+                )}
+              </Show>
+            </div>
           </Window>
         </div>
         <p class="st-rb-cap">{copy().captions[0]}</p>

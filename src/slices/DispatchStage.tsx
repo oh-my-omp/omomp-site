@@ -20,6 +20,16 @@ function Badge() {
   );
 }
 
+/** Reading aid under an English plugin line on a page in another language. */
+function Gloss(props: { label: string; text: string }) {
+  return (
+    <p class="st-dispatch-gloss">
+      <span>{props.label}</span>
+      {props.text}
+    </p>
+  );
+}
+
 function Verdicts(props: { verdicts: readonly DispatchVerdict[] }) {
   return (
     <ul class="st-dispatch-verdicts">
@@ -128,6 +138,7 @@ export default function DispatchStage(props: { lang: Lang }) {
           <h3>{d().drift}</h3>
           <p class="st-dispatch-cap">{d().driftCaption}</p>
           <p class="st-dispatch-note">{d().driftNote}</p>
+          <Show when={d().gloss}>{(g) => <Gloss label={g().label} text={g().drift} />}</Show>
           <div class="st-dispatch-fp is-old">
             <span class="st-dispatch-fp-label">{d().oldFingerprintLabel}</span>
             <span class="st-dispatch-fp-line">
@@ -149,6 +160,7 @@ export default function DispatchStage(props: { lang: Lang }) {
               <For each={s.seats}>{(seat) => <li><code>{seat}</code></li>}</For>
             </ul>
             <p class="st-dispatch-checkout">{s.checkout}</p>
+            <Show when={d().gloss}>{(g) => <Gloss label={g().label} text={g().checkout} />}</Show>
             <Verdicts verdicts={s.newVerdicts} />
           </div>
         </section>

@@ -58,8 +58,12 @@ export type PbBlock = PbDesignBlock | PbExecutionBlock | PbOrchestrationBlock;
 export interface PbCoordinator {
   /** Notice header, verbatim (`tr` in src/extension/index.ts:308). */
   readonly header: string;
-  /** The request sentence with the block's preset, verbatim, cut where the two options begin. */
+  /** The request sentence with the block's preset, verbatim. */
   readonly request: string;
+  /** The lead-in to the two options, verbatim. */
+  readonly choose: string;
+  /** Option ① up to its first clause, verbatim, ending in "…". */
+  readonly first: string;
   /** Site captions for each beat of the flow. */
   readonly beats: {
     readonly notice: string;
@@ -102,13 +106,11 @@ const shared = {
     policy: "Rate-limit policy",
     searchAsk: "Mount the middleware on /search with this policy:",
     b2Report: "rate-limit.ts added; bucket math covered by token-bucket.test.ts.",
-    asked: 'A person requested launching blocks ["b4"]',
-  },
+    },
   zh: {
     policy: "限流策略",
     searchAsk: "按这份策略给 /search 挂上中间件：",
     b2Report: "已添加 rate-limit.ts；令牌桶算法由 token-bucket.test.ts 覆盖。",
-    asked: '人请求启动 Playbook 的块 ["b4"]。',
   },
 } as const satisfies Record<Lang, Record<string, string>>;
 
@@ -168,7 +170,9 @@ const en: PlaybooksStageData = {
   coordinator: {
     header: "This is a Playbook document service notice, not a user message",
     request:
-      'A person requested launching blocks ["b4"] of the Playbook. Block b4 has preset agent: "task:low" isolated: true, so playbook.agent / playbook.run use it automatically when arguments are omitted. Next, choose one: …',
+      'A person requested launching blocks ["b4"] of the Playbook. Block b4 has preset agent: "task:low" isolated: true, so playbook.agent / playbook.run use it automatically when arguments are omitted.',
+    choose: "Next, choose one:",
+    first: `① Non-blocking: in eval, \`${playbooksScene.call}\` returns as soon as the subagent is started and bound; …`,
     beats: {
       notice: "The click reaches the coordinator as a notice",
       start: "The coordinator starts the block from eval",
@@ -236,7 +240,9 @@ const zh: PlaybooksStageData = {
   coordinator: {
     header: "这是 Playbook 文档服务的通知，不是用户消息",
     request:
-      '人请求启动 Playbook 的块 ["b4"]。块 b4 已预设 agent: "task:low" isolated: true，不显式传参时 playbook.agent / playbook.run 自动使用。下一步二选一：…',
+      '人请求启动 Playbook 的块 ["b4"]。块 b4 已预设 agent: "task:low" isolated: true，不显式传参时 playbook.agent / playbook.run 自动使用。',
+    choose: "下一步二选一：",
+    first: `① 不阻塞：在 eval 中 \`${playbooksScene.call}\`，启动并绑定后立即返回；…`,
     beats: {
       notice: "点击以通知的形式送到协调者",
       start: "协调者在 eval 里启动这个块",
@@ -261,53 +267,70 @@ export const playbooksLinks: readonly { readonly label: string; readonly href: s
  * The slice above each cell of the page's How it works grid, in cell order:
  * a design block and the execution block that reaches it by `((b1))`, the launch
  * request notice the pane sends the coordinator, and the status and report a
- * subagent wrote into a run file. Reference syntax, notice header and JSON, and
- * YAML field order are verbatim from the extension; paths and titles come from the scenario.
+ * subagent wrote into a run file. YAML layout follows serialize() in
+ * src/service/store.ts; the notice is the extension's own text in the page language;
+ * "…" marks an elision. Paths and titles come from the scenario.
  */
-const sectionArt = (lang: Lang): readonly [Art, Art, Art] => [
-  {
-    kind: "code",
-    title: "rate-limit.yaml",
-    lines: [
-      "- id: b1",
-      `  title: "${shared[lang].policy}"`,
-      "  design: |2",
-      "      bucket(key) → { tokens, refill }",
-      "  status: done",
-      "- id: b4",
-      "  body: |2",
-      `      ${shared[lang].searchAsk}`,
-      "      ((b1))",
-      `  agent: "task:low"`,
-      "  isolated: true",
-    ],
-  },
-  {
-    kind: "code",
-    title: "notice",
-    lines: [
-      playbooksStage[lang].coordinator.header,
-      shared[lang].asked,
-      "…",
-      '{"doc":"/work/rate-limit.yaml",',
-      ' "event":"launch_requested",',
-      ' "data":{"blocks":["b4"]}}',
-    ],
-  },
-  {
-    kind: "code",
-    title: "rate-limit.runs/r1.yaml",
-    lines: [
-      "run:",
-      "  id: r1",
-      "  status: running",
-      "blocks:",
-      "  - id: b2",
-      "    status: done",
-      "    report: |2",
-      `      ${shared[lang].b2Report}`,
-    ],
-  },
-];
+/** The notice joins its sentences the way the extension's template does: a space in English, nothing in Chinese. */
+export const joinNotice = (lang: Lang, parts: readonly string[]): string => parts.join(lang === "en" ? " " : "");
+
+const sectionArt = (lang: Lang): readonly [Art, Art, Art] => {
+  const d = playbooksStage[lang];
+  const title = (id: string) => d.blocks.find((b) => b.id === id)?.title ?? id;
+  return [
+    {
+      kind: "code",
+      title: playbooksScene.file,
+      lines: [
+        "  - id: b1",
+        `    title: "${shared[lang].policy}"`,
+        "    requirement: |2",
+        "      …",
+        "    design: |2",
+        "      bucket(key) → { tokens, refill }",
+        "      …",
+        "  - id: b4",
+        `    title: "${title("b4")}"`,
+        "    body: |2",
+        `      ${shared[lang].searchAsk}`,
+        "      ((b1))",
+        `    agent: "${playbooksScene.agent}"`,
+        "    isolated: true",
+        "    status: todo",
+      ],
+    },
+    {
+      kind: "hook",
+      hook: {
+        kind: "reminder",
+        source: "omp-playbooks",
+        at: "launch_requested",
+        label: lang === "en" ? "notice" : "通知",
+        body: [d.coordinator.header, joinNotice(lang, [d.coordinator.request, d.coordinator.choose, d.coordinator.first]), playbooksScene.data].join("\n"),
+      },
+    },
+    {
+      kind: "code",
+      title: "rate-limit.runs/r1.yaml",
+      lines: [
+        `title: "${d.title}"`,
+        "blocks:",
+        "  - id: b2",
+        `    title: "${title("b2")}"`,
+        "    …",
+        "    status: done",
+        "    report: |2",
+        `      ${shared[lang].b2Report}`,
+        "  - id: b3",
+        "    …",
+        "    status: running",
+        "run:",
+        "  id: r1",
+        "  …",
+        "  status: running",
+      ],
+    },
+  ];
+};
 
 export const playbooksSectionArt: Record<Lang, readonly [Art, Art, Art]> = { en: sectionArt("en"), zh: sectionArt("zh") };

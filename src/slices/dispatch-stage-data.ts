@@ -56,6 +56,11 @@ export interface DispatchStageContent {
   readonly driftCaption: string;
   /** Verbatim engine note recorded when the open PR changes head. */
   readonly driftNote: string;
+  /**
+   * Reading aids for the two English plugin lines (driftNote, the judge checkout line) on a page in
+   * another language: label and translated text, both localized. Absent where the page is English.
+   */
+  readonly gloss?: { readonly label: string; readonly drift: string; readonly checkout: string };
   readonly oldFingerprintLabel: string;
   readonly newFingerprintLabel: string;
   readonly voided: string;
@@ -107,7 +112,7 @@ export const dispatchStage: Record<Lang, DispatchStageContent> = {
     issues: "Issue tree",
     ticket: "Ticket #48",
     drift: "New push",
-    issuesCaption: "The parent issue and its sub-issues become tickets; three wait for #48.",
+    issuesCaption: "The parent issue and its sub-issues become tickets; the route tickets wait for #48.",
     umbrellaTag: "parent",
     waiting: "waiting",
     launcherOutcome: "launched",
@@ -133,7 +138,7 @@ export const dispatchStage: Record<Lang, DispatchStageContent> = {
     issues: "工单树",
     ticket: "工单 #48",
     drift: "新的推送",
-    issuesCaption: "父 issue 和它的子 issue 各成一张工单，其中三张要等 #48 交付。",
+    issuesCaption: "父 issue 和它的子 issue 各成一张工单，接入路由的工单要等 #48 交付。",
     umbrellaTag: "父 issue",
     waiting: "等待中",
     launcherOutcome: "已启动",
@@ -142,6 +147,11 @@ export const dispatchStage: Record<Lang, DispatchStageContent> = {
     steps: { pr: "开 PR", ci: "CI", review: "评审", merge: "合并" },
     driftCaption: "两位判定者都已入座，负责人又推了一次。",
     driftNote: "Open PR changed to head e4f5a6b; gates restart on the new fingerprint.",
+    gloss: {
+      label: "译文",
+      drift: "已开的 PR 换成了 head e4f5a6b；各道关卡按新指纹重新开始。",
+      checkout: "工作目录是被裁决的 PR head 的分离检出，提交一个不差。",
+    },
     oldFingerprintLabel: "之前的 head",
     newFingerprintLabel: "当前的 head",
     voided: "判定记录已删除，通过的评审不再作数",
@@ -166,51 +176,81 @@ export const dispatchLinks: readonly { readonly label: string; readonly href: st
 
 /**
  * The slice above each cell of the page's How it works grid, in cell order:
- * the default workflow's review state and its routes, the first lines a judge seat
- * receives, and the durable effect record a GitHub write leaves behind. State names,
- * fields, brief sentences and effect states are verbatim from the plugin.
+ * the default workflow from opening the PR to merging it, the brief a review seat
+ * receives (src/domain/briefs.ts, with its English text glossed on other pages), and the
+ * durable effect record a GitHub write leaves behind (effectSchema in src/domain/model.ts,
+ * the merge action in src/domain/public-grammar.ts). Workflow lines, brief sentences, record
+ * keys and the gh command are verbatim from the plugin; "…" marks an elision and `#` lines
+ * are site comments in the page language.
  */
-const sectionArt: readonly [Art, Art, Art] = [
+const briefBody = [
+  "You are the review seat for dispatch ticket 48. You own only this ticket, in its Reviewing state.",
+  "Independently verify the complete current contract against this checkout, not just prior findings.",
+  "Your working directory is a detached checkout of exactly the pull request head under judgment. Judge it against the complete current contract and the exact gate stamp. … Do not modify code.",
+].join("\n\n");
+
+const sectionArt = (lang: Lang): readonly [Art, Art, Art] => [
   {
     kind: "code",
     title: "default-workflow.yml",
     lines: [
+      "Publishing:",
+      "  kind: action",
+      "  action: publishPr",
+      "  on: {done: AwaitingChecks}",
       "AwaitingChecks:",
       "  kind: decision",
-      "  observe: {drift: AwaitingChecks}",
+      "  branches:",
+      "    - when: {all: [{checks: passing}, {mergeable: 'yes'}]}",
+      "      to: Reviewing",
       "Reviewing:",
       "  kind: judge",
       "  subject: pullRequest",
-      "  judges: [review, accept]",
-      "  on: {passed: Merging, rejected: Coding,",
-      "       escalated: escalate}",
+      "  …",
+      "  on: {passed: Merging, rejected: Coding, escalated: escalate}",
+      "Merging:",
+      "  kind: action",
+      "  action: merge",
     ],
   },
   {
-    kind: "code",
-    title: "review: 48",
-    lines: [
-      "You are the review seat for dispatch ticket 48.",
-      "You own only this ticket, in its Reviewing state.",
-      "…",
-      "Your working directory is a detached checkout",
-      "of exactly the pull request head under judgment.",
-      "Judge it against the complete current contract",
-      "and the exact gate stamp. …",
-      "Do not modify code.",
-    ],
+    kind: "hook",
+    hook: {
+      kind: "judge",
+      source: "omp-dispatch",
+      at: dispatchScene.seats[0],
+      label: lang === "en" ? "seat brief" : "席位简报",
+      body: briefBody,
+      gloss:
+        lang === "en"
+          ? undefined
+          : {
+              label: "译文",
+              text: "你是 dispatch 工单 48 的 review 席位，只负责这张工单的 Reviewing 状态。对照这份检出独立核验完整的现行契约，不只看此前的结论。工作目录是被裁决的 PR head 的分离检出；按完整的现行契约和确切的关卡戳裁决。…不要改代码。",
+            },
+    },
   },
   {
     kind: "code",
     title: "effect · merge",
     lines: [
-      "status:   executing        (saved first)",
-      "write:    gh pr merge 52 --repo omomp/shop-api",
-      "            --merge --match-head-commit e4f5a6b",
-      "readback: PR 52 merged into main",
-      "status:   confirmed        (fresh GitHub read)",
+      "ticketId: 48",
+      "action:",
+      "  kind: merge",
+      "  pr: omomp/shop-api#52",
+      `  head: ${dispatchScene.newSha}`,
+      `  target: ${dispatchScene.target}`,
+      "origin: {state: Merging, …}",
+      "state: {kind: executing}",
+      lang === "en" ? "# saved before the write" : "# 写入之前先落盘",
+      "$ gh pr merge 52 --repo omomp/shop-api \\",
+      `    --merge --match-head-commit ${dispatchScene.newSha}`,
+      lang === "en" ? "# then a fresh GitHub read" : "# 随后重新读取 GitHub",
+      "state:",
+      "  kind: confirmed",
+      "  result: {kind: merged, …}",
     ],
   },
 ];
 
-export const dispatchSectionArt: Record<Lang, readonly [Art, Art, Art]> = { en: sectionArt, zh: sectionArt };
+export const dispatchSectionArt: Record<Lang, readonly [Art, Art, Art]> = { en: sectionArt("en"), zh: sectionArt("zh") };

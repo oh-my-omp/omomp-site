@@ -149,6 +149,8 @@ export interface RemoteBuildStageData {
     readonly flushNote: string;
     readonly clean: string;
     readonly ignored: string;
+    /** Reading aid under the English envNote on a page in another language; absent where the page is English. */
+    readonly gloss?: { readonly label: string; readonly envNote: string };
   };
   /** Human-facing plugin strings, verbatim in each language. */
   readonly ui: {
@@ -186,6 +188,7 @@ export const remoteBuildStage: Record<Lang, RemoteBuildStageData> = {
       flushNote: "每次写入类工具调用后自动执行",
       clean: "没有 remote-build 环境",
       ignored: "留在本机",
+      gloss: { label: "译文", envNote: "remote-build 环境只存在于 git worktree 中；~/work/shop-api 是主检出" },
     },
     ui: {
       ptyTitle: "容器 rb-rate-limit-a3f9c1b7e2",
@@ -196,41 +199,72 @@ export const remoteBuildStage: Record<Lang, RemoteBuildStageData> = {
 
 /**
  * The slice above each cell of the page's How it works grid, in cell order:
- * the opt-in file and the flush that follows a write-type tool call, the
- * Dockerfile-content image tag, and the container tools registered at session
- * start. Config keys, the flush command, the tag shape and tool names are
- * verbatim from the plugin.
+ * the Mutagen session remote_env_init creates for a worktree and the flush that
+ * follows each write-type tool call (src/mutagen.ts); the remote_env_init reports of
+ * two worktrees with the same Dockerfile, the second reusing the first one's image
+ * (src/init.ts, tag shape src/project.ts); and a container_exec call with its result
+ * head. Flags, report keys and values, tool names and result lines are verbatim;
+ * `#` lines are site comments in the page language.
  */
-const sectionArt: readonly [Art, Art, Art] = [
+const image = "rb-project-shop-api-5c1e8d0b2a:7c2e91d04b5fa318";
+
+const sectionArt = (lang: Lang): readonly [Art, Art, Art] => [
   {
     kind: "code",
-    title: ".omp/remote-build.json",
+    title: "mutagen",
     lines: [
-      '{"dockerfile": ".devcontainer/Dockerfile"}',
-      "$ mutagen sync flush rb-rate-limit-a3f9c1b7e2",
+      "$ mutagen sync create \\",
+      `    --name=${remoteBuildScene.container} \\`,
+      "    --label=remote-build \\",
+      `    --label=rb-env=${remoteBuildScene.id} \\`,
+      "    --mode=one-way-replica \\",
+      "    --ignore-vcs \\",
+      '    --ignore=".env*" \\',
+      `    ${remoteBuildScene.sessions[0]!.alpha} \\`,
+      `    ${remoteBuildScene.sessions[0]!.beta}`,
+      lang === "en" ? "# after each write-type tool call" : "# 每次写入类工具调用之后",
+      `$ ${remoteBuildScene.syncFlush}`,
     ],
   },
   {
     kind: "code",
-    title: "image",
+    title: "remote_env_init",
     lines: [
-      "sha256(.devcontainer/Dockerfile)",
-      "  a3f9c1b7e2cc41d0",
-      "tag rb-project-<project-id>:",
-      "  a3f9c1b7e2cc41d0",
+      "status: ready",
+      `worktree: ${remoteBuildScene.sessions[0]!.alpha}`,
+      `image: ${image}`,
+      "image_source: built from worktree Dockerfile .devcontainer/Dockerfile",
+      "",
+      "status: ready",
+      `worktree: ${remoteBuildScene.sessions[1]!.alpha}`,
+      `image: ${image}`,
+      "image_source: reused (cached build of .devcontainer/Dockerfile)",
     ],
   },
   {
     kind: "code",
     title: "container_*",
     lines: [
+      lang === "en" ? "# registered at session start" : "# 会话启动时即已注册",
       "container_exec",
       "container_write_stdin",
       "container_list_sessions",
       "container_kill_session",
-      "# registered at session start; prompt prefix unchanged",
+      "",
+      `container_exec input: ${remoteBuildScene.execArgs}`,
+      remoteBuildScene.resultHead[0]!,
+      "---",
+      ...remoteBuildScene.screen.slice(0, 4).map((l) => l.text),
     ],
   },
 ];
 
-export const remoteBuildSectionArt: Record<Lang, readonly [Art, Art, Art]> = { en: sectionArt, zh: sectionArt };
+export const remoteBuildSectionArt: Record<Lang, readonly [Art, Art, Art]> = { en: sectionArt("en"), zh: sectionArt("zh") };
+
+/** Capsule links beside the How it works heading: the files that define each mechanism. */
+export const remoteBuildLinks: readonly { readonly label: string; readonly href: string }[] = [
+  { label: "README", href: "https://github.com/oh-my-omp/omp-remote-build#readme" },
+  { label: "mutagen.ts", href: "https://github.com/oh-my-omp/omp-remote-build/blob/HEAD/src/mutagen.ts" },
+  { label: "init.ts", href: "https://github.com/oh-my-omp/omp-remote-build/blob/HEAD/src/init.ts" },
+  { label: "container-tools.ts", href: "https://github.com/oh-my-omp/omp-remote-build/blob/HEAD/src/container-tools.ts" },
+];

@@ -3,7 +3,7 @@
 .st-pb {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 104px minmax(0, 1fr);
-  align-items: stretch;
+  align-items: start;
   font-size: 13px;
   line-height: 1.5;
   min-width: 0;
@@ -17,6 +17,7 @@
 
 /* --- connector: the request out of the pane, the status back into it --- */
 .st-pb-link {
+  align-self: stretch;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
