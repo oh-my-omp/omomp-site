@@ -1,0 +1,297 @@
+/* omp-playbooks stage: the Playbook YAML beside the Tern document pane that renders it. */
+
+.st-pb {
+  display: grid;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  min-width: 0;
+}
+
+/* One window, two panes: file on the left, Playbooks document view on the right. */
+.st-pb-win .sl-win-body {
+  padding: 0;
+}
+.st-pb-split {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  min-height: 0;
+}
+
+/* --- left: the file itself --- */
+.st-pb-file {
+  padding: 14px 0 16px;
+  border-right: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.75;
+  overflow-x: auto;
+  min-width: 0;
+}
+.st-pb-yl {
+  display: flex;
+  gap: 0;
+  padding: 0 16px 0 14px;
+  white-space: pre;
+  color: var(--dim);
+}
+.st-pb-yl.mark {
+  box-shadow: inset 3px 0 0 var(--accent);
+  background: rgb(247 168 35 / 0.05);
+}
+.st-pb-y-k {
+  color: var(--dim);
+}
+.st-pb-y-s {
+  color: var(--soft);
+}
+.st-pb-y-v {
+  color: var(--agent);
+}
+
+/* --- right: the document pane (src/service/ui.ts card anatomy) --- */
+.st-pb-pane {
+  min-width: 0;
+  padding: 12px 14px 0;
+}
+.st-pb-doc {
+  padding: 2px 2px 10px;
+  color: var(--text);
+  font-weight: 560;
+}
+.st-pb-hash {
+  color: var(--dim);
+  font-weight: 400;
+}
+
+.st-pb-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg-raised);
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.st-pb-run {
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--line));
+}
+.st-pb-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  min-width: 0;
+}
+.st-pb-idx {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+}
+.st-pb-title {
+  color: var(--text);
+  font-weight: 540;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.st-pb-dots {
+  margin-left: auto;
+  color: var(--dim);
+}
+.st-pb-chev {
+  color: var(--dim);
+  font-style: normal;
+}
+
+/* status icons: empty ring todo, spinner running, check ring done */
+.st-pb-ic {
+  flex: none;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1.5px solid var(--dim);
+  position: relative;
+}
+.st-pb-ic-running {
+  border-color: var(--accent);
+  border-right-color: transparent;
+  animation: st-pb-spin 0.9s linear infinite;
+}
+.st-pb-ic-done {
+  border-color: var(--silent);
+}
+.st-pb-ic-done::after {
+  content: "";
+  position: absolute;
+  left: 2.6px;
+  top: 1.4px;
+  width: 4.4px;
+  height: 2.4px;
+  border-left: 1.5px solid var(--silent);
+  border-bottom: 1.5px solid var(--silent);
+  transform: rotate(-48deg);
+}
+@keyframes st-pb-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* design card: requirement, rendered design, change-request line */
+.st-pb-req {
+  margin: 0;
+  padding: 0 12px;
+  color: var(--soft);
+}
+.st-pb-design {
+  display: grid;
+  gap: 1px;
+  margin: 8px 12px 0;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+.st-pb-chg {
+  margin: 0;
+  padding: 8px 12px 10px;
+  color: var(--dim);
+  font-size: 12px;
+}
+.st-pb-chg i {
+  font-style: normal;
+  color: var(--dim);
+}
+
+/* task/orchestration body */
+.st-pb-body {
+  margin: 0;
+  padding: 0 12px 10px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.65;
+  color: var(--soft);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.st-pb-body i {
+  font-style: normal;
+  color: var(--dim);
+}
+
+/* done card: collapsed completion-report row above the footer */
+.st-pb-report {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 10px 8px;
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* task footer: SUBAGENT / ISOLATED WORKTREE columns and the launch button */
+.st-pb-foot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 7px 10px;
+  border-top: 1px solid var(--line);
+}
+.st-pb-cell {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.st-pb-cell em {
+  font-style: normal;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--dim);
+}
+.st-pb-cell > span {
+  font-size: 12px;
+  color: var(--soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.st-pb-btn {
+  margin-left: auto;
+}
+.st-pb-off {
+  color: var(--dim);
+  border-color: var(--line);
+}
+
+/* dock: coordinator left, progress right */
+.st-pb-dock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 2px -14px 0;
+  padding: 9px 14px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+}
+.st-pb-co {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--soft);
+}
+.st-pb-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--silent);
+}
+.st-pb-prog {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--dim);
+}
+
+/* site annotations under the window; the tick matches the accent margin mark */
+.st-pb-notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 22px;
+  padding: 0 4px;
+  font-size: 12px;
+  color: var(--dim);
+}
+.st-pb-notes span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+}
+.st-pb-mark {
+  flex: none;
+  width: 3px;
+  height: 9px;
+  border-radius: 1px;
+  background: var(--accent);
+  transform: translateY(1px);
+}
+
+@media (max-width: 780px) {
+  .st-pb-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .st-pb-file {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    max-height: 300px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-pb-ic-running {
+    animation: none;
+  }
+}
