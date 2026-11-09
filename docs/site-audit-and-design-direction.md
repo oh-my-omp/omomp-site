@@ -7,7 +7,7 @@
 1. **视觉模板套路化**：全站机械套用 `#0b0c0e` 黑底 + 脏黄紫双色径向光斑（`.glow`）+ 半透明灰渐变大字（`.gradient-text`）+ 橙色等宽大写 `.eyebrow` + 泛滥的 `01`–`06` 编号 + `#111216` 圆角灰框（Card Soup）。
 2. **真实界面切片数量为零**：`docs/content-design.md:66, 203` 明确要求“每节下有几条要点，配一块真实界面切片”、“不做脱离真实运行结果的示意动画”。但全站除了纯文本会话框 `ReplayPlayer` 外，没有任何一块真实 UI 界面切片（`omp-ask-more` 全屏决策页、`omp-todo-more` 的 Tern 待办面板、`omp-unified-exec` 的 Tern 终端 HUD、`omp-playbooks` 的 Tern 卡片面板全部缺席），反而用 `src/components/RepoFigure.astro` 画了 4 张十来行代码的火柴盒 SVG 充数。
 3. **生搬硬套内部测试/调试日志充当演示**：没有设计面向读者的可理解模拟演示，而是直接从本机历史里抠出修 bug 和跑 CI 冒烟探针的原始 JSON/文本日志（如 `PR #188`、`#applyToolPresentation`、`topology B`、`PROBE-RC-1`、`This is a bounded plugin runtime check... Stop and reply READY`），导致演示内容虚假、上下文断裂、中英混杂、极难阅读。
-4. **全站文案陷入“AI 对偶口号腔”與翻译腔**：从 `h1`、`h2` 到卡片描述，几十处标题全部套用“不是 A，而是 B”、“每 X 一个 Y”的工整格言句式，中文版直接从英文隐喻硬翻并由 `src/middleware.ts` 强行注入 `<wbr>` 分词断行，读感生硬拗口。
+4. **全站文案陷入“AI 对偶口号腔”与翻译腔**：从 `h1`、`h2` 到卡片描述，几十处标题全部套用“不是 A，而是 B”、“每 X 一个 Y”的工整格言句式，中文版直接从英文隐喻硬翻并由 `src/middleware.ts` 强行注入 `<wbr>` 分词断行，读感生硬拗口。
 5. **前期设计文档缺失视觉与交互的执行规范**：`docs/content-design.md` 只列出了信息目录（哪些页面、哪些名词）并点名了 `supabase.com` 与 `linear.app` 两个网址，却没有拆解两者的版式解剖学、图文面积比、网格形态与控件切片规范，还错误规定了“用 `omp-sessions` 从本机会话记录中检索、不改写不编造”，直接诱导实现者把表格填成灰框、把单测日志当成产品演示。
 
 ## 二、 参照基准失真对比：Supabase 与 Linear 到底差在哪
