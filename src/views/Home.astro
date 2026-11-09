@@ -167,7 +167,7 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
       <a class="more" href={href("/principles/", lang)}>{t(home.principles.more, lang)} →</a>
     </SplitHead>
     <div class="wrap body">
-      <Grid cols={4} count={principles.length}>
+      <Grid cols={2} count={principles.length}>
         {principles.map((p) => {
           if (!isFig(p.id)) throw new Error(`principle \`${p.id}\` has no figure in Fig.astro`);
           return (
@@ -274,17 +274,27 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     gap: 28px;
     padding: 26px 26px 22px;
   }
+  /* Wide cards pair with a narrow one on each row: the products, the question page and the image tool. */
+  .card[data-repo="omp-ask-more"],
   .card[data-repo="omp-playbooks"],
   .card[data-repo="omp-dispatch"],
-  .card[data-repo="omp-remote-build"] {
+  .card[data-repo="omp-remote-build"],
+  .card[data-repo="omp-codex-image-gen"] {
     grid-column: span 8;
   }
-  .card[data-repo="omp-codex-image-gen"] {
-    grid-column: 1 / -1;
-    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
-    grid-template-rows: auto;
-    gap: 28px;
-    padding-bottom: 22px;
+  /* The question page at width: the brief's three blocks side by side, then the options and the tradeoff card. */
+  .card[data-repo="omp-ask-more"] .ca :global(.sl-ask-brief) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.4em;
+  }
+  /* Call lines wrap in a card instead of cutting off what was asked. */
+  .card .ca :global(.sl-tx-sig) {
+    flex-wrap: wrap;
+  }
+  .card .ca :global(.sl-tx-sig .a) {
+    white-space: normal;
+    overflow-wrap: break-word;
+    min-width: 0;
   }
   .ct {
     display: grid;
@@ -318,7 +328,7 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     gap: 10px;
     min-width: 0;
     min-height: 0;
-    height: 330px;
+    height: var(--art-h, 330px);
     overflow: hidden;
     mask-image: linear-gradient(to bottom, #000 86%, transparent);
     pointer-events: none;
@@ -328,6 +338,14 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
   .card[data-repo="omp-codex-image-gen"] .ca {
     height: auto;
     mask-image: none;
+  }
+  /* The question page is drawn whole down to its tradeoff card; the plan beside it gets the same height. */
+  .card[data-repo="omp-ask-more"] .ca {
+    height: auto;
+    mask-image: none;
+  }
+  .card[data-repo="omp-todo-more"] {
+    --art-h: 400px;
   }
   .bridge {
     margin-top: 28px;
@@ -347,9 +365,10 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
   .body {
     margin-top: clamp(40px, 5vw, 64px);
   }
-  /* Each principle figure keeps its drawn size, centred in the cell's art region; stretched, its labels grow past body text. */
+  /* Two figures a row, each drawn a quarter larger than its canvas so its smallest label reads at body-note size;
+     stretched further, the labels would grow past body text. */
   .figs :global(svg.fig) {
-    max-width: 250px;
+    max-width: 300px;
     margin-inline: auto;
   }
   .last {
@@ -391,9 +410,11 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     color: var(--text);
   }
   @media (max-width: 1080px) {
-    .card {
+    .card,
+    .card[data-repo="omp-codex-image-gen"] {
       grid-column: span 6;
     }
+    .card[data-repo="omp-ask-more"],
     .card[data-repo="omp-playbooks"],
     .card[data-repo="omp-dispatch"],
     .card[data-repo="omp-remote-build"] {
@@ -404,8 +425,7 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     .hero {
       grid-template-columns: minmax(0, 1fr);
     }
-    .card[data-repo="omp-config"],
-    .card[data-repo="omp-codex-image-gen"] {
+    .card[data-repo="omp-config"] {
       grid-template-columns: minmax(0, 1fr);
       gap: 16px;
     }
@@ -426,7 +446,25 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
       padding-bottom: 4px;
     }
     .ca {
-      height: 300px;
+      height: var(--art-h, 300px);
+    }
+    .card[data-repo="omp-ask-more"] .ca :global(.sl-ask-brief) {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.7em;
+    }
+    /* Stacked on a phone, these slices need their full height to reach the element the caption names. */
+    .card[data-repo="omp-dispatch"] .ca {
+      height: auto;
+      mask-image: none;
+    }
+    .card[data-repo="omp-todo-more"] {
+      --art-h: 300px;
+    }
+    .card[data-repo="omp-unified-exec"] {
+      --art-h: 350px;
+    }
+    .card[data-repo="omp-playbooks"] {
+      --art-h: 330px;
     }
     .next {
       grid-template-columns: minmax(0, 1fr);

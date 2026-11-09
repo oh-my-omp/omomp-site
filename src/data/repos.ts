@@ -82,13 +82,14 @@ export const repos: readonly Repo[] = [
     },
   },
   {
-    name: "omp-thinking-translator",
-    kind: "plugin",
-    seams: ["delivery"],
-    art: { from: "component", id: "thinking-translator" },
+    name: "omp-dispatch",
+    kind: "product",
+    seams: [],
+    page: "/products/dispatch/",
+    art: { from: "product", id: "dispatch" },
     line: {
-      en: "Each thinking line is translated under the original; the model never sees it.",
-      zh: "思考逐行附上译文，译文只给人看，不发给模型。",
+      en: "Hand over an issue tree: a fresh session delivers each ticket, a fresh judge rules on it.",
+      zh: "交出一棵 issue 树：每张工单由新会话交付，由新判定者裁决。",
     },
   },
   {
@@ -98,18 +99,17 @@ export const repos: readonly Repo[] = [
     art: { from: "component", id: "sessions" },
     line: {
       en: "Read any past session by URL, or query them all with SQL.",
-      zh: "按 URL 读任意历史会话，也能用 SQL 一起查。",
+      zh: "按 URL 读取任意历史会话，或用 SQL 跨会话查询。",
     },
   },
   {
-    name: "omp-dispatch",
-    kind: "product",
-    seams: [],
-    page: "/products/dispatch/",
-    art: { from: "product", id: "dispatch" },
+    name: "omp-peers",
+    kind: "plugin",
+    seams: ["delivery"],
+    art: { from: "component", id: "peers" },
     line: {
-      en: "Hand over an issue tree: a fresh session delivers each ticket, a fresh judge rules on it.",
-      zh: "交出一棵 issue 树：每张工单由新会话交付，由新判定者裁决。",
+      en: "Sessions in other omp processes can be found, asked a side question or messaged.",
+      zh: "找到其他 omp 进程里的会话，旁路提问或发消息。",
     },
   },
   {
@@ -124,13 +124,13 @@ export const repos: readonly Repo[] = [
     },
   },
   {
-    name: "omp-peers",
+    name: "omp-thinking-translator",
     kind: "plugin",
     seams: ["delivery"],
-    art: { from: "component", id: "peers" },
+    art: { from: "component", id: "thinking-translator" },
     line: {
-      en: "Sessions in other omp processes can be found, asked a side question or messaged.",
-      zh: "找到其他 omp 进程里的会话，旁路提问或发消息。",
+      en: "Each thinking line is translated under the original; the model never sees it.",
+      zh: "思考逐行附上译文，译文只给人看，不发给模型。",
     },
   },
   {
