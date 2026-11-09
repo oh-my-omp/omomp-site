@@ -267,7 +267,7 @@ export function principlePanes(id: PrincipleId, lang: Lang): Panes {
             kind: "code",
             title: "APPEND-SYSTEM-decision-support.md",
             lines: decisionSupport,
-            ...(en ? {} : { gloss: { label: "译文", text: "# 强制决策支持：本节是默认规则，用户的明确指令只覆盖它点名的规则和范围。" } }),
+            ...(en ? {} : { gloss: { label: "译文", text: "# 强制决策支持：本节是默认规则，用户的明确指令只覆盖它点名的规则和范围。……" } }),
           }),
           component("append-system-model", lang),
         ],

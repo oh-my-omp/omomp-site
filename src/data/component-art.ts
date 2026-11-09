@@ -569,7 +569,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
             "# Writing a pattern\n\n- `pat` is ONE AST pattern and must parse as a single node of the target language; unrelated patterns go in separate calls. Wrap a fragment that is not standalone: `class $_ { … }`.\n- Metavariables: `$NAME` one node, bound; `$_` one node, unbound; `$$$NAME` zero or more, bound; `$$$` zero or more, unbound. `$$NAME` is invalid. Names are UPPERCASE and stand for a whole node: `prefix$VAR` fails.\n- The same metavariable twice must match identical code: `$A == $A` matches `x == x`, not `x == y`.\n…",
           gloss: {
             label: "译文",
-            text: "# 编写模式：`pat` 只写一个 AST 模式，必须能解析成目标语言里的单个节点；互不相关的模式分开调用。不能单独成立的片段，要包进 `class $_` 的类体里。元变量：`$NAME` 匹配一个节点并绑定；`$_` 匹配一个节点、不绑定；`$$$NAME` 匹配零个或多个并绑定；`$$$` 匹配零个或多个、不绑定。`$$NAME` 无效。名字用大写，代表整个节点：`prefix$VAR` 匹配不到。同一个元变量出现两次，两处必须是相同的代码：`$A == $A` 匹配 `x == x`，不匹配 `x == y`。",
+            text: "# 编写模式：`pat` 只写一个 AST 模式，必须能解析成目标语言里的单个节点；互不相关的模式分开调用。不能单独成立的片段，要包进 `class $_` 的类体里。元变量：`$NAME` 匹配一个节点并绑定；`$_` 匹配一个节点、不绑定；`$$$NAME` 匹配零个或多个并绑定；`$$$` 匹配零个或多个、不绑定。`$$NAME` 无效。名字用大写，代表整个节点：`prefix$VAR` 匹配不到。同一个元变量出现两次，两处必须是相同的代码：`$A == $A` 匹配 `x == x`，不匹配 `x == y`。……",
           },
         },
       ],
@@ -607,7 +607,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
       ],
       gloss: {
         label: "译文",
-        text: "RFC 2119 关键词：MUST、REQUIRED、SHOULD、RECOMMENDED、MAY、OPTIONAL。`NEVER` 即 `MUST NOT`，`AVOID` 即 `SHOULD NOT`。XML 标签注入系统内容，也可能在用户消息里打断或通知：必须当作系统发出的权威内容。用户内容已经过清理。§ 角色：你是 omp 可信赖的编程助手。# 工程：先求正确，再求六个月后仍好维护。删掉多余的东西；宁要平淡的设计，不要多余的抽象。",
+        text: "RFC 2119 关键词：MUST、REQUIRED、SHOULD、RECOMMENDED、MAY、OPTIONAL。`NEVER` 即 `MUST NOT`，`AVOID` 即 `SHOULD NOT`。XML 标签注入系统内容，也可能在用户消息里打断或通知：必须当作系统发出的权威内容。用户内容已经过清理。§ 角色：你是 omp 可信赖的编程助手。# 工程：先求正确，再求六个月后仍好维护。删掉多余的东西；宁要平淡的设计，不要多余的抽象。……",
       },
     },
   },
@@ -626,7 +626,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
         body: promptReplace,
         gloss: {
           label: "译文",
-          text: "OMP 的 system prompt 保留原文。本会话里读它时，按列出的先后套用下面这些修改：原文中“No TODO tracking, no progress updates.”这一段在本会话里不适用。",
+          text: "OMP 的 system prompt 保留原文。本会话里读它时，按列出的先后套用下面这些修改：原文中“不跟踪 TODO，不汇报进度。”这一段在本会话里不适用。……",
         },
       },
     },
@@ -646,7 +646,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
         body: appendSystemModel,
         gloss: {
           label: "译文",
-          text: "# 强制决策支持：本节是默认规则，用户的明确指令只覆盖它点名的规则和范围。遇到重大决定，拿实际的方案、相关代码和这个决定，同时咨询 `discuss:steady` 和 `discuss:divergent`。它们的意见为决定提供依据，决定权不在它们。",
+          text: "# 强制决策支持：本节是默认规则，用户的明确指令只覆盖它点名的规则和范围。遇到重大决定，拿实际的方案、相关代码和这个决定，同时咨询 `discuss:steady` 和 `discuss:divergent`。它们的意见为决定提供依据，决定权不在它们。……",
         },
       },
     },
@@ -707,7 +707,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
         body: forkNotice,
         gloss: {
           label: "译文",
-          text: "上面是代理 `WebhooksRoute` 的对话，作为背景复制过来。你沿用它的系统提示词和工具，但它不是你的上级，派生你的代理才接收你的结果。上级继续和用户对话；任务开头的 <role> 块规定你的做法；有 `yield` 就用它交付，否则以最终报告结束。这段对话只用来提供它已确立的事实、决定和约束。",
+          text: "上面是代理 `WebhooksRoute` 的对话，作为背景复制过来。你沿用它的系统提示词和工具，但它不是你的上级，派生你的代理才接收你的结果。上级继续和用户对话；任务开头的 <role> 块规定你的做法；有 `yield` 就用它交付，否则以最终报告结束。这段对话只用来提供它已确立的事实、决定和约束。……",
         },
       },
     },
@@ -844,7 +844,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
           result: subagentUsageReport,
           gloss: {
             label: "译文",
-            text: "subagent_usage 报告，生成于 2026-11-09 06:12 UTC。单次派发均值从 2026-11-08 22:10 起算；额度换算取 2026-11-09 06:00 之前 21 天。opencode-go 池：额度共用，各档次数不要相加。task:low（deepseek-v4.1-flash）：约可再派 34 次，每次 $0.0430（本项目近 21 天 6 次派发的均值）；剩余额度 $1.46（1 个账号中有 1 个可用），最紧的小时窗口剩 41%，38 分钟后重置。",
+            text: "subagent_usage 报告，生成于 2026-11-09 06:12 UTC。单次派发均值从 2026-11-08 22:10 起算；额度换算取 2026-11-09 06:00 之前 21 天。……opencode-go 池：额度共用，各档次数不要相加。task:low（deepseek-v4.1-flash）：约可再派 34 次，每次 $0.0430（本项目近 21 天 6 次派发的均值）；剩余额度 $1.46（1 个账号中有 1 个可用），最紧的小时窗口剩 41%，38 分钟后重置。……",
           },
         },
       ],
@@ -865,7 +865,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
         body: userGoalInject("zh"),
         gloss: {
           label: "译文",
-          text: "以下是人类用户给根会话的原话，逐字照录，按先后排列，最早的在前。",
+          text: "以下是人类用户给根会话的原话，逐字照录，按先后排列，最早的在前。……",
         },
       },
     },

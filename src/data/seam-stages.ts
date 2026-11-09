@@ -458,7 +458,7 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
                     ...taskTopics,
                     gloss: {
                       label: "译文",
-                      text: "Topics——调用前只读这次需要的那一篇：`tool://task/batch`，按模板派发多项或分波次派发之前；`tool://task/follow-up`，给已有的代理追加工作、发消息或读回结果之前；`tool://task/isolation`，设置 `isolated: true` 之前，或隔离项启动、合并失败之后；`tool://task/judge`，读一批短文本（标题、行、发现、摘要）只为对每条回答同一个固定问题或归类之前；`tool://task/limits`，规划大范围并发、嵌套委派或长时间运行的子代理之前。",
+                      text: "……Topics——调用前只读这次需要的那一篇：`tool://task/batch`，按模板派发多项或分波次派发之前；`tool://task/follow-up`，给已有的代理追加工作、发消息或读回结果之前；`tool://task/isolation`，设置 `isolated: true` 之前，或隔离项启动、合并失败之后；`tool://task/judge`，读一批短文本（标题、行、发现、摘要）只为对每条回答同一个固定问题或归类之前；`tool://task/limits`，规划大范围并发、嵌套委派或长时间运行的子代理之前。",
                     },
                   },
                   {
