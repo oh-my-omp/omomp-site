@@ -5,9 +5,6 @@ playbooks:
   tagline:
     en: Write the design together with the agent, then launch it block by block.
     zh: 和代理一起写设计，再一块一块启动执行。
-  claim:
-    en: The design document is also the run
-    zh: 设计文档本身就是执行记录
   intro:
     en: One YAML file holds the design, the prompts that execute it and the code that orchestrates them. You edit it as cards in a Tern pane; the agent edits the same file through its tools.
     zh: 一个 YAML 文件同时装下设计、执行提示词和编排代码。你在 Tern 面板里按卡片编辑，代理通过工具读写同一个文件。
@@ -42,42 +39,40 @@ playbooks:
           zh: 每次运行都复制一份带全新状态的 Playbook，模板留着下次用。
         - en: Another coordinator can pick the document up where the last one stopped.
           zh: 换一个协调者，也能从上一个停下的地方接着做。
-  parties:
-    - name:
-        en: You
-        zh: 你
-      role:
-        en: Edit blocks, read designs, ask for launches and changes.
-        zh: 编辑卡片、审阅设计，提出启动和修改请求。
-    - name:
+  roles:
+    hub:
+      name:
         en: Coordinator
         zh: 协调者
       role:
         en: The omp main session. Revises designs, compiles prompts, runs subagents.
         zh: omp 主会话：修订设计、编译提示词、运行子代理。
-    - name:
-        en: Document service
-        zh: 文档服务
-      role:
-        en: Stores the file, resolves references, draws the pane, notifies the coordinator.
-        zh: 存储文件、解析引用、绘制面板、通知协调者。
-    - name:
-        en: Subagent
-        zh: 子代理
-      role:
-        en: Runs one compiled prompt and writes status and report back.
-        zh: 执行一份编译好的提示词，把状态和报告写回文件。
-
+    around:
+      - name:
+          en: You
+          zh: 你
+        role:
+          en: Edit blocks, read designs, ask for launches and changes.
+          zh: 编辑卡片、审阅设计，提出启动和修改请求。
+      - name:
+          en: Document service
+          zh: 文档服务
+        role:
+          en: Stores the file, resolves references, draws the pane, notifies the coordinator.
+          zh: 存储文件、解析引用、绘制面板、通知协调者。
+      - name:
+          en: Subagent
+          zh: 子代理
+        role:
+          en: Runs one compiled prompt and writes status and report back.
+          zh: 执行一份编译好的提示词，把状态和报告写回文件。
 dispatch:
   order: 2
   name: omp-dispatch
   repo: https://github.com/oh-my-omp/omp-dispatch
   tagline:
-    en: Deliver a GitHub issue tree. A fresh session per ticket, a fresh judge per verdict.
-    zh: 交付一整棵 GitHub issue 树。每张工单由新会话完成，每次裁决由新会话做出。
-  claim:
-    en: An issue tree goes in. Merged, verified, closed issues come out
-    zh: 输入一棵 issue 树，输出已合并、已验证、已关闭的 issue
+    en: "Hand over a GitHub issue tree: each ticket is delivered by a new session, and every verdict comes from a new judge."
+    zh: 交出一棵 GitHub issue 树：每张工单由新会话交付，每次裁决都由新的判定者做出。
   intro:
     en: Click the link an issue carries, or let a GitHub App event fire, and a coordinator session opens for that issue. It turns the tree into tickets and walks each one through a workflow you can rewrite.
     zh: 点击 issue 里的链接，或由 GitHub App 事件触发，就会为该 issue 开一个协调者会话。它把整棵树拆成工单，按一份你可以改写的工作流逐单推进。
@@ -112,42 +107,40 @@ dispatch:
           zh: 议程在崩溃后仍然保留；只有确认旧协调者已退出，新协调者才会接手。
         - en: A failed or uncertain write goes to the coordinator, never silently retried.
           zh: 写失败或结果不明，一律交给协调者处理，不会悄悄重试。
-  parties:
-    - name:
-        en: You
-        zh: 你
-      role:
-        en: File the issue tree and click its link.
-        zh: 写好 issue 树，点一下链接。
-    - name:
+  roles:
+    hub:
+      name:
         en: Coordinator
         zh: 协调者
       role:
         en: Convenes tickets, sets dependencies, rules on escalations.
         zh: 编排工单、设定依赖、裁决升级上来的问题。
-    - name:
-        en: Owner
-        zh: 负责人
-      role:
-        en: A one-shot session that delivers one ticket.
-        zh: 一次性会话，交付一张工单。
-    - name:
-        en: Judge
-        zh: 判定者
-      role:
-        en: A fresh session that rules on one exact commit.
-        zh: 全新会话，只对一个确定的提交做裁决。
-
+    around:
+      - name:
+          en: You
+          zh: 你
+        role:
+          en: File the issue tree and click its link.
+          zh: 写好 issue 树，点一下链接。
+      - name:
+          en: Owner
+          zh: 负责人
+        role:
+          en: A one-shot session that delivers one ticket.
+          zh: 一次性会话，交付一张工单。
+      - name:
+          en: Judge
+          zh: 判定者
+        role:
+          en: A fresh session that rules on one exact commit.
+          zh: 全新会话，只对一个确定的提交做裁决。
 remote-build:
   order: 3
   name: omp-remote-build
   repo: https://github.com/oh-my-omp/omp-remote-build
   tagline:
-    en: Edit on your laptop. Build and test in a remote container, one per worktree.
-    zh: 在本机编辑，到远端容器里构建和测试，每个 worktree 一个容器。
-  claim:
-    en: Edit here. Build there
-    zh: 这边改，那边构建
+    en: The agent edits files on your machine while builds and tests run in a remote container, one per worktree.
+    zh: 代理在本机改文件，构建和测试在远程容器里跑，每个 worktree 一个容器。
   intro:
     en: The agent keeps editing files locally with its usual tools. Compiling, testing and running happen in a container on a remote host that sees every edit before the next step.
     zh: 代理照常用本地工具改文件；编译、测试、运行都在远端主机的容器里进行，每一步之前容器都已看到最新改动。
@@ -178,28 +171,30 @@ remote-build:
           zh: 容器工具在远端容器里打开交互式终端会话。
         - en: The tools are on from the start of a session, so switching worktrees never changes the prompt prefix.
           zh: 这些工具在会话一开始就启用，换 worktree 也不会改动提示词前缀。
-  parties:
-    - name:
+  roles:
+    hub:
+      name:
         en: Your machine
         zh: 本机
       role:
         en: The omp session and the git worktree you edit.
         zh: omp 会话和你编辑的 git worktree。
-    - name:
-        en: Mutagen
-        zh: Mutagen
-      role:
-        en: Mirrors the worktree one way to the build host.
-        zh: 把 worktree 单向同步到构建主机。
-    - name:
-        en: Komodo
-        zh: Komodo
-      role:
-        en: Deploys and runs the container on the build host.
-        zh: 在构建主机上部署并运行容器。
-    - name:
-        en: Container
-        zh: 容器
-      role:
-        en: Builds, tests and runs, with the mirror as its working directory.
-        zh: 以同步过来的目录为工作目录，构建、测试、运行。
+    around:
+      - name:
+          en: Mutagen
+          zh: Mutagen
+        role:
+          en: Mirrors the worktree one way to the build host.
+          zh: 把 worktree 单向同步到构建主机。
+      - name:
+          en: Komodo
+          zh: Komodo
+        role:
+          en: Deploys and runs the container on the build host.
+          zh: 在构建主机上部署并运行容器。
+      - name:
+          en: Container
+          zh: 容器
+        role:
+          en: Builds, tests and runs, with the mirror as its working directory.
+          zh: 以同步过来的目录为工作目录，构建、测试、运行。

@@ -2,10 +2,14 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import Base from "../layouts/Base.astro";
 import PageHead from "../components/PageHead.astro";
+import SplitHead from "../components/SplitHead.astro";
+import Grid from "../components/Grid.astro";
+import Cell from "../components/Cell.astro";
 import Pager from "../components/Pager.astro";
-import ReplayPlayer from "../islands/ReplayPlayer";
-import { productPage as copy, replayPage, seamPage } from "../copy/pages";
-import { replayLabels, shotsFor } from "../data/replay";
+import PlaybooksStage from "../slices/PlaybooksStage";
+import DispatchStage from "../slices/DispatchStage";
+import RemoteBuildStage from "../slices/RemoteBuildStage";
+import { productPage as copy, replayPage, defaultsPage } from "../copy/pages";
 import { href, t, type Lang } from "../i18n";
 import { ui } from "../ui";
 
@@ -18,80 +22,78 @@ const all = (await getCollection("products")).sort((a, b) => a.data.order - b.da
 const index = all.findIndex((p) => p.id === product.id);
 const prev = all[index - 1];
 const next = all[index + 1];
-const shots = shotsFor([product.id], lang);
-const tones = ["var(--human)", "var(--accent)", "var(--agent)", "var(--silent)"];
+const stages = { playbooks: PlaybooksStage, dispatch: DispatchStage, "remote-build": RemoteBuildStage } as const;
+const isStaged = (id: string): id is keyof typeof stages => id in stages;
+if (!isStaged(product.id)) throw new Error(`product \`${product.id}\` has no stage component`);
+const StageView = stages[product.id];
+const { hub, around } = product.data.roles;
 ---
 
 <Base lang={lang} title={product.data.name} description={product.data.tagline[lang]}>
-  <PageHead eyebrow={`${t(copy.eyebrow, lang)} · ${product.data.name}`} title={product.data.claim[lang]} lede={product.data.intro[lang]}>
-    <div class="ctas">
-      <a class="btn" href={product.data.repo}>{t(copy.repo, lang)} →</a>
+  <PageHead kicker={`${t(copy.kicker, lang)} · ${product.data.name}`} title={product.data.tagline[lang]} lede={product.data.intro[lang]}>
+    <div class="top">
+      <a class="btn" href={product.data.repo}>{t(copy.repo, lang)} ↗</a>
+      <nav class="switch" aria-label={t(copy.all, lang)}>
+        {all.map((p) => (
+          <a href={href(`/products/${p.id}/`, lang)} aria-current={p.id === product.id ? "page" : undefined}>
+            {p.data.name}
+          </a>
+        ))}
+      </nav>
     </div>
-    <nav class="switch" aria-label={t(copy.all, lang)}>
-      {all.map((p) => (
-        <a href={href(`/products/${p.id}/`, lang)} aria-current={p.id === product.id ? "page" : undefined}>
-          {p.data.name}
-        </a>
-      ))}
-    </nav>
   </PageHead>
 
-  <section class="wrap parties reveal">
-    {
-      product.data.parties.map((p, i) => (
-        <div class="party" style={`--tone:${tones[i % tones.length]}`}>
-          <span class="pname">{p.name[lang]}</span>
-          <span class="prole">{p.role[lang]}</span>
-          {i < product.data.parties.length - 1 && <span class="link" aria-hidden="true" />}
-        </div>
-      ))
-    }
+  <section class="wrap stage">
+    <StageView lang={lang} />
   </section>
 
-  {
-    product.data.sections.map((s, i) => (
-      <section class="wrap sec reveal">
-        <span class="n">{String(i + 1).padStart(2, "0")}</span>
-        <h2>{s.title[lang]}</h2>
-        <ul style={`--cols:${s.points.length % 3 === 0 ? 3 : 2}`}>
-          {s.points.map((pt) => (
-            <li>{pt[lang]}</li>
-          ))}
-        </ul>
-      </section>
-    ))
-  }
+  <section class="section">
+    <SplitHead title={t(copy.how, lang)} />
+    <div class="wrap body">
+      <Grid cols={3} count={product.data.sections.length}>
+        {product.data.sections.map((s) => <Cell title={s.title[lang]} text={s.points.map((p) => p[lang]).join(lang === "zh" ? "" : " ")} />)}
+      </Grid>
+    </div>
+  </section>
 
-  {
-    shots.length > 0 && (
-      <section class="wrap replay reveal">
-        <h2 class="replay-title">{t(seamPage.replay, lang)}</h2>
-        <ReplayPlayer client:visible shots={shots} labels={replayLabels(lang)} compact />
-        <p class="note">{t(replayPage.note, lang)}</p>
-      </section>
-    )
-  }
+  <section class="section">
+    <SplitHead title={t(copy.who, lang)} />
+    <div class="wrap body roles" style={`--n:${around.length}`}>
+      <div class="hub">
+        <b>{hub.name[lang]}</b>
+        <p>{hub.role[lang]}</p>
+      </div>
+      <div class="spokes" aria-hidden="true">
+        {around.map(() => <span />)}
+      </div>
+      <Grid cols={around.length === 2 ? 2 : 3} count={around.length}>
+        {around.map((r) => <Cell title={r.name[lang]} text={r.role[lang]} />)}
+      </Grid>
+    </div>
+  </section>
 
   <Pager
     prev={prev
       ? { href: href(`/products/${prev.id}/`, lang), label: t(ui.previous, lang), title: prev.data.name }
-      : { href: href("/replay/", lang), label: t(ui.previous, lang), title: t(replayPage.eyebrow, lang) }}
+      : { href: href("/replay/", lang), label: t(ui.previous, lang), title: t(replayPage.kicker, lang) }}
     next={next
       ? { href: href(`/products/${next.id}/`, lang), label: t(ui.next, lang), title: next.data.name }
-      : { href: href("/defaults/", lang), label: t(ui.next, lang), title: t({ en: "Defaults", zh: "默认策略" }, lang) }}
+      : { href: href("/defaults/", lang), label: t(ui.next, lang), title: t(defaultsPage.kicker, lang) }}
   />
 </Base>
 
 <style>
-  .ctas {
+  .top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 24px;
     margin-top: 8px;
   }
-  /* Sibling products, current one marked, the way the seam rail marks the current seam. */
   .switch {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    margin-top: 20px;
   }
   .switch a {
     padding: 5px 12px;
@@ -100,6 +102,7 @@ const tones = ["var(--human)", "var(--accent)", "var(--agent)", "var(--silent)"]
     font-family: var(--mono);
     font-size: 12.5px;
     color: var(--muted);
+    text-decoration: none;
     transition: border-color 0.15s, color 0.15s;
   }
   .switch a:hover {
@@ -107,99 +110,73 @@ const tones = ["var(--human)", "var(--accent)", "var(--agent)", "var(--silent)"]
     border-color: var(--line-strong);
   }
   .switch a[aria-current="page"] {
-    color: var(--accent);
-    border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+    color: var(--text);
+    border-color: var(--muted);
   }
-  .replay-title {
-    font-size: clamp(24px, 3vw, 32px);
-    margin-bottom: 4px;
+  .stage {
+    padding-bottom: clamp(72px, 10vw, 128px);
   }
-  .parties {
+  .body {
+    margin-top: clamp(40px, 5vw, 64px);
+  }
+
+  /* The hub sits above the parties it connects; one hairline drops to each of them. */
+  .hub {
+    justify-self: center;
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 12px;
-  }
-  .party {
-    position: relative;
-    display: grid;
-    align-content: start;
-    gap: 8px;
-    padding: 20px;
-    border: 1px solid color-mix(in srgb, var(--tone) 30%, transparent);
-    border-radius: var(--radius);
-    background:
-      linear-gradient(180deg, color-mix(in srgb, var(--tone) 9%, transparent), transparent 70%),
-      var(--bg-raised);
-  }
-  .pname {
-    font-weight: 600;
-    color: var(--tone);
-  }
-  .prole {
-    color: var(--muted);
-    font-size: 14.5px;
-  }
-  .link {
-    position: absolute;
-    right: -12px;
-    top: 50%;
-    width: 12px;
-    height: 1px;
-    background: var(--line-strong);
-  }
-  .sec {
-    display: grid;
-    gap: 14px;
-    padding-top: clamp(56px, 8vw, 96px);
-  }
-  .n {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--accent);
-  }
-  h2 {
-    font-size: clamp(26px, 3.4vw, 36px);
-    margin-bottom: 10px;
-  }
-  ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
-    gap: 12px;
-  }
-  li {
-    padding: 18px 20px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
+    gap: 6px;
+    width: min(100%, 420px);
+    padding: 20px 24px;
+    border: 1px solid var(--line-strong);
+    border-radius: 14px;
     background: var(--bg-raised);
+    text-align: center;
+  }
+  .hub p {
     color: var(--muted);
     font-size: 15px;
   }
-  .replay {
-    padding-top: 72px;
+  .roles {
     display: grid;
-    gap: 16px;
   }
-  .note {
-    font-size: 13px;
-    color: var(--dim);
+  .spokes {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+    height: 48px;
+  }
+  .spokes::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    height: 24px;
+    border-left: 1px solid var(--line-strong);
+  }
+  .spokes::after {
+    content: "";
+    position: absolute;
+    top: 24px;
+    left: calc(50% / var(--n));
+    right: calc(50% / var(--n));
+    border-top: 1px solid var(--line-strong);
+  }
+  .spokes span {
+    justify-self: center;
+    margin-top: 24px;
+    border-left: 1px solid var(--line-strong);
   }
   @media (max-width: 960px) {
-    .parties {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    .link {
+    .spokes {
       display: none;
     }
-    ul {
-      grid-template-columns: 1fr;
-    }
-  }
-  @media (max-width: 640px) {
-    .parties {
-      grid-template-columns: 1fr;
+    .hub {
+      justify-self: stretch;
+      width: auto;
+      margin-bottom: 1px;
+      text-align: left;
+      border-radius: 14px 14px 0 0;
+      border-bottom: 0;
     }
   }
 </style>

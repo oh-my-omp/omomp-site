@@ -2,7 +2,11 @@
 import { getCollection } from "astro:content";
 import Base from "../layouts/Base.astro";
 import PageHead from "../components/PageHead.astro";
+import SplitHead from "../components/SplitHead.astro";
+import Stage from "../components/Stage.astro";
+import Fig from "../components/Fig.astro";
 import Pager from "../components/Pager.astro";
+import ArtView from "../slices/Art";
 import { defaultsPage as copy } from "../copy/pages";
 import { href, inlineCode, t, type Lang } from "../i18n";
 import { ui } from "../ui";
@@ -20,12 +24,44 @@ const groups = seams
     rows: components.flatMap((c) => (c.data.seam === s.id && c.data.defaults ? [{ c, d: c.data.defaults }] : [])),
   }))
   .filter((g) => g.rows.length > 0);
+/** The shipped turn check from the demo's step 12, as its file starts (omp-config agent/extensions/turn-judge). */
+const example = {
+  kind: "code",
+  title: "agent/extensions/turn-judge/TURN-JUDGE-gpt-talk-only.md",
+  lines: [
+    "---",
+    "name: gpt-talk-only",
+    "target: main",
+    "model: (^|/)[Gg][Pp][Tt]",
+    "skipTools: wt, harness_restart",
+    "inject: user",
+    "question.says_remaining: Does `本轮回复` say that some of the assistant's work is still not done, not run, not committed, not pushed or not verified?",
+    "…",
+    "when.unfinished_with_plan: says_remaining >= 0.6 & announces_future >= 0.3 & asks_user < 0.5 & user_forbids_work < 0.5 & external_blocker < 0.5",
+    "prompt: 你停下了，但交代的工作还没做完。不要只宣布下一步或认错：现在就用工具继续做，直到有可验证的结果。…",
+    "---",
+  ],
+} as const;
 ---
 
-<Base lang={lang} title={t(copy.eyebrow, lang)} description={t(copy.lede, lang).replaceAll("`", "")}>
-  <PageHead eyebrow={t(copy.eyebrow, lang)} title={t(copy.title, lang)} lede={t(copy.lede, lang)} />
+<Base lang={lang} title={t(copy.kicker, lang)} description={t(copy.lede, lang).replaceAll("`", "")}>
+  <PageHead kicker={t(copy.kicker, lang)} title={t(copy.title, lang)} lede={t(copy.lede, lang)} />
 
-  <div class="wrap reveal">
+  <section class="section">
+    <SplitHead title={t(copy.exampleTitle, lang)} lede={t(copy.exampleLede, lang)} />
+    <div class="wrap body">
+      <Stage>
+        <div class="example">
+          <ArtView lang={lang} art={example} />
+          <Fig fig="policy" lang={lang} labels />
+        </div>
+      </Stage>
+    </div>
+  </section>
+
+  <section class="section">
+    <SplitHead title={t(copy.listTitle, lang)} lede={t(copy.listLede, lang)} />
+    <div class="wrap body">
     <ul class="key">
       {
         layers.map((l) => (
@@ -72,7 +108,8 @@ const groups = seams
         ))
       }
     </div>
-  </div>
+    </div>
+  </section>
 
   <Pager
     prev={{ href: href("/products/remote-build/", lang), label: t(ui.previous, lang), title: "omp-remote-build" }}
@@ -81,6 +118,23 @@ const groups = seams
 </Base>
 
 <style>
+  .body {
+    margin-top: clamp(40px, 5vw, 64px);
+  }
+  .example {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(24px, 4vw, 56px);
+    align-items: center;
+  }
+  .example :global(.sl-art-code pre) {
+    font-size: 12px;
+  }
+  @media (max-width: 900px) {
+    .example {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
   .key {
     display: flex;
     flex-wrap: wrap;
