@@ -77,7 +77,7 @@
   background: color-mix(in srgb, var(--layer) 12%, transparent);
 }
 
-/* The sentence opens under the row of the selected component, three columns wide, starting at its column. */
+/* The sentence opens under the row of the selected component, across the row it belongs to. */
 .lm-detail {
   grid-column: 1 / -1;
   display: grid;
@@ -85,10 +85,17 @@
   background: var(--bg-raised) !important;
 }
 .lm-box {
+  grid-column: 2 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  column-gap: 32px;
+  padding: 18px 20px 20px;
+  border-left: 2px solid var(--layer);
+}
+.lm-text {
   display: grid;
   gap: 8px;
-  padding: 18px 16px 20px;
-  border-left: 2px solid var(--layer);
 }
 .lm-box code {
   justify-self: start;
@@ -99,19 +106,26 @@
   color: var(--soft);
   font-size: 15px;
   line-height: 1.6;
+  max-width: 62ch;
 }
 .lm-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 20px;
-  font-size: 14px;
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  font-size: 13px;
 }
 .lm-links a {
-  color: var(--accent);
+  color: var(--text);
   text-decoration: none;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 4px 11px;
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s;
 }
 .lm-links a:hover {
-  text-decoration: underline;
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 @media (max-width: 900px) {
@@ -151,6 +165,24 @@
   }
   .lm-box {
     grid-column: 1 / -1 !important;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 14px;
+  }
+  .lm-links {
+    display: flex;
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 640px) {
+  /* Six seams as a 3 by 2 grid, so none of them is clipped by a horizontal scroller. */
+  .lm-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow-x: visible;
+  }
+  .lm-tabs button {
+    text-align: center;
+    padding: 8px 6px;
   }
 }
 @media (max-width: 480px) {

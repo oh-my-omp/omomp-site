@@ -1,23 +1,54 @@
 import type { Text } from "../i18n";
 
-export const principlesPage = {
+type PrincipleFig = "append" | "signals" | "roles" | "policy";
+
+export const principlesPage: {
+  kicker: Text;
+  title: Text;
+  lede: Text;
+  seen: Text;
+  /** Column headings over a principle's practice strip, in the figure's order. */
+  practiceTitles: Readonly<Record<PrincipleFig, readonly Text[]>>;
+} = {
   kicker: { en: "Principles", zh: "设计原则" },
-  title: { en: "Four rules every repository follows", zh: "每个仓库都遵守的四条工程规则" },
+  title: { en: "Four rules every repository follows", zh: "四条工程规则" },
   lede: {
-    en: "Each component on this site puts one of these rules into practice. Each rule below names the problem it answers, how it is carried out, and the components that carry it.",
-    zh: "站上每个组件都在落实其中一条。下面每条规则写明它针对的问题、具体做法，以及由哪些组件承担。",
+    en: "Every plugin and config in omomp is built around four constraints: keep the prompt cache intact, correct drift from runtime signals, isolate state ownership across roles, and separate extension mechanisms from personal policy.",
+    zh: "omomp 的所有插件与配置都围绕四条约束构建：保持提示前缀与缓存不变、根据运行时信号纠偏、隔离不同角色的状态所有权、将扩展机制与个人策略分离。",
   },
   seen: { en: "Components", zh: "落地组件" },
-} satisfies Record<string, Text>
+  practiceTitles: {
+    append: [
+      { en: "Prefix stays as built", zh: "前缀保持原样" },
+      { en: "Same paths in every worktree", zh: "各工作树路径一致" },
+      { en: "One tool list per session", zh: "工具列表一次写定" },
+    ],
+    signals: [
+      { en: "Block before the call", zh: "执行前阻断" },
+      { en: "Remind on the result", zh: "结果后提醒" },
+      { en: "Judge before the end", zh: "结束前判定" },
+    ],
+    roles: [
+      { en: "Stateless workers", zh: "执行者不留状态" },
+      { en: "Advisors read your words", zh: "顾问读你的原话" },
+      { en: "Buttons only send requests", zh: "按钮只发请求" },
+    ],
+    policy: [
+      { en: "Scope conditions", zh: "作用域条件" },
+      { en: "Runnable examples", zh: "可运行的示例" },
+      { en: "Updates keep your changes", zh: "更新保留本地改动" },
+    ],
+  },
+}
 
 export const lifelinePage = {
   kicker: { en: "Lifeline", zh: "生命线" },
-  title: { en: "Six handoffs between your words and the code", zh: "从你的一句话到代码，要转手六次" },
+  title: { en: "Six seams between your words and the code", zh: "从一句话到代码" },
   lede: {
-    en: "Each handoff is a seam where intent can drift. At every seam omomp works on three layers: panels you see and answer, tools the agent calls, and hooks that run without showing on your screen.",
-    zh: "每次转手都是一道接缝，意图可能在这里走样。omomp 在每道接缝分三层起作用：你看得见、要作答的面板，代理调用的工具，以及不在你屏幕上出现的钩子。",
+    en: "Intent can drift at any of the six seams. At each seam omomp works on three layers: human surfaces you see and answer, agent primitives the model calls, and silent governance hooks that run in the background.",
+    zh: "意图可能在任意一道接缝走样。omomp 在每道接缝分三层介入：你直接查看与作答的人机交互面、模型调用的代理原语，以及后台运行的静默治理钩子。",
   },
-  mapTitle: { en: "Every component, by seam and layer", zh: "全部组件，按接缝与层级排布" },
+  mapTitle: { en: "Every component, by seam and layer", zh: "组件按接缝与层级排布" },
   mapLede: {
     en: "Select a component to read what it does. Each seam's page shows its components at work and its part of the demo.",
     zh: "选中一个组件，就能读到它做什么。每道接缝的页面会展示其中组件的实际样子，以及演示里对应的几步。",

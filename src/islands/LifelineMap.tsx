@@ -96,9 +96,11 @@ export default function LifelineMap(props: {
               </For>
               <Show when={focus().layer === layer}>
                 <div class="lm-detail">
-                  <div class={`lm-box layer-${layer}`} style={{ "grid-column": `${2 + Math.min(column(), props.seams.length - 3)} / span 3` }}>
-                    <code>{focus().name}</code>
-                    <p>{focus().line}</p>
+                  <div class={`lm-box layer-${layer}`}>
+                    <div class="lm-text">
+                      <code>{focus().name}</code>
+                      <p>{focus().line}</p>
+                    </div>
                     <div class="lm-links">
                       <a href={focus().repo}>{props.labels.repo} ↗</a>
                       <a href={props.seams[column()]!.href}>

@@ -8,7 +8,7 @@ append:
     zh: 改动以追加消息送到模型，提示前缀和建立在它上面的缓存不受影响。
   title:
     en: Append changes and keep the prompt prefix unchanged
-    zh: 增量追加，保持提示前缀不变
+    zh: 增量追加，前缀不变
   problem:
     en: When a hook rewrites the system prompt or changes the tool list mid-session, every later request starts with a different prefix. The prompt cache misses, and the session pays again for context it has already sent.
     zh: 钩子改写 system prompt，或在会话中途增减工具，之后每个请求的前缀都会变化。提示缓存随之失效，已经发过的上下文要重新计费。
@@ -31,30 +31,30 @@ signals:
     zh: 长会话会逐渐偏离静态指令。omomp 观察代理的实际动作，在偏离出现的那一步处理。
   title:
     en: Correct drift from observable signals
-    zh: 用可观测的信号纠正偏离
+    zh: 按可观测信号纠偏
   problem:
     en: A model given two instructions that disagree follows neither reliably. Over a long session it drifts from the system prompt even when the prompt is clean.
     zh: 两条指令互相冲突时，模型哪条都不会稳定遵守；即使提示词没有冲突，长会话里它也会逐渐偏离。
   practice:
-    - en: "First the conflicts go: duplicated tool prose leaves the base template, tool details move into on-demand topics, and host sentences that contradict local rules are overridden by appended replacements."
-      zh: 先消除冲突：基础模板删去重复的工具说明，工具细节移进按需读取的专题，与本地规则矛盾的宿主原句用追加的替换声明覆盖。
-    - en: Then behavior is checked. A misused tool, two writers in one checkout, an unverified handoff, or a turn that announces work and stops each counts as a drift signal.
-      zh: 再检查行为：用错工具、两个代理同时写一个工作区、没验证就交付、说了要做却结束回合，都算偏离信号。
-    - en: Each signal is handled where it occurs, at the tool call, the tool result, the subagent handoff or the end of the turn, with a block or a reminder.
-      zh: 每个信号在它出现的位置处理：工具调用、工具结果、子代理交付或回合结束，处理方式是阻断或提醒。
+    - en: Risky shell and eval calls are refused at `tool_call`, before any process starts.
+      zh: 危险的 shell 与 eval 调用在 `tool_call` 阶段被拒绝，进程不会启动。
+    - en: A shell call that does a job a built-in tool covers, or one whose step failed without reporting, is judged once it returns; the reminder arrives with that call's result.
+      zh: 本该用内置工具完成的 shell 调用，或某一步失败却没报错的调用，在返回后判定，提醒随该次结果送达模型。
+    - en: A subagent's `yield` is judged against its assignment, and a turn that ends with work still open receives the follow-up its turn file defines.
+      zh: 子代理交付时按任务说明判定；带着未完成工作结束的回合，会收到该回合判定文件定义的追问。
   seen: [tool-policy-nag, isolation-nudge, task-completion-judge, turn-judge]
 
 roles:
   order: 3
   short:
     en: Separate roles
-    zh: 角色分离
+    zh: 职责与状态分离
   summary:
     en: Workers keep no state between jobs. Advisors read your own words, not the main agent's summary of them.
     zh: 执行者在两次任务之间不保留状态；顾问读到的是你的原话，不是主代理的转述。
   title:
     en: One owner per state; planning, execution and advice kept apart
-    zh: 权威源头单一，编排、执行、顾问分离
+    zh: 单一权威源，职责分离
   problem:
     en: A main agent writing a subagent's brief passes its own assumptions down with it. A button or a subagent that acts on its own creates a second version of the same state.
     zh: 主代理给子代理写派工说明时，会把自己的假设一并传下去；按钮或子代理擅自改动状态，同一件事就有了两个版本。
@@ -62,7 +62,7 @@ roles:
     - en: Execution goes to stateless `task:*` tiers. Each receives a brief and returns a result.
       zh: 执行交给无状态的 `task:*` 档位：接一份派工说明，交一份结果。
     - en: Advisors (`discuss:*`, `mentor:default`) receive the user's original request directly and work read-only or with no tools.
-      zh: 顾问（`discuss:*`、`mentor:default`）直接拿到用户的原始请求，只读或没有工具。
+      zh: 顾问（`discuss:*`、`mentor:default`）直接读取用户的原始请求，只读运行或完全不使用工具。
     - en: In a Playbook, a button sends a request to the coordinator. The button changes nothing by itself.
       zh: 在 Playbook 里，按钮只向协调者发出请求，本身不改变任何状态。
   seen: [worker-tiers, advisors, user-prompt-inject, task-split-check]
