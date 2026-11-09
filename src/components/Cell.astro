@@ -44,6 +44,7 @@ const hasArt = Astro.slots.has("default");
       padding: 32px 28px 32px 36px;
     }
     .wide .art {
+      align-items: center;
       padding: 32px 28px;
     }
   }
@@ -53,10 +54,11 @@ const hasArt = Astro.slots.has("default");
   .link:hover {
     background: #0c0d0e;
   }
+  /* Slices start at the same height in a row; a short one leaves room below it, not on both sides. */
   .art {
     display: grid;
-    place-items: center;
-    min-height: 240px;
+    align-items: start;
+    justify-items: center;
     padding: 32px 28px 8px;
     min-width: 0;
     overflow: hidden;

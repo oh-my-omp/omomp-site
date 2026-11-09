@@ -325,7 +325,11 @@ const thinkingPanel = {
         "One commit per phase, so the middleware can be reverted on its own.",
         "Report the 429 behaviour with the test names as evidence.",
       ],
-      translated: ["16 个测试全部通过，包括签名 webhook 那个用例。", "每个阶段一个提交，这样中间件可以单独回滚。"],
+      translated: [
+        "16 个测试全部通过，包括签名 webhook 那个用例。",
+        "每个阶段一个提交，这样中间件可以单独回滚。",
+        "汇报 429 的行为时，把测试名作为证据列出来。",
+      ],
     },
 } as const;
 
@@ -404,12 +408,12 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
     en: {
       kind: "code",
       title: "README.md · shell commands",
-      lines: ["omp                           # full mode", "omp-light                     # light mode (skips the governance extensions in config-light.yml)"],
+      lines: ["# full mode", "omp", "", "# light mode: skips the governance extensions listed in config-light.yml", "omp-light"],
     },
     zh: {
       kind: "code",
       title: "README.md · shell commands",
-      lines: ["omp                           # 完整模式", "omp-light                     # 轻量模式（跳过 config-light.yml 列出的治理扩展）"],
+      lines: ["# 完整模式", "omp", "", "# 轻量模式：跳过 config-light.yml 列出的治理扩展", "omp-light"],
     },
   },
   "tool-topics": {
@@ -1004,6 +1008,14 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
           result:
             '2 omp process(es) reachable through omp-peers, 2 main session(s):\n- pid 68412 (this process)\n  - b8d2c4f9 "rate-limit the public API" — ~/code/shop-api — busy (you)\n- pid 59307\n  - 9c1e77a2 "docs sweep" — ~/code/handbook — idle',
         },
+        {
+          kind: "call",
+          tool: "peer_ask",
+          args: 'to: 9c1e77a2 · "Does the handbook document the 429 response yet?"',
+          status: "ok",
+          result:
+            "Answer from session 9c1e77a2 (pid 59307):\n\nYes: handbook/api/errors.md lists 429 with Retry-After in seconds. It does not mention that signed webhooks are exempt.",
+        },
       ],
     },
     zh: {
@@ -1016,6 +1028,14 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
           status: "ok",
           result:
             '2 omp process(es) reachable through omp-peers, 2 main session(s):\n- pid 68412 (this process)\n  - b8d2c4f9 "rate-limit the public API" — ~/code/shop-api — busy (you)\n- pid 59307\n  - 9c1e77a2 "docs sweep" — ~/code/handbook — idle',
+        },
+        {
+          kind: "call",
+          tool: "peer_ask",
+          args: "to: 9c1e77a2 · “手册里写了 429 响应吗？”",
+          status: "ok",
+          result:
+            "Answer from session 9c1e77a2 (pid 59307):\n\n写了：handbook/api/errors.md 列出了 429 和以秒计的 Retry-After，但没提签名 webhook 免限流。",
         },
       ],
     },

@@ -443,6 +443,13 @@
 .sl-todo.compact {
   font-size: 11.5px;
 }
+/* As a card or grid slice the popover is the whole picture, so it spans the slice instead of hanging off a HUD pill. */
+.sl-art .sl-todo {
+  justify-items: stretch;
+}
+.sl-art .sl-todo-pop {
+  width: 100%;
+}
 .sl-todo-pop {
   width: min(100%, 30em);
   padding: 0.95em 1.1em;

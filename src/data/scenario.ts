@@ -792,8 +792,8 @@ export const playerLabels: Record<Lang, PlayerLabels> = {
     prev: "上一步",
     next: "下一步",
     step: "步骤",
-    front: "你屏幕上的",
-    back: "送给模型的",
+    front: "你看到的界面",
+    back: "发给模型的消息",
     quiet: "这一步没有给模型追加任何内容。",
     seams: {
       intent: "意图",

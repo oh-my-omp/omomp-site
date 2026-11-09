@@ -14,8 +14,8 @@ import Window from "../slices/Window";
 import { home } from "../copy/home";
 import { componentArt } from "../data/component-art";
 import { repos, repoUrl, type Repo } from "../data/repos";
-import { scenario } from "../data/scenario";
-import { href, t, type Lang } from "../i18n";
+import { playerLabels, scenario } from "../data/scenario";
+import { href, inlineCode, t, type Lang } from "../i18n";
 
 interface Props {
   lang: Lang;
@@ -50,6 +50,7 @@ const seamsOf = (r: Repo) =>
     ? t(home.blocks.allSeams, lang)
     : r.seams.map((id) => seams.find((s) => s.id === id)?.data.short[lang]).join(" · ");
 const target = (r: Repo) => (r.page ? href(r.page, lang) : repoUrl(r.name));
+const routeHref = (route: string) => (route.startsWith("https://") ? route : href(route, lang));
 ---
 
 <Base lang={lang} title={t(home.meta.title, lang)} description={t(home.meta.description, lang)}>
@@ -64,17 +65,16 @@ const target = (r: Repo) => (r.page ? href(r.page, lang) : repoUrl(r.name));
       </div>
     </div>
     <div class="hr" aria-hidden="true">
-      <span class="side human">{t(home.hero.screen, lang)}</span>
+      <span class="side human">{playerLabels[lang].front}</span>
       <Window tabs={["shop-api"]} meta="omp">
         <div class="hr-screen"><Transcript lines={heroFront.lines} /></div>
       </Window>
-      <span class="side silent">{t(home.hero.model, lang)}</span>
+      <span class="side silent">{playerLabels[lang].back}</span>
       <HookMessage hook={heroHook} />
     </div>
   </section>
 
-  <section class="wrap blocks" aria-label={t(home.blocks.kicker, lang)}>
-    <p class="kicker">{t(home.blocks.kicker, lang)}</p>
+  <section class="wrap blocks" aria-label={t(home.blocks.label, lang)}>
     <div class="bento">
       {
         repos.map((r) => (
@@ -114,7 +114,15 @@ const target = (r: Repo) => (r.page ? href(r.page, lang) : repoUrl(r.name));
             tern: { name: t(home.hosts.hosts.tern.name, lang), role: t(home.hosts.hosts.tern.role, lang) },
           },
           links: { omp: t(home.hosts.links.omp, lang), tern: t(home.hosts.links.tern, lang) },
-          tabs: home.hosts.tabs.map((tab) => ({ id: tab.id, label: t(tab.label, lang), uses: tab.uses, lines: tab.lines, text: t(tab.text, lang) })),
+          after: t(home.hosts.after, lang),
+          tabs: home.hosts.tabs.map((tab) => ({
+            id: tab.id,
+            label: t(tab.label, lang),
+            uses: tab.uses,
+            lines: tab.lines,
+            text: t(tab.text, lang),
+            after: tab.after.map((a) => inlineCode(t(a, lang))),
+          })),
         }}
       />
     </div>
@@ -142,7 +150,7 @@ const target = (r: Repo) => (r.page ? href(r.page, lang) : repoUrl(r.name));
     <SplitHead title={t(home.next.title, lang)} />
     <div class="wrap body">
       <Grid cols={3} count={home.next.items.length}>
-        {home.next.items.map((i) => <Cell tag={t(i.q, lang)} title={`${t(i.a, lang)} →`} text="" href={href(i.route, lang)} />)}
+        {home.next.items.map((i) => <Cell tag={t(i.q, lang)} title={`${t(i.a, lang)} →`} text="" href={routeHref(i.route)} />)}
       </Grid>
     </div>
   </section>
@@ -212,7 +220,6 @@ const target = (r: Repo) => (r.page ? href(r.page, lang) : repoUrl(r.name));
   /* Bento: about a third text, the rest a slice of the repository at work. */
   .blocks {
     display: grid;
-    gap: 16px;
   }
   .bento {
     display: grid;
@@ -246,12 +253,15 @@ const target = (r: Repo) => (r.page ? href(r.page, lang) : repoUrl(r.name));
     grid-row: span 2;
   }
   .card[data-repo="omp-ask-more"],
-  .card[data-repo="omp-todo-more"],
-  .card[data-repo="omp-unified-exec"] {
+  .card[data-repo="omp-todo-more"] {
     grid-column: span 6;
   }
+  /* The terminal view needs the width; the thinking card is narrower so both slices end near the same height. */
+  .card[data-repo="omp-unified-exec"] {
+    grid-column: span 7;
+  }
   .card[data-repo="omp-thinking-translator"] {
-    grid-column: span 6;
+    grid-column: span 5;
   }
   .ct {
     display: grid;
@@ -288,8 +298,10 @@ const target = (r: Repo) => (r.page ? href(r.page, lang) : repoUrl(r.name));
     mask-image: linear-gradient(to bottom, #000 78%, transparent);
     pointer-events: none;
   }
+  /* The pipeline is drawn whole: all six seams fit, so it is neither cut nor faded. */
   .card[data-repo="omp-config"] .ca {
-    max-height: 560px;
+    max-height: none;
+    mask-image: none;
   }
   .body {
     margin-top: clamp(40px, 5vw, 64px);
@@ -305,6 +317,7 @@ const target = (r: Repo) => (r.page ? href(r.page, lang) : repoUrl(r.name));
     }
     .card[data-repo="omp-config"] .ca {
       max-height: 300px;
+      mask-image: linear-gradient(to bottom, #000 78%, transparent);
     }
   }
   @media (max-width: 900px) {

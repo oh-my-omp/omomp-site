@@ -10,6 +10,8 @@ export interface HostTab {
   readonly uses: readonly Part[];
   readonly lines: readonly string[];
   readonly text: string;
+  /** What this way of installing gives you, one short line each, as HTML from `inlineCode`. */
+  readonly after: readonly string[];
 }
 
 export interface HostStageData {
@@ -17,6 +19,8 @@ export interface HostStageData {
   readonly parts: Readonly<Record<"config" | "plugins" | "products", string>>;
   readonly hosts: Readonly<Record<"omp" | "tern", { readonly name: string; readonly role: string }>>;
   readonly links: Readonly<Record<"omp" | "tern", string>>;
+  /** Heading over each tab's `after` list. */
+  readonly after: string;
   readonly tabs: readonly HostTab[];
 }
 
@@ -72,6 +76,12 @@ export default function HostStage(props: { data: HostStageData }) {
             </pre>
           </Show>
           <p>{tab().text}</p>
+          <div class="hs-after">
+            <span>{props.data.after}</span>
+            <ul>
+              <For each={tab().after}>{(item) => <li innerHTML={item} />}</For>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
