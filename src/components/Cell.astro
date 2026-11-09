@@ -10,13 +10,15 @@ interface Props {
   mono?: boolean;
   /** The only cell in a one-column grid: text in the left three tenths, art in the right seven. */
   wide?: boolean;
+  /** Anchor id, so links elsewhere on the page can jump to this cell. */
+  id?: string;
 }
-const { title, text, tag, href, mono, wide } = Astro.props;
+const { title, text, tag, href, mono, wide, id } = Astro.props;
 const Tag = href ? "a" : "div";
 const hasArt = Astro.slots.has("default");
 ---
 
-<Tag class:list={["cell", { link: href, bare: !hasArt, wide: wide && hasArt }]} href={href}>
+<Tag class:list={["cell", { link: href, bare: !hasArt, wide: wide && hasArt }]} href={href} id={id}>
   {hasArt && <div class="art"><slot /></div>}
   <div class="txt">
     {tag && <span class="tag" set:html={inlineCode(tag)} />}
