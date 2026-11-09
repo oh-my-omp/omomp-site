@@ -50,10 +50,11 @@
 .rp-ticks button.past {
   color: var(--muted);
 }
+/* The current step fills from left to right as its beats appear. */
 .rp-ticks button.on {
   color: var(--bg);
-  background: var(--text);
   border-color: var(--text);
+  background: linear-gradient(90deg, var(--text) var(--p, 100%), rgb(255 255 255 / 0.55) var(--p, 100%));
 }
 
 .rp-head {
@@ -128,19 +129,114 @@
   line-height: 1.65;
 }
 
-/* Split: the screen the person sees, and the messages that reached the model without showing there. */
+/* Progress through every beat of the scenario on this page. */
+.rp-progress {
+  height: 2px;
+  margin-top: -8px;
+  background: var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.rp-progress span {
+  display: block;
+  height: 100%;
+  background: var(--text);
+  transition: width 0.4s ease;
+}
+
+/*
+ * Split: the screen the person sees, and the messages that reached the model without showing there.
+ * The split keeps one height that fits the viewport; each pane scrolls inside it and follows the newest beat,
+ * so a change never happens off screen.
+ */
 .rp-split {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
   gap: 20px;
-  align-items: stretch;
+  height: clamp(380px, calc(100vh - 300px), 700px);
+  height: clamp(380px, calc(100svh - 300px), 700px);
 }
 .rp-front,
 .rp-back {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto minmax(0, 1fr);
   gap: 12px;
   min-width: 0;
+  min-height: 0;
+}
+.rp-win {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+}
+.rp-win > .sl-win-body {
+  display: grid;
+  min-height: 0;
+}
+.rp-scroll {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+.rp-hooks {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding-right: 4px;
+}
+
+/* A transcript revealed line by line keeps the transcript's own spacing. */
+.rp-tx {
+  display: grid;
+  gap: 0.8em;
+  padding: 1em 1.1em;
+  font-size: 13px;
+}
+.rp-tx .sl-tx {
+  padding: 0;
+}
+
+/* Each beat appears in place; a firing hook and the element it reacts to light up in the hook's colour. */
+.rp-beat {
+  --tone: var(--silent);
+  border-radius: 8px;
+  transition: box-shadow 0.25s ease, background-color 0.25s ease;
+  animation: rp-in 0.35s ease both;
+}
+.rp-beat[data-tone="block"] {
+  --tone: var(--danger);
+}
+.rp-beat[data-tone="judge"] {
+  --tone: var(--warn);
+}
+.rp-beat.lit {
+  box-shadow:
+    0 0 0 1.5px var(--tone),
+    0 0 0 6px color-mix(in srgb, var(--tone) 16%, transparent);
+  background-color: color-mix(in srgb, var(--tone) 6%, transparent);
+}
+.rp-hooks > .rp-beat:focus-visible {
+  outline: 2px solid var(--muted);
+  outline-offset: 2px;
+}
+@keyframes rp-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rp-beat,
+  .rp-progress span {
+    animation: none;
+    transition: none;
+  }
 }
 .rp-side {
   font-size: 12px;
@@ -161,6 +257,7 @@
 }
 .rp-panels {
   display: grid;
+  align-content: start;
   gap: 14px;
   padding: 16px;
 }
@@ -172,9 +269,24 @@
   font-size: 14px;
 }
 
+/*
+ * Narrow: the two panes stack inside the same fitted height, the screen above the messages.
+ * The caption moves below them so the controls and both panes fit one screen while playing.
+ */
 @media (max-width: 900px) {
   .rp-split {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 14px;
+    height: clamp(420px, calc(100vh - 230px), 760px);
+    height: clamp(420px, calc(100svh - 230px), 760px);
+  }
+  .rp-caption {
+    order: 1;
+  }
+  .rp-front,
+  .rp-back {
+    gap: 8px;
   }
 }
 /* Two rows of three seams: every seam and step stays visible without horizontal scrolling. */

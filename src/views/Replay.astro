@@ -23,7 +23,7 @@ if (!delivery) throw new Error("seam `delivery` missing from seams.yaml");
     <ReplayPlayer client:load lang={lang} steps={scenario[lang]} labels={playerLabels[lang]} />
   </section>
   <Pager
-    prev={{ href: href("/lifeline/delivery/", lang), label: `${t(ui.previous, lang)} · 06`, title: delivery.data.name[lang] }}
+    prev={{ href: href("/lifeline/delivery/", lang), label: t(ui.previous, lang), title: delivery.data.name[lang] }}
     next={{ href: href("/products/playbooks/", lang), label: t(ui.next, lang), title: "omp-playbooks" }}
   />
 </Base>
