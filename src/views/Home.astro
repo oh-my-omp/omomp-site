@@ -1,597 +1,326 @@
 ---
 import { getCollection } from "astro:content";
 import Base from "../layouts/Base.astro";
-import HostDiagram from "../components/HostDiagram.astro";
-import RepoFigure from "../components/RepoFigure.astro";
+import SplitHead from "../components/SplitHead.astro";
+import Grid from "../components/Grid.astro";
+import Cell from "../components/Cell.astro";
+import Fig from "../components/Fig.astro";
+import HostStage from "../islands/HostStage";
+import ArtView from "../slices/Art";
+import ConfigPipeline from "../slices/ConfigPipeline";
+import HookMessage from "../slices/HookMessage";
+import Transcript from "../slices/Transcript";
+import Window from "../slices/Window";
 import { home } from "../copy/home";
+import { componentArt } from "../data/component-art";
 import { repos, repoUrl, type Repo } from "../data/repos";
-import { href, inlineCode, t, type Lang } from "../i18n";
+import { scenario } from "../data/scenario";
+import { href, t, type Lang } from "../i18n";
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
-
 const seams = (await getCollection("seams")).sort((a, b) => a.data.order - b.data.order);
-const seamShort = new Map(seams.map((s) => [s.id, s.data.short[lang]]));
-const seamOrder = new Map(seams.map((s) => [s.id, s.data.order]));
 const principles = (await getCollection("principles")).sort((a, b) => a.data.order - b.data.order);
+const figs = ["append", "signals", "roles", "policy"] as const;
+type FigId = (typeof figs)[number];
+const isFig = (id: string): id is FigId => (figs as readonly string[]).includes(id);
 
-const byKind = (kind: Repo["kind"]) => repos.filter((r) => r.kind === kind);
-const runtime = byKind("runtime")[0]!;
-const plugins = byKind("plugin");
-const products = byKind("product");
-const tools = byKind("tool");
+/** The hero shows the demo step where a dispatch is held back: what the person sees beside what the model receives. */
+const heroStep = scenario[lang].find((s) => s.hooks.some((h) => h.source === "isolation-nudge"));
+if (!heroStep) throw new Error("demo scenario has no isolation-nudge step");
+const heroFront = heroStep.front[0];
+if (heroFront?.kind !== "transcript") throw new Error("hero step must open with a transcript");
+const heroHook = { ...heroStep.hooks[0]!, gloss: undefined };
 
-/** Install commands; `tail` is the repo slug, which may wrap to its own line on narrow screens. */
-type TermLine =
-  | { kind: "comment"; text: string }
-  | { kind: "blank" }
-  | { kind: "command"; prompt: "$" | ">"; head: string; tail?: string };
-const terminal: readonly TermLine[] = [
-  { kind: "comment", text: lang === "en" ? "one plugin" : "单个插件" },
-  { kind: "command", prompt: "$", head: "omp plugin install https://github.com/oh-my-omp/", tail: "omp-ask-more" },
-  { kind: "blank" },
-  { kind: "comment", text: lang === "en" ? "the whole runtime" : "整套运行时" },
-  { kind: "command", prompt: "$", head: "git clone https://github.com/oh-my-omp/", tail: "omp-config" },
-  { kind: "command", prompt: "$", head: "cd omp-config && omp" },
-  { kind: "command", prompt: ">", head: "/onboard-omp" },
-];
+/** Art slices for a card; the hook pipeline is drawn separately. */
+const artsOf = (r: Repo) => {
+  switch (r.art.from) {
+    case "pipeline":
+      return [];
+    case "component":
+      return [componentArt[r.art.id][lang]];
+    case "own":
+      return r.art.arts[lang];
+  }
+};
+const seamsOf = (r: Repo) =>
+  r.seams.length === seams.length
+    ? t(home.blocks.allSeams, lang)
+    : r.seams.map((id) => seams.find((s) => s.id === id)?.data.short[lang]).join(" · ");
+const target = (r: Repo) => (r.page ? href(r.page, lang) : repoUrl(r.name));
 ---
 
 <Base lang={lang} title={t(home.meta.title, lang)} description={t(home.meta.description, lang)}>
-  <section class="hero">
-    <div class="glow" aria-hidden="true"></div>
-    <div class="wrap hero-inner">
-      <p class="eyebrow">{t(home.hero.eyebrow, lang)}</p>
-      <h1 class="gradient-text">{t(home.hero.title, lang)}</h1>
+  <section class="hero wrap">
+    <div class="hl">
+      <p class="kicker">{t(home.hero.kicker, lang)}</p>
+      <h1>{t(home.hero.title, lang)}</h1>
       <p class="lede">{t(home.hero.lede, lang)}</p>
       <div class="ctas">
-        <a class="btn btn-primary" href={href("/lifeline/", lang)}>{t(home.hero.primary, lang)}</a>
-        <a class="btn" href={href("/principles/", lang)}>{t(home.hero.secondary, lang)}</a>
+        <a class="btn btn-primary" href={href("/replay/", lang)}>{t(home.hero.primary, lang)}</a>
+        <a class="btn" href={href("/lifeline/", lang)}>{t(home.hero.secondary, lang)}</a>
       </div>
-      <ol class="seam-strip" aria-label={lang === "en" ? "The six seams" : "六道接缝"}>
-        {
-          seams.map((s) => (
-            <li>
-              <a href={href(`/lifeline/${s.id}/`, lang)}>
-                <span class="strip-head">
-                  <span class="n">{String(s.data.order).padStart(2, "0")}</span>
-                  {s.data.short[lang]}
-                </span>
-                <span class="strip-name">{s.data.name[lang]}</span>
-              </a>
-            </li>
-          ))
-        }
-      </ol>
+    </div>
+    <div class="hr" aria-hidden="true">
+      <span class="side human">{t(home.hero.screen, lang)}</span>
+      <Window tabs={["shop-api"]} meta="omp">
+        <div class="hr-screen"><Transcript lines={heroFront.lines} /></div>
+      </Window>
+      <span class="side silent">{t(home.hero.model, lang)}</span>
+      <HookMessage hook={heroHook} />
     </div>
   </section>
 
-  <section class="band wrap reveal">
-    <div class="band-text">
-      <p class="eyebrow">{t(home.hosts.eyebrow, lang)}</p>
-      <h2>{t(home.hosts.title, lang)}</h2>
-      <p class="sub">{t(home.hosts.body, lang)}</p>
-    </div>
-    <HostDiagram lang={lang} />
-  </section>
-
-  <section class="band wrap reveal">
-    <div class="band-text">
-      <p class="eyebrow">{t(home.modular.eyebrow, lang)}</p>
-      <h2>{t(home.modular.title, lang)}</h2>
-      <p class="sub" set:html={inlineCode(t(home.modular.body, lang))} />
-    </div>
-    <div class="term">
-      <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i></div>
-      <pre><code>{
-        terminal.map((line) =>
-          line.kind === "comment" ? (
-            <span class="ln c"># {line.text}</span>
-          ) : line.kind === "blank" ? (
-            <span class="ln"> </span>
-          ) : (
-            <span class="ln"><span class="p">{line.prompt}</span> {line.head}{line.tail && <><wbr />{line.tail}</>}</span>
-          ),
-        )
-      }</code></pre>
-    </div>
-  </section>
-
-  <section class="wrap blocks reveal" id="blocks">
-    <p class="eyebrow">{t(home.blocks.eyebrow, lang)}</p>
-    <h2>{t(home.blocks.title, lang)}</h2>
-
-    <h3 class="group">{t(home.blocks.runtime, lang)}</h3>
-    <a class="card card-wide" href={repoUrl(runtime.name)}>
-      <div class="wide-text">
-        <code class="card-name">{runtime.name}</code>
-        <p>{runtime.line[lang]}</p>
-        <div class="chips">
-          {runtime.seams.map((s) => <span class="chip">{String(seamOrder.get(s)).padStart(2, "0")} {seamShort.get(s)}</span>)}
-        </div>
-      </div>
-      {runtime.figure && <RepoFigure figure={runtime.figure} lang={lang} />}
-    </a>
-
-    <h3 class="group">{t(home.blocks.plugins, lang)}</h3>
-    <div class="grid">
+  <section class="wrap blocks" aria-label={t(home.blocks.kicker, lang)}>
+    <p class="kicker">{t(home.blocks.kicker, lang)}</p>
+    <div class="bento">
       {
-        plugins.map((r) => (
-          <a class="card" href={repoUrl(r.name)}>
-            <code class="card-name">{r.name}</code>
-            <p>{r.line[lang]}</p>
-            <div class="chips">
-              <span class="chip-label">{t(home.blocks.seamLabel, lang)}</span>
-              {r.seams.map((s) => (
-                <span class="chip">
-                  {String(seamOrder.get(s)).padStart(2, "0")} {seamShort.get(s)}
+        repos.map((r) => (
+          <a class={`card k-${r.kind}`} data-repo={r.name} href={target(r)}>
+            <div class="ct">
+              <div class="meta">
+                <code class="name">{r.name}</code>
+                <span>
+                  {t(home.blocks.kinds[r.kind], lang)}
+                  {r.seams.length > 0 && ` · ${seamsOf(r)}`}
                 </span>
+              </div>
+              <p>{t(r.line, lang)}</p>
+            </div>
+            <div class="ca">
+              {r.art.from === "pipeline" && <ConfigPipeline lang={lang} />}
+              {artsOf(r).map((art) => (
+                <ArtView lang={lang} art={art} />
               ))}
             </div>
           </a>
         ))
       }
     </div>
+  </section>
 
-    <h3 class="group" id="products">{t(home.blocks.products, lang)}</h3>
-    <p class="group-sub">{t(home.blocks.productsBody, lang)}</p>
-    <div class="grid grid-products">
-      {
-        products.map((r) => (
-          <a class="card card-product" href={href(r.page!, lang)}>
-            <code class="card-name">{r.name}</code>
-            {r.figure && <RepoFigure figure={r.figure} lang={lang} />}
-            <p>{r.line[lang]}</p>
-            <span class="more">{t(home.blocks.readMore, lang)} →</span>
-          </a>
-        ))
-      }
-    </div>
-
-    <h3 class="group">{t(home.blocks.tools, lang)}</h3>
-    <div class="tools-row">
-      {
-        tools.map((r) => (
-          <a class="tool" href={repoUrl(r.name)}>
-            <code>{r.name}</code>
-            <span>{r.line[lang]}</span>
-          </a>
-        ))
-      }
+  <section class="section">
+    <SplitHead title={t(home.hosts.title, lang)} lede={t(home.hosts.lede, lang)} />
+    <div class="wrap body">
+      <HostStage
+        client:visible
+        data={{
+          omomp: { name: t(home.hosts.omomp.name, lang), role: t(home.hosts.omomp.role, lang) },
+          parts: { config: t(home.hosts.parts.config, lang), plugins: t(home.hosts.parts.plugins, lang), products: t(home.hosts.parts.products, lang) },
+          hosts: {
+            omp: { name: t(home.hosts.hosts.omp.name, lang), role: t(home.hosts.hosts.omp.role, lang) },
+            tern: { name: t(home.hosts.hosts.tern.name, lang), role: t(home.hosts.hosts.tern.role, lang) },
+          },
+          links: { omp: t(home.hosts.links.omp, lang), tern: t(home.hosts.links.tern, lang) },
+          tabs: home.hosts.tabs.map((tab) => ({ id: tab.id, label: t(tab.label, lang), uses: tab.uses, lines: tab.lines, text: t(tab.text, lang) })),
+        }}
+      />
     </div>
   </section>
 
-  <section class="wrap tenets reveal">
-    <p class="eyebrow">{t(home.principles.eyebrow, lang)}</p>
-    <h2>{t(home.principles.title, lang)}</h2>
-    <div class="tenet-grid">
-      {
-        principles.map((p) => (
-          <a class="tenet" href={`${href("/principles/", lang)}#${p.id}`}>
-            <span class="n">{String(p.data.order).padStart(2, "0")}</span>
-            <h3>{p.data.short[lang]}</h3>
-            <p>{p.data.summary[lang]}</p>
-          </a>
-        ))
-      }
+  <section class="section">
+    <SplitHead title={t(home.principles.title, lang)} lede={t(home.principles.lede, lang)}>
+      <a class="more" href={href("/principles/", lang)}>{t(home.principles.more, lang)} →</a>
+    </SplitHead>
+    <div class="wrap body">
+      <Grid cols={4} count={principles.length}>
+        {principles.map((p) => {
+          if (!isFig(p.id)) throw new Error(`principle \`${p.id}\` has no figure in Fig.astro`);
+          return (
+            <Cell tag={`FIG 0.${p.data.order}`} title={p.data.short[lang]} text={p.data.summary[lang]} href={href(`/principles/#${p.id}`, lang)}>
+              <Fig fig={p.id} lang={lang} />
+            </Cell>
+          );
+        })}
+      </Grid>
     </div>
-    <a class="link-more" href={href("/principles/", lang)}>{t(home.principles.more, lang)} →</a>
   </section>
 
-  <section class="wrap next reveal">
-    <p class="eyebrow">{t(home.next.eyebrow, lang)}</p>
-    <h2>{t(home.next.title, lang)}</h2>
-    <div class="next-list">
-      {
-        home.next.items.map((item) => (
-          <a href={href(item.route, lang)}>
-            <span class="q">{item.q[lang]}</span>
-            <span class="a">{item.a[lang]} →</span>
-          </a>
-        ))
-      }
+  <section class="section last">
+    <SplitHead title={t(home.next.title, lang)} />
+    <div class="wrap body">
+      <Grid cols={3} count={home.next.items.length}>
+        {home.next.items.map((i) => <Cell tag={t(i.q, lang)} title={`${t(i.a, lang)} →`} text="" href={href(i.route, lang)} />)}
+      </Grid>
     </div>
   </section>
 </Base>
 
 <style>
+  /* First screen: text on the left, a slice of the demo on the right, the repositories just below. */
   .hero {
-    position: relative;
-    overflow: hidden;
-    border-bottom: 1px solid var(--line);
-  }
-  .glow {
-    position: absolute;
-    inset: -40% -10% auto;
-    height: 720px;
-    background:
-      radial-gradient(40% 50% at 50% 40%, rgb(247 168 35 / 0.16), transparent 70%),
-      radial-gradient(30% 40% at 75% 30%, rgb(195 177 251 / 0.1), transparent 70%);
-    pointer-events: none;
-  }
-  .hero-inner {
-    position: relative;
     display: grid;
-    justify-items: center;
-    text-align: center;
-    gap: 22px;
-    padding-top: clamp(80px, 14vw, 160px);
-    padding-bottom: 56px;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: clamp(32px, 5vw, 72px);
+    align-items: center;
+    padding-top: clamp(48px, 7vw, 88px);
+    padding-bottom: clamp(40px, 5vw, 56px);
   }
-  .hero h1 {
-    font-size: clamp(40px, 7vw, 76px);
-    max-width: 960px;
+  .hl {
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+  }
+  .hl h1 {
+    font-size: clamp(36px, 4.6vw, 56px);
+    max-width: 14em;
   }
   .lede {
-    font-size: clamp(17px, 1.7vw, 21px);
+    font-size: clamp(17px, 1.5vw, 19px);
     color: var(--muted);
-    max-width: 680px;
+    max-width: 34em;
   }
   .ctas {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .hr {
+    display: grid;
+    gap: 10px;
+    font-size: 13px;
+  }
+  .hr-screen {
+    padding: 14px;
+  }
+  .side {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .side::before {
+    content: "";
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 8px;
+    border-radius: 50%;
+    vertical-align: 1px;
+  }
+  .side.human::before {
+    background: var(--human);
+  }
+  .side.silent {
     margin-top: 6px;
   }
-  .seam-strip {
-    list-style: none;
-    margin: 56px 0 0;
-    padding: 0;
+  .side.silent::before {
+    background: var(--silent);
+  }
+
+  /* Bento: about a third text, the rest a slice of the repository at work. */
+  .blocks {
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    width: 100%;
+    gap: 16px;
+  }
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-auto-rows: minmax(150px, auto);
+    gap: 1px;
+    background: var(--line);
     border: 1px solid var(--line);
-    border-radius: var(--radius);
-    background: rgb(17 18 22 / 0.7);
-    overflow: hidden;
-    text-align: left;
-  }
-  .seam-strip li {
-    position: relative;
-  }
-  .seam-strip li + li {
-    border-left: 1px solid var(--line);
-  }
-  /* A chevron on each inner border, so the strip reads as one pipeline. */
-  .seam-strip li:not(:last-child)::after {
-    content: "›";
-    position: absolute;
-    z-index: 1;
-    top: 50%;
-    right: -9px;
-    width: 18px;
-    height: 18px;
-    display: grid;
-    place-items: center;
-    transform: translateY(-50%);
-    border: 1px solid var(--line-strong);
-    border-radius: 50%;
-    background: var(--bg);
-    color: var(--accent);
-    font-size: 13px;
-    line-height: 1;
-    pointer-events: none;
-  }
-  .seam-strip a {
-    display: grid;
-    align-content: start;
-    gap: 6px;
-    padding: 16px 18px;
-    font-size: 13px;
-    line-height: 1.4;
-    color: var(--dim);
-    height: 100%;
-    transition: background 0.15s, color 0.15s;
-  }
-  .strip-head {
-    display: flex;
-    gap: 8px;
-    align-items: baseline;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
-  }
-  .seam-strip a:hover {
-    color: var(--muted);
-    background: rgb(255 255 255 / 0.03);
-  }
-  .n {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--accent);
-  }
-  .band {
-    display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-    gap: clamp(32px, 6vw, 80px);
-    align-items: center;
-    padding-top: clamp(80px, 12vw, 140px);
-  }
-  .band-text {
-    display: grid;
-    gap: 16px;
-  }
-  h2 {
-    font-size: clamp(30px, 4vw, 44px);
-  }
-  .sub {
-    color: var(--muted);
-    font-size: 17px;
-  }
-  .term {
-    border: 1px solid var(--line-strong);
     border-radius: 14px;
-    background: var(--bg-sunken);
     overflow: hidden;
-  }
-  .term-bar {
-    display: flex;
-    gap: 6px;
-    padding: 12px 14px;
-    border-bottom: 1px solid var(--line);
-    background: var(--bg-raised);
-  }
-  .term-bar i {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: rgb(255 255 255 / 0.12);
-  }
-  .term pre {
-    margin: 0;
-    padding: 22px 24px;
-    white-space: pre-wrap;
-  }
-  .term code {
-    background: none;
-    border: 0;
-    padding: 0;
-    font-size: 12.5px;
-    line-height: 1.8;
-  }
-  /* A command wraps only before its repo slug, and its continuation hangs under the command. */
-  .term .ln {
-    display: block;
-    padding-left: 2ch;
-    text-indent: -2ch;
-    overflow-wrap: normal;
-    word-break: normal;
-  }
-  .term .c {
-    color: var(--dim);
-  }
-  .term .p {
-    color: var(--accent);
-  }
-  .blocks,
-  .tenets,
-  .next {
-    padding-top: clamp(80px, 12vw, 140px);
-    display: grid;
-    gap: 16px;
-  }
-  .group {
-    margin-top: 36px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--dim);
-    font-family: var(--mono);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-  .group-sub {
-    color: var(--muted);
-    margin-top: -8px;
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
   }
   .card {
+    grid-column: span 4;
     display: grid;
-    align-content: start;
-    gap: 12px;
-    padding: 22px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    background: var(--bg-raised);
-    transition: border-color 0.2s, transform 0.2s, background 0.2s;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 18px;
+    min-width: 0;
+    min-height: 330px;
+    padding: 22px 22px 0;
+    background: var(--bg);
+    color: inherit;
+    text-decoration: none;
+    overflow: hidden;
+    transition: background 0.15s;
   }
   .card:hover {
-    border-color: var(--line-strong);
-    background: rgb(255 255 255 / 0.025);
-    transform: translateY(-2px);
+    background: #0c0d0e;
   }
-  .card p {
-    color: var(--muted);
-    font-size: 15px;
+  .card[data-repo="omp-config"] {
+    grid-column: span 6;
+    grid-row: span 2;
   }
-  .grid .card:not(.card-product) {
-    display: flex;
-    flex-direction: column;
+  .card[data-repo="omp-ask-more"],
+  .card[data-repo="omp-todo-more"],
+  .card[data-repo="omp-unified-exec"] {
+    grid-column: span 6;
   }
-  .grid .card:not(.card-product) .card-name {
-    align-self: flex-start;
+  .card[data-repo="omp-thinking-translator"] {
+    grid-column: span 6;
   }
-  .grid .card .chips {
-    margin-top: auto;
-  }
-  .card-name {
-    justify-self: start;
-    font-size: 13.5px;
-    color: var(--text);
-  }
-  .card-wide {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
-    align-items: center;
-    gap: 24px 40px;
-    background:
-      linear-gradient(120deg, rgb(247 168 35 / 0.08), transparent 50%),
-      var(--bg-raised);
-  }
-  .wide-text {
-    display: grid;
-    gap: 12px;
-  }
-  .grid-products .card-product {
-    display: flex;
-    flex-direction: column;
-    background:
-      radial-gradient(80% 60% at 100% 0%, rgb(195 177 251 / 0.1), transparent 70%),
-      var(--bg-raised);
-  }
-  .card-product .card-name {
-    align-self: flex-start;
-  }
-  .more {
-    margin-top: auto;
-    padding-top: 4px;
-    font-size: 13px;
-    color: var(--accent);
-  }
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    align-items: center;
-  }
-  .chip-label {
-    font-size: 12px;
-    color: var(--dim);
-    margin-right: 2px;
-  }
-  .chip {
-    font-size: 12px;
-    color: var(--muted);
-    padding: 2px 8px;
-    border-radius: 999px;
-    border: 1px solid var(--line-strong);
-  }
-  .tools-row {
+  .ct {
     display: grid;
     gap: 8px;
   }
-  .tool {
+  .meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 14px;
     align-items: baseline;
-    padding: 14px 18px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
+    gap: 4px 12px;
+    font-size: 12px;
+    color: var(--dim);
+  }
+  .name {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: 15px;
+    color: var(--text);
+  }
+  .ct p {
     color: var(--muted);
     font-size: 14.5px;
+    line-height: 1.55;
+    max-width: 36em;
   }
-  .tool:hover {
-    border-color: var(--line-strong);
-  }
-  .tenet-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 12px;
-    margin-top: 12px;
-  }
-  .tenet {
+  .ca {
     display: grid;
     align-content: start;
     gap: 10px;
-    padding: 22px;
-    border-top: 1px solid var(--line-strong);
+    min-height: 0;
+    max-height: 300px;
+    overflow: hidden;
+    mask-image: linear-gradient(to bottom, #000 78%, transparent);
+    pointer-events: none;
   }
-  .tenet h3 {
-    font-size: 18px;
+  .card[data-repo="omp-config"] .ca {
+    max-height: 560px;
   }
-  .tenet p {
-    color: var(--muted);
-    font-size: 14.5px;
+  .body {
+    margin-top: clamp(40px, 5vw, 64px);
   }
-  .tenet:hover h3 {
-    color: var(--accent);
+  .last {
+    padding-bottom: clamp(72px, 10vw, 128px);
   }
-  .link-more {
-    font-size: 14px;
-    color: var(--accent);
-  }
-  .next-list {
-    display: grid;
-    margin-top: 12px;
-    border-top: 1px solid var(--line);
-  }
-  .next-list a {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 22px 4px;
-    border-bottom: 1px solid var(--line);
-    font-size: clamp(18px, 2vw, 22px);
-    transition: padding 0.2s, color 0.2s;
-  }
-  .next-list a:hover {
-    padding-left: 12px;
-  }
-  .next-list .a {
-    color: var(--dim);
-    font-size: 15px;
-    white-space: nowrap;
-  }
-  .next-list a:hover .a {
-    color: var(--accent);
-  }
-  @media (max-width: 960px) {
-    .seam-strip {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+  @media (max-width: 1080px) {
+    .card,
+    .card[data-repo] {
+      grid-column: span 6;
+      grid-row: auto;
     }
-    .seam-strip li:nth-child(4) {
-      border-left: 0;
-    }
-    .seam-strip li:nth-child(n + 4) {
-      border-top: 1px solid var(--line);
-    }
-    .seam-strip li:nth-child(3n)::after {
-      display: none;
-    }
-    .band,
-    .card-wide {
-      grid-template-columns: 1fr;
-    }
-    .grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    .tenet-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .card[data-repo="omp-config"] .ca {
+      max-height: 300px;
     }
   }
-  @media (max-width: 600px) {
-    .seam-strip {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: minmax(0, 1fr);
     }
-    .seam-strip li {
-      border-left: 0 !important;
-      border-top: 1px solid var(--line);
+  }
+  @media (max-width: 680px) {
+    .card,
+    .card[data-repo] {
+      grid-column: 1 / -1;
+      min-height: 0;
+      padding-bottom: 4px;
     }
-    .seam-strip li:nth-child(even) {
-      border-left: 1px solid var(--line) !important;
-    }
-    .seam-strip li:nth-child(-n + 2) {
-      border-top: 0;
-    }
-    /* In two columns a chevron would pair 01 with 02 but never lead from 02 to 03; the numbers carry the order. */
-    .seam-strip li:not(:last-child)::after {
-      display: none;
-    }
-    .term pre {
-      padding: 18px;
-    }
-    .term code {
-      font-size: 12px;
-    }
-    .grid,
-    .tenet-grid {
-      grid-template-columns: 1fr;
+    .ca {
+      max-height: 240px;
     }
   }
 </style>

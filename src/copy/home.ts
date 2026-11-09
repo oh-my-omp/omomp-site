@@ -1,110 +1,128 @@
 import type { Text } from "../i18n";
 
-/** A box in the "where it sits" diagram; `repo` is null where no public repository exists. */
-interface Host {
-  readonly name: string;
-  readonly repo: string | null;
-  readonly role: Text;
-}
-
 export const home = {
   meta: {
-    title: { en: "oh-my-omp — your intent survives every handoff", zh: "oh-my-omp — 你的意图，转手多少次都不走样" },
+    title: { en: "oh-my-omp — governance, panels and workflows for omp", zh: "oh-my-omp — omp 的治理、面板与工作流" },
     description: {
-      en: "Governance config, plugins and standalone products for the Oh My Pi (omp) coding agent. Drift is caught at each handoff between you, the model, its subagents and the terminal.",
-      zh: "Oh My Pi（omp）编码代理的治理配置、插件与独立产品。你、模型、子代理与终端之间的每次转手，偏离都在当场被拦下。",
+      en: "Governance config, plugins and standalone products for the Oh My Pi (omp) coding agent, with a check, a tool or a panel at each handoff between you, the model, its subagents and the terminal.",
+      zh: "Oh My Pi（omp）编码代理的治理配置、插件与独立产品：在你、模型、子代理与终端之间的每次转手处，加上检查、工具或面板。",
     },
   },
   hero: {
-    eyebrow: { en: "For the Oh My Pi (omp) coding agent", zh: "面向 Oh My Pi（omp）编码代理" },
-    title: { en: "Your intent survives every handoff", zh: "你的意图，几经转手也不走样" },
+    kicker: { en: "For the Oh My Pi (omp) coding agent", zh: "面向 Oh My Pi（omp）编码代理" },
+    title: { en: "Governance, panels and workflows for the omp coding agent", zh: "omp 编码代理的治理、面板与工作流" },
     lede: {
-      en: "A request crosses prompts, plans, subagents and terminals before it becomes code. omomp catches drift at the seam where it starts.",
-      zh: "一句需求要穿过提示词、计划、子代理和终端，才会变成代码。跑偏在哪道接缝露头，omomp 就在哪里拦下。",
+      en: "A request passes through prompts, plans, subagents and terminals before it becomes code. omomp adds a check, a tool or a panel at each of those handoffs, so a misread instruction is caught where it starts.",
+      zh: "一句需求要经过提示词、计划、子代理和终端才会变成代码。omomp 在每次转手处加上检查、工具或面板，误读在哪一步出现，就在哪一步被发现。",
     },
-    primary: { en: "Walk the lifeline", zh: "沿生命线看" },
-    secondary: { en: "Read the principles", zh: "读设计原则" },
+    primary: { en: "See the demo", zh: "看演示" },
+    secondary: { en: "Walk the lifeline", zh: "沿生命线看" },
+    screen: { en: "On your screen", zh: "你屏幕上的" },
+    model: { en: "Sent to the model", zh: "送给模型的" },
+  },
+  blocks: {
+    kicker: { en: "Repositories", zh: "仓库" },
+    kinds: {
+      runtime: { en: "Runtime", zh: "运行时" },
+      plugin: { en: "Plugin", zh: "插件" },
+      product: { en: "Product", zh: "产品" },
+      tool: { en: "Tool", zh: "工具" },
+    },
+    allSeams: { en: "All seams", zh: "全部接缝" },
   },
   hosts: {
-    eyebrow: { en: "Where it sits", zh: "所处位置" },
-    title: { en: "omomp sits on two hosts you already run", zh: "omomp 叠在你已在用的代理和终端之上" },
-    body: {
-      en: "It replaces neither the agent nor the terminal. It adds governance, panels and workflows on top of both.",
-      zh: "不替换代理，也不替换终端；只在两者之上叠加治理、面板和工作流。",
+    title: { en: "It runs on omp and Tern, and you install as much as you want", zh: "它跑在 omp 和 Tern 之上，装多少由你决定" },
+    lede: {
+      en: "omomp replaces neither the agent nor the terminal. Each plugin works on stock omp by itself; omp-config adds the shared checks on top.",
+      zh: "omomp 不替换代理，也不替换终端。每个插件在原生 omp 上都能单独用；omp-config 再在其上加上共用的检查。",
     },
-    top: {
-      name: "oh-my-omp (omomp)",
-      repo: "https://github.com/oh-my-omp",
-      role: {
-        en: "Governance config, plugins and standalone products.",
-        zh: "治理配置、插件和独立产品。",
-      },
-    } satisfies Host,
-    hosts: [
-      {
-        name: "Oh My Pi (omp)",
-        repo: "https://github.com/can1357/oh-my-pi",
+    omomp: {
+      name: { en: "oh-my-omp (omomp)", zh: "oh-my-omp（omomp）" },
+      role: { en: "Configuration, plugins and products layered on both hosts.", zh: "叠在两个宿主之上的配置、插件和产品。" },
+    },
+    parts: {
+      config: { en: "omp-config", zh: "omp-config" },
+      plugins: { en: "plugins", zh: "插件" },
+      products: { en: "products", zh: "产品" },
+    },
+    links: {
+      omp: { en: "loaded as extensions and plugins", zh: "作为扩展和插件加载" },
+      tern: { en: "panels drawn in Tern", zh: "面板画在 Tern 里" },
+    },
+    hosts: {
+      omp: {
+        name: { en: "Oh My Pi (omp)", zh: "Oh My Pi（omp）" },
         role: {
-          en: "Terminal coding agent. Sessions, tools, subagents, extensions and plugins.",
-          zh: "终端编码代理，提供会话、工具、子代理、扩展与插件机制。",
+          en: "Terminal coding agent: sessions, tools, subagents, extensions and plugins.",
+          zh: "终端编码代理：会话、工具、子代理、扩展与插件机制。",
         },
       },
-      {
-        name: "Tern",
-        repo: null,
+      tern: {
+        name: { en: "Tern", zh: "Tern" },
         role: {
-          en: "Graphical terminal. Draws the plugins' panels: todo, terminals, decisions, playbooks.",
+          en: "Graphical terminal that draws the plugins' panels: todo, terminals, decisions, playbooks.",
           zh: "图形化终端，绘制插件的面板：待办、终端、决策、Playbook。",
         },
       },
-    ] satisfies ReadonlyArray<Host>,
-  },
-  modular: {
-    eyebrow: { en: "Take what you need", zh: "按需取用" },
-    title: { en: "One plugin, or the whole setup", zh: "单装一个插件，或整套接入" },
-    body: {
-      en: "Every plugin works on stock omp. Add omp-config and they run under its dispatch gates and turn judges. `/onboard-omp` reads your existing rules first and installs only when you ask.",
-      zh: "每个插件都能在原生 omp 上独立运行；接入 omp-config 后，它们统一受派发闸门和回合判定约束。`/onboard-omp` 先读你现有的规则，经你确认才安装。",
     },
-    onboard: { en: "Start with /onboard-omp", zh: "从 /onboard-omp 开始" },
-  },
-  blocks: {
-    eyebrow: { en: "Building blocks", zh: "模块构成" },
-    title: { en: "One problem per repository", zh: "一个仓库，解决一个问题" },
-    runtime: { en: "Runtime", zh: "运行时" },
-    plugins: { en: "Plugins", zh: "插件" },
-    products: { en: "Products", zh: "产品" },
-    productsBody: {
-      en: "Workflows with their own model of the work. Each has its own page.",
-      zh: "自成体系的工作流，各有独立的心智模型和专页。",
-    },
-    tools: { en: "Tools", zh: "工具" },
-    seamLabel: { en: "Acts at", zh: "作用于" },
-    readMore: { en: "Read more", zh: "详细了解" },
+    tabs: [
+      {
+        id: "plugin",
+        label: { en: "One plugin", zh: "单装一个插件" },
+        uses: ["plugins", "omp"],
+        lines: ["omp install https://github.com/oh-my-omp/omp-todo-more"],
+        text: {
+          en: "Every plugin works on stock omp without omp-config, in the terminal you already use.",
+          zh: "每个插件都能在原生 omp 上运行，不需要 omp-config，就在你现在用的终端里。",
+        },
+      },
+      {
+        id: "config",
+        label: { en: "With omp-config", zh: "接入 omp-config" },
+        uses: ["config", "plugins", "omp"],
+        lines: ["git clone https://github.com/oh-my-omp/omp-config.git", "cd omp-config && omp", "/onboard-omp"],
+        text: {
+          en: "The agent first walks through your existing rules and skills without changing anything, and installs only when you ask. The plugins then run under the shared dispatch checks and turn judges.",
+          zh: "代理先只读地梳理你现有的规则和技能，不做任何改动，你明确要求后才安装。之后各插件统一受共用的派发检查和回合判定约束。",
+        },
+      },
+      {
+        id: "tern",
+        label: { en: "In Tern", zh: "搭配 Tern" },
+        uses: ["config", "plugins", "products", "omp", "tern"],
+        lines: [],
+        text: {
+          en: "In Tern, ⇧⌘A opens an agent block that runs omp. The plugins draw their panels there: the todo panel, the Terminals view and decision sheets. omp-playbooks shows its blocks as cards in a Tern pane.",
+          zh: "在 Tern 里按 ⇧⌘A 打开一个运行 omp 的代理块，插件就在其中绘制面板：待办面板、终端视图和决策页。omp-playbooks 在 Tern 面板里把各个块显示成卡片。",
+        },
+      },
+    ],
   },
   principles: {
-    eyebrow: { en: "What makes it different", zh: "差异所在" },
-    title: { en: "Four rules behind every repository", zh: "所有仓库背后的四条原则" },
-    more: { en: "How each rule is enforced", zh: "看每条原则怎么落地" },
+    title: { en: "Four rules behind every repository", zh: "所有仓库背后的四条规则" },
+    lede: {
+      en: "They decide what each component may change, where its messages go, and what you can replace.",
+      zh: "它们决定每个组件能改什么、消息送到哪里、哪些部分可以由你替换。",
+    },
+    more: { en: "How each rule is carried out", zh: "看每条规则怎么落地" },
   },
   next: {
-    eyebrow: { en: "Where to go", zh: "接下来" },
     title: { en: "Start from a question", zh: "从一个问题开始" },
     items: [
+      {
+        q: { en: "What happens to one request?", zh: "一个需求会经历什么？" },
+        a: { en: "Replay", zh: "回放" },
+        route: "/replay/",
+      },
+      {
+        q: { en: "Where can intent drift?", zh: "意图会在哪里走样？" },
+        a: { en: "Lifeline", zh: "生命线" },
+        route: "/lifeline/",
+      },
       {
         q: { en: "Why is it built this way?", zh: "为什么这样设计？" },
         a: { en: "Principles", zh: "设计原则" },
         route: "/principles/",
-      },
-      {
-        q: { en: "What happens to one request?", zh: "一个需求会经历什么？" },
-        a: { en: "The lifeline", zh: "生命线" },
-        route: "/lifeline/",
-      },
-      {
-        q: { en: "What does it catch in practice?", zh: "实际能拦下什么？" },
-        a: { en: "Replay", zh: "回放" },
-        route: "/replay/",
       },
       {
         q: { en: "What runs as its own product?", zh: "哪些是独立产品？" },

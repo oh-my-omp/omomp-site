@@ -1,0 +1,154 @@
+/* Host and install stage on the home page (src/islands/HostStage.tsx). */
+.hs {
+  display: grid;
+  gap: 24px;
+}
+.hs-tabs {
+  justify-self: start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+}
+.hs-tabs button {
+  font: inherit;
+  font-size: 14px;
+  padding: 6px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+.hs-tabs button:hover {
+  color: var(--text);
+}
+.hs-tabs button.on {
+  color: var(--bg);
+  background: var(--text);
+}
+.hs-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.hs-map,
+.hs-how {
+  padding: clamp(20px, 3vw, 36px);
+  background: var(--bg-raised);
+}
+.hs-how {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  background: var(--bg);
+}
+.hs-box {
+  display: grid;
+  gap: 6px;
+  padding: 18px 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--bg-panel);
+  transition: opacity 0.2s, border-color 0.2s;
+}
+.hs-box b {
+  font-weight: 600;
+}
+.hs-box span {
+  color: var(--muted);
+  font-size: 14.5px;
+}
+.hs-box.top {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.hs-box.lit {
+  border-color: var(--muted);
+}
+.hs-box.dim {
+  opacity: 0.4;
+}
+.hs-parts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.hs-parts code {
+  padding: 3px 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: transparent;
+  font-size: 12px;
+  color: var(--dim);
+  transition: color 0.2s, border-color 0.2s;
+}
+.hs-parts code.lit {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+}
+.hs-links,
+.hs-hosts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.hs-links span {
+  position: relative;
+  padding: 16px 0 16px 22px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim);
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+.hs-links span.lit {
+  opacity: 1;
+}
+.hs-links span::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  border-left: 1px dashed var(--line-strong);
+}
+.hs-how pre {
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--bg-panel);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--soft);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.hs-how p {
+  color: var(--muted);
+  font-size: 15px;
+}
+@media (max-width: 860px) {
+  .hs-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 560px) {
+  .hs-links {
+    display: none;
+  }
+  .hs-hosts {
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: 12px;
+    gap: 12px;
+  }
+}
