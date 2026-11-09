@@ -186,7 +186,7 @@ export const todoStopReminder = (lang: Lang): Hook =>
         body: todoReminder("zh"),
         gloss: {
           label: "译文",
-          text: `你停下时还有 4 个待办没完成：${items.zh.phases.routes}阶段的“${items.zh.orders.title}”，${items.zh.orders.explanation}，估时 ${items.zh.orders.estimate} 分钟；其余几项这里从略。目标：${goal.zh.objective}；后两行从略。请继续做这些任务；已经做完的，标记为完成。（提醒 1/3）`,
+          text: `你停下时还有 4 个待办没完成：${items.zh.phases.routes}阶段的“${items.zh.orders.title}”，${items.zh.orders.explanation}，估时 ${items.zh.orders.estimate} 分钟；……目标：${goal.zh.objective}；……请继续做这些任务；已经做完的，标记为完成。（提醒 1/3）`,
         },
       };
 
@@ -525,7 +525,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
         body: askRejected.zh,
         gloss: {
           label: "译文",
-          text: "退回 ask：问题 “storage” 对只看得到这个对话框、从没见过你的会话和这个项目的读者来说很难看懂。逐条改写下面各项，让每句话都说清谁做什么，缩写写全，名称、编号和之前的决定都用平白的话说出来：“按 #212 的结论，RL 继续用共享集群，还是像 v1 那样放进程内？”用了对话框里从没解释过的词、缩写、名称或编号；其余几条从略。",
+          text: "退回 ask：问题 “storage” 对只看得到这个对话框、从没见过你的会话和这个项目的读者来说很难看懂。逐条改写下面各项，让每句话都说清谁做什么，缩写写全，名称、编号和之前的决定都用平白的话说出来：“按 #212 的结论，RL 继续用共享集群，还是像 v1 那样放进程内？”用了对话框里从没解释过的词、缩写、名称或编号；……",
         },
       },
     },
@@ -687,7 +687,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
           args: "op: show · id: OrdersRoute",
           status: "ok",
           result: ctxShow(ordersHandoff.zh),
-          gloss: { label: "译文", text: "上下文 OrdersRoute。层级：Main > OrdersRoute。交接：子代理自己写的报告，原文照录。任务：无。完整记录：history://OrdersRoute。" },
+          gloss: { label: "译文", text: `上下文 OrdersRoute。层级：Main > OrdersRoute。交接：${ordersHandoff.zh}任务：无。完整记录：history://OrdersRoute。` },
         },
       ],
     },
