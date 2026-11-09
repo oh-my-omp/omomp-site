@@ -48,8 +48,8 @@ ask-readability:
   layer: silent
   seam: intent
   line:
-    en: Before a question reaches you it is read as a newcomer with no view of the project or the session would read it, and any sentence leaning on unexplained names, numbers or shorthand is sent back.
-    zh: 问题送到你面前之前，先按不看项目、不看会话的新人视角读一遍；凡依赖没解释的名称、编号或缩写的句子都退回重写。
+    en: Before a question opens, a judge with no view of the session reads every sentence and rejects the ask when a name, number or abbreviation is never explained.
+    zh: 问题打开前，一个看不到会话的判定模型逐句审读；凡有名称、编号或缩写没解释过，整次提问就被退回。
 
 omp-modes:
   name: omp · omp-light
@@ -230,8 +230,8 @@ advisors:
   layer: agent
   seam: delegation
   line:
-    en: Consulted by the main agent, a conservative and an expansive discussion partner that can only read and a mentor with no tools at all give it a second opinion that is not its own echo.
-    zh: 主代理咨询时，一个保守、一个发散且都只能读的讨论伙伴，加上一个完全没有工具的导师，给出不同于自己回声的第二种意见。
+    en: The read-only discuss:steady and discuss:divergent partners and a tool-free mentor give the main agent a second opinion that its own wording does not shape.
+    zh: 主代理可咨询只读的 discuss:steady、discuss:divergent 两位讨论伙伴和无工具的导师，得到不受自身措辞左右的第二意见。
 
 subagent-usage-tool:
   name: subagent_usage
@@ -362,8 +362,8 @@ watchdog-agent:
   layer: silent
   seam: execution
   line:
-    en: For a watched session it counts actions and runs a review at a set interval, then injects what it found, giving one kind of session or one model its own reviewer.
-    zh: 对被监视的会话，它统计动作数、每隔一段做一次审查，再把发现注入会话，某一类会话或某个模型由此有了专属审查者。
+    en: In a watched session it counts each tool call and each non-empty reply as one action, runs a review after a set number of them, and injects the note back, optionally narrowed to one session target or model.
+    zh: 在受监视的会话里，每次工具调用和每条非空回复各算一步，累计到设定步数就做一次审查，再把结论注入会话；可以只监视某类会话目标或某个模型。
   defaults:
     mechanism:
       en: Spec discovery, action counting, review and injection.
@@ -396,8 +396,8 @@ omomp-lang:
   layer: human
   seam: delivery
   line:
-    en: One setting decides the language of every human-facing string while text sent to the model is never translated, so every plugin shows its interface in the same language.
-    zh: 一个设置决定所有面向人的文字用什么语言，发给模型的文字从不翻译，所有插件的界面因此用同一种语言。
+    en: One setting decides the language of everything a person reads; prompts, tool descriptions, tool results and logs are left untranslated, so every plugin speaks the same interface language.
+    zh: 一个设置决定所有面向人的文字语言；提示词、工具说明、结果和日志保持原文，所有插件的界面因此使用同一种语言。
 
 sessions:
   name: omp-sessions
@@ -414,8 +414,8 @@ peers:
   layer: agent
   seam: delivery
   line:
-    en: It lists live sessions, asks one a side question it answers without touching its transcript, or posts a message into it, so sessions in separate omp processes can work together.
-    zh: 它列出在线会话，可以向其中一个旁路提问（作答不写进对方记录）或发消息进去，分属不同 omp 进程的会话因此可以协作。
+    en: It lists the live sessions on this machine, asks one a side question whose answer never enters its transcript, or posts a message into it, so sessions in separate omp processes can work together.
+    zh: 它列出本机在线的会话，可以向其中一个旁路提问（回答不写进对方记录），也可以直接发消息进去，让分属不同 omp 进程的会话互相协作。
 
 task-completion-judge:
   name: task-completion-judge

@@ -35,13 +35,11 @@ export const seamPage = {
   seams: { en: "All seams", zh: "全部接缝" },
   lifeline: { en: "Lifeline", zh: "生命线" },
   demoKicker: { en: "Demo", zh: "演示" },
-  demoTitle: { en: "This seam in the demo", zh: "演示里的这一段" },
   demoLede: {
-    en: "The steps of the rate-limit demo that pass through this seam. Your screen is on the left; what reached the model is on the right.",
-    zh: "限流演示中经过这道接缝的几步。左边是你的屏幕，右边是送到模型那里的内容。",
+    en: "The steps that pass through this seam. Your screen is on the left; what reached the model is on the right.",
+    zh: "经过这道接缝的几步。左边是你的屏幕，右边是送到模型的内容。",
   },
   demoAll: { en: "Whole demo", zh: "完整演示" },
-  layer: { en: "Layer", zh: "层" },
 } satisfies Record<string, Text>
 
 export const replayPage = {

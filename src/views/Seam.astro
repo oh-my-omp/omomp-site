@@ -57,7 +57,11 @@ const colsFor = (n: number) => (n === 1 ? 1 : n === 2 || n === 4 ? 2 : 3);
   </PageHead>
 
   <section class="section">
-    <SplitHead kicker={t(copy.demoKicker, lang)} title={t(copy.demoTitle, lang)} lede={t(copy.demoLede, lang)}>
+    <SplitHead
+      kicker={t(copy.demoKicker, lang)}
+      title={lang === "en" ? `${seam.data.short.en} in the rate-limit demo` : `限流演示中的${seam.data.short.zh}`}
+      lede={t(copy.demoLede, lang)}
+    >
       <a class="more" href={href("/replay/", lang)}>{t(copy.demoAll, lang)} →</a>
     </SplitHead>
     <div class="wrap demo">
@@ -71,7 +75,7 @@ const colsFor = (n: number) => (n === 1 ? 1 : n === 2 || n === 4 ? 2 : 3);
       const cols = colsFor(cells.length);
       return (
         <section class="section">
-          <SplitHead kicker={t(copy.layer, lang)} title={t(ui.layers[l], lang)} lede={seam.data.sections[l][lang]} />
+          <SplitHead kicker={t(ui.layers[l], lang)} title={seam.data.sections[l][lang]} />
           <div class="wrap cells">
             <Grid cols={cols} count={cells.length}>
               {cells.map((c) => (
