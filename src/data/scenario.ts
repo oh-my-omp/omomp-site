@@ -774,7 +774,7 @@ function steps(lang: Lang): readonly Step[] {
           label: label.appended,
           body: intentReminder,
           gloss: en
-            ? gloss("Your `bash` call belongs to “edit an existing file”. Use `edit` for it instead of working around it. The call follows, quoted.")
+            ? gloss(`Your \`bash\` call belongs to “edit an existing file”. Use \`edit\` for it instead of working around it. This call: \`${perlEdit}\``)
             : undefined,
         }),
       ],

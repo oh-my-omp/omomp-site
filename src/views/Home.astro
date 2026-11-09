@@ -325,9 +325,10 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     mask-image: linear-gradient(to bottom, #000 86%, transparent);
     pointer-events: none;
   }
-  /* Drawn whole: the pipeline and the image card end on what they are about. */
+  /* Drawn whole: the pipeline, the image card and the terminal with its key legend end on what they are about. */
   .card[data-repo="omp-config"] .ca,
-  .card[data-repo="omp-codex-image-gen"] .ca {
+  .card[data-repo="omp-codex-image-gen"] .ca,
+  .card[data-repo="omp-unified-exec"] .ca {
     height: auto;
     mask-image: none;
   }
@@ -447,13 +448,11 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     /* Stacked on a phone, these slices need their full height to reach the element the caption names. */
     .card[data-repo="omp-dispatch"] .ca,
     .card[data-repo="omp-playbooks"] .ca,
+    .card[data-repo="omp-sessions"] .ca,
     .card[data-repo="omp-todo-more"] .ca,
     .card[data-repo="omp-remote-build"] .ca {
       height: auto;
       mask-image: none;
-    }
-    .card[data-repo="omp-unified-exec"] {
-      --art-h: 350px;
     }
     .next {
       grid-template-columns: minmax(0, 1fr);

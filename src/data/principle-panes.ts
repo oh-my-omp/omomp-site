@@ -234,7 +234,7 @@ export function principlePanes(id: PrincipleId, lang: Lang): Panes {
             label: appended,
             body: intentReminder,
             gloss: en
-              ? { label: "Translation", text: "This `bash` call is ‘modify an existing file’: use `edit` instead of routing around it. The call follows." }
+              ? { label: "Translation", text: `Your \`bash\` call belongs to “edit an existing file”. Use \`edit\` for it instead of working around it. This call: \`${sedCommand}\`` }
               : undefined,
           }),
         ],

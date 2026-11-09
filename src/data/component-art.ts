@@ -1003,7 +1003,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
         body: intentReminder,
         gloss: {
           label: "Translation",
-          text: "Your `bash` call belongs to “edit an existing file”. Use `edit` for it instead of working around it. The call follows, quoted.",
+          text: "Your `bash` call belongs to “edit an existing file”. Use `edit` for it instead of working around it. This call: `sed -i 's/limit: 100/limit: 300/' src/routes/search.ts`",
         },
       },
     },
@@ -1105,7 +1105,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
         body: completionJudgeBody,
         gloss: {
           label: "Translation",
-          text: "Completion check: this task is not actually finished, so the yield is returned. webhooks.test.ts still fails on “signed callbacks skip the limiter” (expected 200, got 429), and the test was not run again. Finish the missing part and verify it before yielding.",
+          text: "Completion check: compared with the original task and your latest tool calls, this task is not actually finished, so the yield is returned. webhooks.test.ts still fails on “signed callbacks skip the limiter” (expected 200, got 429), and the test was not run again after the change. Finish the missing part and verify it for real before yielding. The yield will not be returned for completeness again.",
         },
       },
     },

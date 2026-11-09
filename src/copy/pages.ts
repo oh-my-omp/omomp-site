@@ -57,7 +57,7 @@ export const lifelinePage = {
   title: { en: "Six seams between your words and the code", zh: "从一句话到代码" },
   lede: {
     en: "A request passes six handoffs on its way to code, and intent can drift at each one. Every seam has its own page; the map at the bottom places each component where it acts.",
-    zh: "一句需求要经过六次转手才变成代码，每一次都可能让意图走样。每道接缝各有一页，页末的组件图标出每个组件在哪里起作用。",
+    zh: "一句需求要经过六次转手才变成代码，每一次都可能让意图走样。每道接缝各有一页，页末的组件图会标出每个组件在哪里起作用。",
   },
   mapTitle: { en: "Every component, by seam and layer", zh: "组件按接缝与层级排布" },
   mapLede: {
@@ -67,8 +67,8 @@ export const lifelinePage = {
   mapDemo: { en: "Watch the demo", zh: "看演示" },
   trackTitle: { en: "One rate-limit task, seam by seam", zh: "一个限流任务，逐道接缝" },
   trackText: {
-    en: "Each column holds the demo steps at that seam and the messages that reached the model there without showing on your screen.",
-    zh: "每一列是演示里落在这道接缝的几步，以及那里送到模型、却不出现在你屏幕上的消息。",
+    en: "Each seam lists the demo steps that pass through it and the messages that reached the model there without showing on your screen.",
+    zh: "每道接缝下列出演示里经过它的几步，以及那里送到模型、却不出现在你屏幕上的消息。",
   },
   trackQuiet: { en: "Nothing reached the model here.", zh: "这里没有给模型追加消息。" },
   mapDefaults: { en: "Mechanism and defaults", zh: "机制与默认策略" },

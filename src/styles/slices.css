@@ -790,8 +790,8 @@
   min-width: 0;
 }
 /*
- * A call signature wraps at its spaces rather than cutting off what was called. Arguments that would get less than
- * their basis beside the tool name move to their own line instead of being squeezed into a narrow column.
+ * A call signature wraps at its spaces rather than cutting off what was called. Arguments that fit beside the tool
+ * name stay there; longer ones move to their own line instead of being squeezed into a narrow column.
  */
 .sl-tx-sig {
   display: flex;
@@ -807,7 +807,7 @@
   color: var(--text);
 }
 .sl-tx-sig .a {
-  flex: 1 1 16em;
+  flex: 1 1 auto;
   color: var(--muted);
   overflow-wrap: break-word;
   min-width: 0;
@@ -1014,6 +1014,7 @@
 .sl-agents .s {
   color: var(--muted);
   font-size: 0.92em;
+  white-space: nowrap;
 }
 /* On a phone the worktree branch takes its own line under the name, so no column is cut to a fragment. */
 @media (max-width: 640px) {
