@@ -143,7 +143,7 @@ export default function ReplayPlayer(props: {
         <section class="rp-back" aria-label={props.labels.back}>
           <span class="rp-side">{props.labels.back}</span>
           <Show when={step().hooks.length > 0} fallback={<p class="rp-quiet">{props.labels.quiet}</p>}>
-            <For each={step().hooks}>{(hook) => <HookMessage hook={hook} />}</For>
+            <For each={step().hooks}>{(timed) => <HookMessage hook={timed.hook} />}</For>
           </Show>
         </section>
       </div>

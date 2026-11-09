@@ -28,11 +28,11 @@ type FigId = (typeof figs)[number];
 const isFig = (id: string): id is FigId => (figs as readonly string[]).includes(id);
 
 /** The hero shows the demo step where a dispatch is held back: what the person sees beside what the model receives. */
-const heroStep = scenario[lang].find((s) => s.hooks.some((h) => h.source === "isolation-nudge"));
+const heroStep = scenario[lang].find((s) => s.hooks.some((h) => h.hook.source === "isolation-nudge"));
 if (!heroStep) throw new Error("demo scenario has no isolation-nudge step");
 const heroFront = heroStep.front[0];
 if (heroFront?.kind !== "transcript") throw new Error("hero step must open with a transcript");
-const heroHook = heroStep.hooks[0]!;
+const heroHook = heroStep.hooks[0]!.hook;
 
 /** Art slices for a card; the hook pipeline is drawn separately. */
 const artsOf = (r: Repo) => {

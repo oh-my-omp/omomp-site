@@ -4,8 +4,20 @@ import type { Panel } from "../slices/Panel";
 
 export type SeamId = "intent" | "prompt" | "memory" | "delegation" | "execution" | "delivery";
 
+/** The front element a hook reacts to: a whole panel, or one line of a transcript panel. Indexes are positions in `Step.front` and its `lines`. */
+export type Anchor =
+  | { readonly kind: "panel"; readonly panel: number }
+  | { readonly kind: "line"; readonly panel: number; readonly line: number };
+
+/** A hook and the moment it fires: right after its anchor appears on the front. The player highlights the anchor and the hook together. */
+export interface TimedHook {
+  readonly anchor: Anchor;
+  readonly hook: Hook;
+}
+
 /**
  * One step of the demo scenario: what the person sees on screen, and what reached the model without showing there.
+ * Playback reveals the front beat by beat (each transcript line, each other panel), and each hook right after its anchor.
  * The scenario is simulated; every hook body follows the source template of the extension that sends it.
  */
 export interface Step {
@@ -13,8 +25,10 @@ export interface Step {
   readonly title: string;
   readonly caption: string;
   readonly front: readonly Panel[];
-  readonly hooks: readonly Hook[];
+  readonly hooks: readonly TimedHook[];
 }
+
+const onPanel = (panel: number, hook: Hook): TimedHook => ({ anchor: { kind: "panel", panel }, hook });
 
 const userRequest = {
   en: "Add rate limiting to the public API: back it with Redis, count per API key, and answer 429 with Retry-After once a key runs out. Then switch the orders, search and webhooks routes over to it.",
@@ -183,7 +197,14 @@ const redisScreen = [
   { text: '1731161421.009 [0 127.0.0.1:52151] "EVALSHA" "9f2c41d0" "1" "rl:key_test_k2" "100" "1.67"' },
 ] as const;
 
+/** Steps as currently written, before each hook names its anchor; `steps` anchors every hook to the step's last panel. */
+type DraftStep = Omit<Step, "hooks"> & { readonly hooks: readonly Hook[] };
+
 function steps(lang: Lang): readonly Step[] {
+  return draftSteps(lang).map((s) => ({ ...s, hooks: s.hooks.map((h) => onPanel(s.front.length - 1, h)) }));
+}
+
+function draftSteps(lang: Lang): readonly DraftStep[] {
   const en = lang === "en";
   const i = items[lang];
   const label = en
