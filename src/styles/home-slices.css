@@ -539,6 +539,13 @@
   overflow: hidden;
   opacity: 0.7;
 }
+/* Behind the opened session only the list matters; it takes the full width so commands read whole. */
+.hx-view .sl-term-split {
+  grid-template-columns: minmax(0, 1fr);
+}
+.hx-view .sl-term-detail {
+  display: none;
+}
 .hx-page {
   margin: -58px 0 0 28px;
   position: relative;
@@ -573,14 +580,36 @@
   .hp-dp {
     grid-template-columns: minmax(0, 1fr);
   }
+  /* Stacked, the Tern cards lead and the YAML they write follows. */
+  .hp-pb .hp-pane {
+    order: -1;
+  }
+  .hp-pb .hp-file {
+    border-right: 0;
+    border-top: 1px solid var(--line);
+  }
+  /* The ticket machine folds into two columns so the drift note below it stays in view. */
   .hp-rail {
     grid-row: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(4, auto);
+    grid-auto-flow: column;
+    column-gap: 12px;
+  }
+  .hp-rail li:nth-child(4)::after {
+    display: none;
   }
   .hp-rb-head,
   .hp-rb-row {
     grid-template-columns: minmax(0, 1.2fr) 34px minmax(0, 1fr);
   }
+  /* The middle column is only an arrow wide, so the sync mode heads the card on its own line. */
   .hp-rb-head span:nth-child(2) {
-    font-size: 0;
+    grid-column: 1 / -1;
+    order: -1;
+    text-align: left;
+  }
+  .hp-rb-head span:nth-child(3) {
+    grid-column: 3;
   }
 }

@@ -154,16 +154,31 @@ function Dispatch(props: { lang: Lang }) {
   );
 }
 
-const rbCopy: Readonly<Record<Lang, { readonly here: string; readonly sync: string; readonly host: string; readonly main: string; readonly none: string }>> = {
-  en: { here: "This machine", sync: "one-way-replica", host: "builder", main: "main checkout", none: "worktrees only" },
-  zh: { here: "本机", sync: "one-way-replica", host: "builder", main: "主检出", none: "只给 worktree" },
+/** Card headings and roles in the page's language; `sync` is Mutagen's own mode name and stays as written. */
+const rbCopy: Readonly<
+  Record<Lang, { readonly here: string; readonly sync: string; readonly host: string; readonly main: string; readonly agent: string; readonly none: string }>
+> = {
+  en: { here: "This machine", sync: "one-way-replica", host: "Build host", main: "main checkout", agent: "agent", none: "worktrees only" },
+  zh: { here: "本机", sync: "one-way-replica", host: "构建主机", main: "主检出", agent: "代理", none: "仅限 worktree" },
 };
 
-const rbRows: readonly { readonly path: string; readonly role: string; readonly container: string | null; readonly live: boolean }[] = [
-  { path: "~/work/shop-api/", role: "main", container: null, live: false },
-  { path: "~/work/worktrees/rate-limit/", role: "agent · rate-limit", container: "rb-rate-limit-a3f9c1b7e2", live: true },
-  { path: "~/work/worktrees/coverage/", role: "agent · coverage", container: "rb-coverage-7e04d2f6c1", live: false },
+/** A checkout on this machine: the main one has no environment; each agent's worktree has its own container. */
+type RbRole = { readonly kind: "main" } | { readonly kind: "agent"; readonly branch: string };
+
+const rbRows: readonly { readonly path: string; readonly role: RbRole; readonly container: string | null; readonly live: boolean }[] = [
+  { path: "~/work/shop-api/", role: { kind: "main" }, container: null, live: false },
+  { path: "~/work/worktrees/rate-limit/", role: { kind: "agent", branch: "rate-limit" }, container: "rb-rate-limit-a3f9c1b7e2", live: true },
+  { path: "~/work/worktrees/coverage/", role: { kind: "agent", branch: "coverage" }, container: "rb-coverage-7e04d2f6c1", live: false },
 ];
+
+const roleText = (role: RbRole, c: (typeof rbCopy)[Lang]): string => {
+  switch (role.kind) {
+    case "main":
+      return c.main;
+    case "agent":
+      return `${c.agent} · ${role.branch}`;
+  }
+};
 
 function RemoteBuild(props: { lang: Lang }) {
   const c = () => rbCopy[props.lang];
@@ -181,7 +196,7 @@ function RemoteBuild(props: { lang: Lang }) {
               <code>
                 <For each={r.path.split(/(?<=\/)/)}>{(seg) => <span class="seg">{seg}</span>}</For>
               </code>
-              <span>{r.role === "main" ? c().main : r.role}</span>
+              <span>{roleText(r.role, c())}</span>
             </div>
             <div class="hp-rb-flow" aria-hidden="true">
               <i />
