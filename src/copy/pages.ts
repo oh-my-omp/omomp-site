@@ -6,17 +6,28 @@ export const principlesPage: {
   kicker: Text;
   title: Text;
   lede: Text;
+  /** The section with the four figures: its heading and the right-hand lede. */
+  figsTitle: Text;
+  figsLede: Text;
   seen: Text;
-  /** Column headings over a principle's practice strip, in the figure's order. */
+  /** Accessible name of the practice switcher inside a rule's stage. */
+  practices: Text;
+  /** Titles of a rule's practices in the stage switcher, in the order of its `practice` list. */
   practiceTitles: Readonly<Record<PrincipleFig, readonly Text[]>>;
 } = {
   kicker: { en: "Principles", zh: "设计原则" },
   title: { en: "Four rules every repository follows", zh: "四条工程规则" },
   lede: {
-    en: "Every plugin and config in omomp is built around four constraints: keep the prompt cache intact, correct drift from runtime signals, isolate state ownership across roles, and separate extension mechanisms from personal policy.",
-    zh: "omomp 的所有插件与配置都围绕四条约束构建：保持提示前缀与缓存不变、根据运行时信号纠偏、隔离不同角色的状态所有权、将扩展机制与个人策略分离。",
+    en: "Every plugin and config in omomp is built around four constraints: keep the prompt cache intact, correct drift from runtime signals, give each piece of state one owner, and keep extension mechanisms apart from personal policy.",
+    zh: "omomp 的所有插件与配置都围绕四条约束构建：保持提示前缀与缓存不变，根据运行时信号纠偏，每份状态只有一个所有者，扩展机制与个人策略分开。",
+  },
+  figsTitle: { en: "Each rule as a structure", zh: "四条规则的结构" },
+  figsLede: {
+    en: "Each figure draws what a rule fixes in place: which bytes stay the same, where a correction enters, who may write what, and which files are yours.",
+    zh: "每张图画出一条规则固定下来的东西：哪些字节不变，纠偏从哪里进入，谁能写什么，哪些文件归你。",
   },
   seen: { en: "Components", zh: "落地组件" },
+  practices: { en: "In practice", zh: "具体做法" },
   practiceTitles: {
     append: [
       { en: "Prefix stays as built", zh: "前缀保持原样" },

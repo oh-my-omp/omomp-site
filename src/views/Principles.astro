@@ -6,7 +6,10 @@ import SplitHead from "../components/SplitHead.astro";
 import Stage from "../components/Stage.astro";
 import Fig from "../components/Fig.astro";
 import Pager from "../components/Pager.astro";
+import ArtView from "../slices/Art";
+import ContextBar from "../slices/ContextBar";
 import { principlesPage as copy } from "../copy/pages";
+import { principlePanes, type PrincipleId } from "../data/principle-panes";
 import { href, inlineCode, t, type Lang } from "../i18n";
 import { ui } from "../ui";
 
@@ -14,15 +17,22 @@ interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
-const figs = ["append", "signals", "roles", "policy"] as const;
-type FigId = (typeof figs)[number];
-const isFig = (id: string): id is FigId => (figs as readonly string[]).includes(id);
+const ids = ["append", "signals", "roles", "policy"] as const;
+const isPrinciple = (id: string): id is PrincipleId => (ids as readonly string[]).includes(id);
 const principles = await Promise.all(
   (await getCollection("principles"))
     .sort((a, b) => a.data.order - b.data.order)
     .map(async (p) => {
-      if (!isFig(p.id)) throw new Error(`principle \`${p.id}\` has no figure in Fig.astro`);
-      return { ...p, fig: p.id, seen: await getEntries(p.data.seen) };
+      if (!isPrinciple(p.id)) throw new Error(`principle \`${p.id}\` has no figure in Fig.astro`);
+      const panes = principlePanes(p.id, lang);
+      if (p.data.practice.length !== panes.length) throw new Error(`principle \`${p.id}\` has ${p.data.practice.length} practices but ${panes.length} panes`);
+      const titles = copy.practiceTitles[p.id];
+      return {
+        ...p,
+        fig: p.id,
+        seen: await getEntries(p.data.seen),
+        practices: p.data.practice.map((line, i) => ({ title: t(titles[i]!, lang), text: line[lang], panes: panes[i]! })),
+      };
     }),
 );
 const figLabel = (order: number) => `FIG 0.${order}`;
@@ -43,13 +53,32 @@ const layers = ["human", "agent", "silent"] as const;
     </ul>
   </PageHead>
 
+  <section class="section" id="figures">
+    <SplitHead title={t(copy.figsTitle, lang)} lede={t(copy.figsLede, lang)} />
+    <div class="wrap body">
+      <ol class="figs">
+        {
+          principles.map((p) => (
+            <li>
+              <a href={`#${p.id}`}>
+                <span class="fig-no">{figLabel(p.data.order)}</span>
+                <div class="fig-art">
+                  <Fig fig={p.fig} lang={lang} />
+                </div>
+                <h3>{p.data.short[lang]}</h3>
+                <p>{p.data.summary[lang]}</p>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
   {
     principles.map((p) => (
       <section class="section" id={p.id}>
-        <div class="wrap fig-kicker">
-          <p class="kicker">{figLabel(p.data.order)}</p>
-        </div>
-        <SplitHead title={p.data.title[lang]} lede={p.data.problem[lang]}>
+        <SplitHead kicker={figLabel(p.data.order)} title={p.data.title[lang]} lede={p.data.problem[lang]}>
           <div class="chips" aria-label={t(copy.seen, lang)}>
             {p.seen.map((c) => (
               <a class={`chip layer-${c.data.layer}`} href={href(`/lifeline/${c.data.seam}/`, lang)}>
@@ -61,18 +90,61 @@ const layers = ["human", "agent", "silent"] as const;
         </SplitHead>
         <div class="wrap body">
           <Stage>
-            <div class="figure">
-              <Fig fig={p.fig} lang={lang} labels dense />
+            {/* A switcher without script: each practice is a radio; the checked one shows its pane. */}
+            <div class="sw" role="group" aria-label={t(copy.practices, lang)}>
+              {p.practices.map((_, i) => (
+                <input class="sw-in" type="radio" name={`sw-${p.id}`} id={`sw-${p.id}-${i}`} checked={i === 0} />
+              ))}
+              <ol class="sw-list">
+                {p.practices.map((x, i) => (
+                  <li>
+                    <label for={`sw-${p.id}-${i}`}>
+                      <h3>{x.title}</h3>
+                      <p set:html={inlineCode(x.text)} />
+                    </label>
+                  </li>
+                ))}
+              </ol>
+              <div class="sw-panes">
+                {p.practices.map((x) => (
+                  <div class="sw-pane">
+                    {x.panes.map((s) => {
+                      switch (s.kind) {
+                        case "art":
+                          return <ArtView lang={lang} art={s.art} />;
+                        case "context":
+                          return (
+                            <div class="sw-ctx">
+                              <ContextBar rows={s.rows} />
+                            </div>
+                          );
+                        case "playbook-foot":
+                          return (
+                            <div class="pb-card">
+                              <div class="pb-head">
+                                <span class="pb-id">{s.foot.block}</span>
+                                <span>{s.foot.title}</span>
+                              </div>
+                              <div class="pb-foot">
+                                <span class="pb-col">
+                                  <span class="pb-k">{s.foot.subagentLabel}</span>
+                                  <span class="pb-v">{s.foot.subagent}</span>
+                                </span>
+                                <span class="pb-col">
+                                  <span class="pb-k">{s.foot.isolatedLabel}</span>
+                                  <span class="pb-v">{s.foot.isolated}</span>
+                                </span>
+                                <span class="pb-launch">{s.foot.button}</span>
+                              </div>
+                            </div>
+                          );
+                      }
+                    })}
+                  </div>
+                ))}
+              </div>
             </div>
           </Stage>
-          <ol class="practice">
-            {p.data.practice.map((line, i) => (
-              <li>
-                <h3>{t(copy.practiceTitles[p.fig][i]!, lang)}</h3>
-                <p set:html={inlineCode(line[lang])} />
-              </li>
-            ))}
-          </ol>
         </div>
       </section>
     ))
@@ -100,54 +172,234 @@ const layers = ["human", "agent", "silent"] as const;
     align-items: center;
     gap: 7px;
   }
-  .fig-kicker {
-    padding-bottom: 14px;
-  }
   .body {
-    display: grid;
-    gap: 40px;
     margin-top: clamp(48px, 6vw, 72px);
   }
-  .figure {
-    width: 100%;
-  }
-  .practice {
+
+  /* The four figures: columns cut by 1px hairlines, figure on top, title and two lines below. */
+  .figs {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-  .practice li {
-    display: grid;
-    align-content: start;
-    gap: 8px;
-    padding: 4px 28px 4px 24px;
-    border-left: 1px solid var(--line);
+  .figs li {
+    border-left: 1px solid rgb(255 255 255 / 0.07);
   }
-  .practice li:first-child {
-    padding-left: 0;
+  .figs li:first-child {
     border-left: 0;
   }
-  .practice p {
+  .figs a {
+    display: grid;
+    gap: 6px;
+    padding: 0 20px 8px;
+    color: inherit;
+    text-decoration: none;
+  }
+  .figs li:first-child a {
+    padding-left: 0;
+  }
+  .figs li:last-child a {
+    padding-right: 0;
+  }
+  .fig-no {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--dim);
+  }
+  .fig-art {
+    height: 290px;
+    display: grid;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .figs h3 {
+    font-size: 15px;
+  }
+  .figs p {
     color: var(--muted);
     font-size: 15px;
   }
-  @media (max-width: 860px) {
-    .practice {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 16px;
+  .figs a:hover h3 {
+    color: var(--accent);
+  }
+
+  /* Practice switcher inside a rule's stage: the list on the left, the selected practice's interface on the right. */
+  .sw {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: clamp(24px, 4vw, 48px);
+    align-items: start;
+    width: 100%;
+  }
+  .sw-in {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .sw-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 4px;
+  }
+  .sw-list label {
+    display: grid;
+    gap: 4px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .sw-list label:hover {
+    background: rgb(255 255 255 / 0.03);
+  }
+  .sw-list h3 {
+    font-size: 15px;
+    color: var(--muted);
+  }
+  .sw-list p {
+    color: var(--dim);
+    font-size: 14px;
+  }
+  .sw-in:nth-of-type(1):checked ~ .sw-list li:nth-child(1) label,
+  .sw-in:nth-of-type(2):checked ~ .sw-list li:nth-child(2) label,
+  .sw-in:nth-of-type(3):checked ~ .sw-list li:nth-child(3) label {
+    background: rgb(255 255 255 / 0.04);
+    border-color: var(--line);
+  }
+  .sw-in:nth-of-type(1):checked ~ .sw-list li:nth-child(1) h3,
+  .sw-in:nth-of-type(2):checked ~ .sw-list li:nth-child(2) h3,
+  .sw-in:nth-of-type(3):checked ~ .sw-list li:nth-child(3) h3 {
+    color: var(--text);
+  }
+  .sw-in:nth-of-type(1):checked ~ .sw-list li:nth-child(1) p,
+  .sw-in:nth-of-type(2):checked ~ .sw-list li:nth-child(2) p,
+  .sw-in:nth-of-type(3):checked ~ .sw-list li:nth-child(3) p {
+    color: var(--muted);
+  }
+  .sw-in:nth-of-type(1):focus-visible ~ .sw-list li:nth-child(1) label,
+  .sw-in:nth-of-type(2):focus-visible ~ .sw-list li:nth-child(2) label,
+  .sw-in:nth-of-type(3):focus-visible ~ .sw-list li:nth-child(3) label {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  /* All panes share one grid cell, so the stage keeps the tallest pane's height and does not jump on switching. */
+  .sw-panes {
+    display: grid;
+    min-width: 0;
+  }
+  .sw-pane {
+    grid-area: 1 / 1;
+    display: grid;
+    align-content: start;
+    gap: 14px;
+    min-width: 0;
+    visibility: hidden;
+  }
+  .sw-in:nth-of-type(1):checked ~ .sw-panes .sw-pane:nth-child(1),
+  .sw-in:nth-of-type(2):checked ~ .sw-panes .sw-pane:nth-child(2),
+  .sw-in:nth-of-type(3):checked ~ .sw-panes .sw-pane:nth-child(3) {
+    visibility: visible;
+  }
+  .sw-ctx {
+    padding: 16px;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    background: var(--bg-panel);
+  }
+
+  /* The Tern Playbook card of the block that was launched, cut to its header and footer. */
+  .pb-card {
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    background: var(--bg-panel);
+    font-size: 13px;
+  }
+  .pb-head {
+    display: flex;
+    gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    color: var(--text);
+  }
+  .pb-id {
+    font-family: var(--mono);
+    color: var(--dim);
+  }
+  .pb-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 22px;
+    padding: 10px 14px;
+  }
+  .pb-col {
+    display: grid;
+    gap: 2px;
+  }
+  .pb-k {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    color: var(--dim);
+  }
+  .pb-v {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--soft);
+  }
+  .pb-launch {
+    margin-left: auto;
+    padding: 5px 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    color: var(--dim);
+    font-size: 12.5px;
+  }
+
+  @media (max-width: 960px) {
+    .figs {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: 40px;
     }
-    .practice li,
-    .practice li:first-child {
-      padding: 0 0 0 16px;
-      border-left: 1px solid var(--line);
+    .figs li:nth-child(odd) {
+      border-left: 0;
+    }
+    .figs li:nth-child(odd) a {
+      padding-left: 0;
+    }
+    .figs li:nth-child(even) a {
+      padding-right: 0;
+    }
+    .sw {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
-  @media (max-width: 640px) {
-    /* The narrow figure fills the stage; drop the side padding that would scale its labels down. */
-    .body :global(.canvas) {
-      padding-inline: 12px;
+  @media (max-width: 600px) {
+    .figs {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .figs li,
+    .figs li:nth-child(odd) {
+      border-left: 0;
+      border-top: 1px solid rgb(255 255 255 / 0.07);
+      padding-top: 28px;
+    }
+    .figs li:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+    .figs a,
+    .figs li:nth-child(odd) a,
+    .figs li:nth-child(even) a {
+      padding: 0;
+    }
+    .fig-art {
+      height: auto;
     }
   }
 </style>
