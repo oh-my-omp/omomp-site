@@ -195,6 +195,12 @@ const alternate = (l: Lang) => new URL(href(route, l), Astro.site).href;
   .foot-nav a:hover {
     color: var(--text);
   }
+  @media (max-width: 480px) {
+    .foot-nav {
+      gap: 8px 14px;
+      font-size: 13px;
+    }
+  }
   .menu {
     display: none;
     position: relative;

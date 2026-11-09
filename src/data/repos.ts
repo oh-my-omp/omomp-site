@@ -49,7 +49,7 @@ export const repos: readonly Repo[] = [
     art: { from: "pipeline" },
     line: {
       en: "The governance layer: prompt cleanup, dispatch checks, turn judges and execution guards, wired into one runtime.",
-      zh: "治理层：提示词整理、派发检查、回合判定和执行防护，接成一套运行时。",
+      zh: "治理层：把提示词整理、派发检查、回合判定和执行防护放进同一套运行时。",
     },
   },
   {
@@ -89,7 +89,7 @@ export const repos: readonly Repo[] = [
     art: { from: "component", id: "thinking-translator" },
     line: {
       en: "Each line of the model's thinking appears translated under the original; the model never sees the translation.",
-      zh: "模型的每一行思考都在原文下方出现译文；模型本身看不到译文。",
+      zh: "模型的每一行思考下方都附上译文；译文只给人看，不发给模型。",
     },
   },
   {
@@ -195,7 +195,7 @@ export const repos: readonly Repo[] = [
     },
     line: {
       en: "Hand over a GitHub issue tree; each ticket is delivered by a new session and every verdict comes from a new judge.",
-      zh: "交出一棵 GitHub issue 树：每张工单由新会话交付，每次裁决都由新的判定者做出。",
+      zh: "把一棵 GitHub issue 树交给它：每张工单由一个新会话交付，每次裁决由一个新的判定会话做出。",
     },
   },
   {
