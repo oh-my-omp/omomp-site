@@ -87,14 +87,14 @@ const workers = ["wt/orders", "wt/search", "wt/webhooks"];
         <path class="loop" d="M26 226C26 238 10 238 10 224V40C10 26 18 26 22 30" />
         <path class="loop-head" d="M17 26 23 31 16 33" />
         {[
-          { y: 48, at: "tool_call", mono: true, kind: "bad", out: L("block", "拦下") },
-          { y: 100, at: "tool_result", mono: true, kind: "ok", out: L("reminder", "提醒") },
-          { y: 152, at: L("subagent yield", "子代理交付"), mono: false, kind: "warn", out: L("judge", "判定") },
-          { y: 204, at: L("turn end", "回合结束"), mono: false, kind: "warn", out: L("judge", "判定") },
+          { y: 48, at: L("tool call", "工具调用"), kind: "bad", out: L("block", "拦下") },
+          { y: 100, at: L("tool result", "工具返回"), kind: "ok", out: L("reminder", "提醒") },
+          { y: 152, at: L("subagent yield", "子代理交付"), kind: "warn", out: L("judge", "判定") },
+          { y: 204, at: L("turn end", "回合结束"), kind: "warn", out: L("judge", "判定") },
         ].map((p) => (
           <g>
             <circle class="node" cx="26" cy={p.y} r="4" />
-            <text class:list={[p.mono ? "m" : "t"]} x="38" y={p.y + 4}>
+            <text class="t" x="38" y={p.y + 4}>
               {p.at}
             </text>
             <path class="link" d={`M134 ${p.y}H154`} />
@@ -133,6 +133,8 @@ const workers = ["wt/orders", "wt/search", "wt/webhooks"];
         ))}
 
         <path class="link" d="M232 27H238V202H232" />
+        <path class="head" d="M236 198 232 202 236 206" />
+        <text class="t" text-anchor="end" x="230" y="172">{L("consults", "咨询")}</text>
         <rect class="b ro" x="48" y="180" width="184" height="44" rx="5" />
         <text class="m c" x="140" y="198">discuss:* · mentor:default</text>
         <text class="t c ok-t" x="140" y="215">{L("read-only · no tools", "只读或无工具")}</text>

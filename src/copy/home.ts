@@ -96,8 +96,8 @@ export const home = {
         install: ["omp install https://github.com/oh-my-omp/omp-sessions"],
         start: ["omp"],
         text: {
-          en: "Every plugin works on stock omp without omp-config, in the terminal you already use. omp-sessions adds a URL scheme and a SQL tool, and has no settings.",
-          zh: "每个插件都能在原生 omp 上运行，不需要 omp-config，就在你现在用的终端里。omp-sessions 加上一个 URL 协议和一个 SQL 工具，没有需要填写的设置。",
+          en: "omp-sessions on its own: no omp-config, no settings to fill in, and the terminal you already use.",
+          zh: "单独装上 omp-sessions：不需要 omp-config，也没有要填的配置项，照旧用你现在的终端。",
         },
         after: [
           { en: "`read` and `grep` open other sessions through `session://` paths", zh: "`read` 和 `grep` 通过 `session://` 路径打开其他会话" },
