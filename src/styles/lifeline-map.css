@@ -36,13 +36,18 @@
 .lm-head:hover {
   background: var(--bg-raised);
 }
+/* The label lines up with the first row of pills, not the middle of a tall row. */
 .lm-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
-  padding: 16px;
+  padding: 18px 16px 16px;
   font-size: 13px;
+  line-height: 20px;
   color: var(--soft);
+}
+.lm-row .layer-dot {
+  margin-top: 6.5px;
 }
 .lm-cell {
   display: flex;
