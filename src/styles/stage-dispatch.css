@@ -1,0 +1,360 @@
+/* omp-dispatch stage: coordinator entry, issue tree, one ticket's rail, drift. */
+
+.st-dispatch {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--bg-panel);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.4),
+    0 24px 60px -24px rgb(0 0 0 / 0.8);
+  overflow: hidden;
+  text-align: left;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.st-dispatch-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 0 14px;
+  height: 34px;
+  border-bottom: 1px solid var(--line);
+}
+.st-dispatch-title {
+  align-self: center;
+  color: var(--soft);
+  font-weight: 560;
+}
+.st-dispatch-meta {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* entry | issues over the taller ticket rail | drift */
+.st-dispatch-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-areas:
+    "entry issues"
+    "ticket drift";
+}
+.st-dispatch-entry { grid-area: entry; }
+.st-dispatch-issues { grid-area: issues; }
+.st-dispatch-ticket { grid-area: ticket; }
+.st-dispatch-drift { grid-area: drift; }
+.st-dispatch-card {
+  min-width: 0;
+  padding: 14px 16px;
+  border-top: 1px solid var(--line);
+}
+.st-dispatch-entry,
+.st-dispatch-issues {
+  border-top: 0;
+}
+.st-dispatch-entry,
+.st-dispatch-ticket {
+  border-right: 1px solid var(--line);
+}
+.st-dispatch-card h3 {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 560;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.st-dispatch-cap {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 11.5px;
+}
+
+.st-dispatch-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+  flex-shrink: 0;
+}
+.st-dispatch-issue-title {
+  color: var(--soft);
+  min-width: 0;
+}
+.st-dispatch-tag {
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: var(--dim);
+}
+
+/* Entry: the issue body with the launcher badge, then the launcher outcome. */
+.st-dispatch-issue {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg-raised);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+.st-dispatch-issue-head {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+.st-dispatch-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px 3px 7px;
+  border-radius: 999px;
+  background: #1f883d;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 560;
+  line-height: 1.2;
+}
+.st-dispatch-badge svg {
+  width: 12px;
+  height: 12px;
+}
+.st-dispatch-launch {
+  margin-top: 10px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+  min-width: 0;
+}
+.st-dispatch-launch code {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.st-dispatch-outcome {
+  color: var(--silent);
+}
+
+/* Issue tree rows */
+.st-dispatch-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 0;
+  border-top: 1px solid var(--line);
+}
+.st-dispatch-row.is-umbrella {
+  border-top: 0;
+}
+.st-dispatch-row .st-dispatch-tag,
+.st-dispatch-row .st-dispatch-ticket {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.st-dispatch-children {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.st-dispatch-children .st-dispatch-row {
+  padding-left: 14px;
+}
+.st-dispatch-ticket {
+  font-size: 10.5px;
+  color: var(--muted);
+}
+.st-dispatch-ticket.waiting {
+  color: var(--dim);
+}
+.st-dispatch-issues > .st-dispatch-tag {
+  display: block;
+  margin-top: 6px;
+}
+
+/* State rail */
+.st-dispatch-ticket-head {
+  margin: 0 0 8px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.st-dispatch-ticket-head code {
+  margin-left: auto;
+  font-size: 10.5px;
+  color: var(--dim);
+  flex-shrink: 0;
+}
+.st-dispatch-rail {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.st-dispatch-state {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 0;
+  border-top: 1px solid var(--line);
+}
+.st-dispatch-state:first-child {
+  border-top: 0;
+}
+.st-dispatch-dot {
+  align-self: center;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid var(--dim);
+  flex-shrink: 0;
+}
+.st-dispatch-state.m-done .st-dispatch-dot {
+  border-color: var(--silent);
+  background: var(--silent);
+}
+.st-dispatch-state.m-current .st-dispatch-dot {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 2px var(--bg-panel);
+  background: var(--accent);
+}
+.st-dispatch-state-name {
+  color: var(--soft);
+}
+.st-dispatch-state.m-current .st-dispatch-state-name {
+  color: var(--text);
+  font-weight: 560;
+}
+.st-dispatch-state.m-pending .st-dispatch-state-name {
+  color: var(--muted);
+}
+.st-dispatch-kind {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.st-dispatch-visits {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--warn);
+}
+.st-dispatch-state-meta {
+  margin-left: auto;
+  font-size: 10.5px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+/* Drift: the verbatim note, the retired fingerprint, the gate on the new head. */
+.st-dispatch-drift h3 {
+  color: var(--warn);
+}
+.st-dispatch-note {
+  margin: 0 0 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--warn);
+  border-radius: 6px;
+  background: var(--bg-raised);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  line-height: 1.6;
+  color: var(--soft);
+}
+.st-dispatch-fp {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.st-dispatch-fp + .st-dispatch-fp {
+  margin-top: 8px;
+}
+.st-dispatch-fp.is-old {
+  opacity: 0.7;
+}
+.st-dispatch-fp-label {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.st-dispatch-fp-line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--soft);
+}
+.st-dispatch-fp.is-old .st-dispatch-fp-line code {
+  color: var(--dim);
+  text-decoration: line-through;
+  text-decoration-color: var(--warn);
+}
+.st-dispatch-fp-target {
+  color: var(--dim);
+}
+.st-dispatch-fp-foot {
+  font-size: 11px;
+  color: var(--warn);
+}
+.st-dispatch-verdicts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.st-dispatch-verdicts li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 0;
+  border-top: 1px solid var(--line);
+}
+.st-dispatch-verdicts li:first-child {
+  border-top: 0;
+}
+.st-dispatch-verdict-role {
+  color: var(--muted);
+}
+.st-dispatch-verdict {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 10.5px;
+}
+.st-dispatch-verdict.v-pending {
+  color: var(--warn);
+}
+.st-dispatch-verdict.v-passed {
+  color: var(--silent);
+}
+.st-dispatch-verdict.v-failed {
+  color: var(--danger);
+}
+
+@media (max-width: 640px) {
+  .st-dispatch-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "entry"
+      "issues"
+      "ticket"
+      "drift";
+  }
+  .st-dispatch-entry,
+  .st-dispatch-ticket {
+    border-right: 0;
+  }
+  .st-dispatch-issues {
+    border-top: 1px solid var(--line);
+  }
+}
