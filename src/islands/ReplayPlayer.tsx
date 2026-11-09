@@ -18,12 +18,16 @@ export default function ReplayPlayer(props: {
   labels: PlayerLabels;
   /** Number of the first step among the whole scenario, when `steps` is a slice of it. */
   firstNumber?: number;
+  /** Total number of steps in the whole scenario; defaults to the length of `steps` when they are the whole scenario. */
+  total?: number;
   compact?: boolean;
 }) {
   const [index, setIndex] = createSignal(0);
   const [playing, setPlaying] = createSignal(false);
   const step = createMemo(() => props.steps[index()]!);
   const last = () => props.steps.length - 1;
+  /** A slice cannot report its own length as the scenario total, so the total stays blank until the caller passes it. */
+  const total = () => props.total ?? (props.firstNumber === undefined ? props.steps.length : undefined);
   const number = (i: number) => (props.firstNumber ?? 1) + i;
 
   /** Steps grouped by seam in order, for the step bar. */
@@ -57,28 +61,29 @@ export default function ReplayPlayer(props: {
   };
   onCleanup(stop);
 
+  /** One numbered tick per step; shared by the seam bar and the inline picker of a single-seam page. */
+  const tick = ({ step: s, i }: { step: Step; i: number }) => (
+    <button
+      type="button"
+      classList={{ on: i === index(), past: i < index() }}
+      aria-label={`${props.labels.step} ${number(i)}: ${s.title}`}
+      aria-current={i === index() ? "step" : undefined}
+      onClick={() => go(i)}
+    >
+      <span>{number(i)}</span>
+    </button>
+  );
+
   return (
     <div class="rp" classList={{ compact: !!props.compact }}>
-      <Show when={props.steps.length > 1}>
+      <Show when={groups().length > 1}>
         <div class="rp-bar">
           <For each={groups()}>
             {(g) => (
               <div class="rp-group">
                 <span class="rp-seam">{props.labels.seams[g.seam]}</span>
                 <div class="rp-ticks">
-                  <For each={g.steps}>
-                    {({ step: s, i }) => (
-                      <button
-                        type="button"
-                        classList={{ on: i === index(), past: i < index() }}
-                        aria-label={`${props.labels.step} ${number(i)}: ${s.title}`}
-                        aria-current={i === index() ? "step" : undefined}
-                        onClick={() => go(i)}
-                      >
-                        <span>{number(i)}</span>
-                      </button>
-                    )}
-                  </For>
+                  <For each={g.steps}>{tick}</For>
                 </div>
               </div>
             )}
@@ -89,22 +94,38 @@ export default function ReplayPlayer(props: {
       <div class="rp-head">
         <div class="rp-title">
           <span class="rp-n">
-            {props.labels.step} {number(index())}
-            <span class="rp-of"> / {number(last())}</span>
+            {props.lang === "zh" ? (
+              <>
+                第 {number(index())} 步
+                {total() !== undefined && <span class="rp-of">，共 {total()} 步</span>}
+              </>
+            ) : (
+              <>
+                {props.labels.step} {number(index())}
+                {total() !== undefined && <span class="rp-of"> of {total()}</span>}
+              </>
+            )}
           </span>
           <h3>{step().title}</h3>
         </div>
         <Show when={props.steps.length > 1}>
-          <div class="rp-controls">
-            <button type="button" class="rp-btn" aria-label={props.labels.prev} disabled={index() === 0} onClick={() => go(index() - 1)}>
-              ←
-            </button>
-            <button type="button" class="rp-btn rp-play" onClick={() => (playing() ? stop() : play())}>
-              {playing() ? props.labels.pause : index() >= last() ? props.labels.again : props.labels.play}
-            </button>
-            <button type="button" class="rp-btn" aria-label={props.labels.next} disabled={index() === last()} onClick={() => go(index() + 1)}>
-              →
-            </button>
+          <div class="rp-right">
+            <Show when={groups().length === 1}>
+              <div class="rp-ticks" aria-label={props.labels.seams[groups()[0]!.seam]}>
+                <For each={groups()[0]!.steps}>{tick}</For>
+              </div>
+            </Show>
+            <div class="rp-controls">
+              <button type="button" class="rp-btn" aria-label={props.labels.prev} disabled={index() === 0} onClick={() => go(index() - 1)}>
+                ←
+              </button>
+              <button type="button" class="rp-btn rp-play" onClick={() => (playing() ? stop() : play())}>
+                {playing() ? props.labels.pause : index() >= last() ? props.labels.again : props.labels.play}
+              </button>
+              <button type="button" class="rp-btn" aria-label={props.labels.next} disabled={index() === last()} onClick={() => go(index() + 1)}>
+                →
+              </button>
+            </div>
           </div>
         </Show>
       </div>

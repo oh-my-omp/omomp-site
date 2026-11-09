@@ -67,6 +67,11 @@
   display: grid;
   gap: 4px;
 }
+.rp-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
 .rp-n {
   font-family: var(--mono);
   font-size: 12px;
@@ -102,7 +107,8 @@
   border-color: var(--muted);
 }
 .rp-btn:disabled {
-  opacity: 0.35;
+  color: rgb(255 255 255 / 0.35);
+  border-color: rgb(255 255 255 / 0.16);
   cursor: default;
 }
 .rp-play {
@@ -127,11 +133,12 @@
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
   gap: 20px;
-  align-items: start;
+  align-items: stretch;
 }
 .rp-front,
 .rp-back {
   display: grid;
+  grid-template-rows: auto 1fr;
   gap: 12px;
   min-width: 0;
 }
@@ -170,12 +177,55 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
-@media (max-width: 640px) {
+/* Two rows of three seams: every seam and step stays visible without horizontal scrolling. */
+@media (max-width: 768px) {
+  .rp-bar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: hidden;
+  }
   .rp-group {
     padding: 8px 10px 10px;
   }
+  .rp-ticks {
+    gap: 4px;
+  }
   .rp-ticks button {
-    width: 28px;
+    width: auto;
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 30px;
+  }
+}
+@media (max-width: 640px) {
+  .rp-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 6px 12px;
+  }
+  .rp-title,
+  .rp-right {
+    display: contents;
+  }
+  .rp-n {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .rp-controls {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+  .rp-title h3 {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .rp-head .rp-ticks {
+    grid-column: 1 / -1;
+    grid-row: 3;
   }
   .rp-panels {
     padding: 12px;
