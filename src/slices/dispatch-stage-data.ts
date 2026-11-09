@@ -1,4 +1,5 @@
 import type { Lang } from "../i18n";
+import type { Art } from "./Art";
 
 /** One node of the issue tree the coordinator reads from GitHub. */
 export interface DispatchIssue {
@@ -122,11 +123,11 @@ export const dispatchStage: Record<Lang, DispatchStageContent> = {
     entry: "入口",
     issues: "工单树",
     ticket: "工单 #48",
-    drift: "偏移",
+    drift: "变更漂移",
     umbrellaTag: "总 issue",
     childrenTag: "子 issue",
     waiting: "尚未开工",
-    entryCaption: "人在 issue 页上启动协调者。",
+    entryCaption: "从 issue 页面直接启动协调者。",
     launcherOutcome: "已启动",
     launcherUrl: "127.0.0.1:47591/omomp/shop-api/issues/47",
     ticketTitle: "新增基于 Redis 的限速中间件",
@@ -171,3 +172,42 @@ export const dispatchStage: Record<Lang, DispatchStageContent> = {
     ],
   },
 };
+
+/**
+ * The slice above each cell of the page's How it works grid, in cell order:
+ * one state's branches from the default workflow, where a seat checks out, and
+ * the durable effect record a GitHub write leaves behind. State names, fields,
+ * the checkout path and the effect states are verbatim from the plugin.
+ */
+const sectionArt: readonly [Art, Art, Art] = [
+  {
+    kind: "code",
+    title: "default-workflow.yml",
+    lines: [
+      "Reviewing:",
+      "  kind: judge",
+      "  on: {passed: Merging, rejected: Coding, escalated: escalate}",
+    ],
+  },
+  {
+    kind: "code",
+    title: "seat",
+    lines: [
+      "<dataDir>/worktrees/<agendaId>",
+      "  detached git worktree",
+      "pullRequest judge @ e4f5a6b",
+      "  new blank session",
+    ],
+  },
+  {
+    kind: "code",
+    title: "effect",
+    lines: [
+      "intent:   executing   (saved first)",
+      "write:    merge",
+      "readback: confirmed   (fresh GitHub read)",
+    ],
+  },
+];
+
+export const dispatchSectionArt: Record<Lang, readonly [Art, Art, Art]> = { en: sectionArt, zh: sectionArt };

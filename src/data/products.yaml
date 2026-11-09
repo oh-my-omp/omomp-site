@@ -2,6 +2,9 @@ playbooks:
   order: 1
   name: omp-playbooks
   repo: https://github.com/oh-my-omp/omp-playbooks
+  headline:
+    en: Write the design with the agent, launch it block by block
+    zh: 与代理共写设计，按块启动执行
   tagline:
     en: Write the design together with the agent, then launch it block by block.
     zh: 和代理一起写设计，再一块一块启动执行。
@@ -13,32 +16,26 @@ playbooks:
         en: Design and execution are separate blocks
         zh: 设计块与执行块分离
       points:
-        - en: A design block holds one unit of design, written as a requirement and its rendered result.
-          zh: 每个设计块只装一个设计单元：一条需求，以及按它渲染出的结果。
-        - en: An execution block pulls in the designs, context and earlier results it needs by reference. One task can draw on several designs.
-          zh: 执行块按引用拉取所需的设计、上下文和先前结果；一个任务可以引用多个设计块。
-        - en: Compiling a block freezes its prompt, so what a subagent received is always on record.
-          zh: 编译时提示词被冻结下来，子代理收到了什么，始终有据可查。
+        - en: A design block holds one requirement and its rendered spec; an execution block pulls the designs and prior results it needs by reference.
+          zh: 设计块记录单条需求与渲染后的设计；执行块按引用拉取所需的设计、上下文与前置结果。
+        - en: Compiling a block freezes the exact prompt sent to the subagent.
+          zh: 编译执行块会冻结提示词，子代理收到的内容全程留档。
     - title:
         en: The button asks, the coordinator decides
-        zh: 按钮只是请求，协调者做决定
+        zh: 按钮只发请求，由协调者拍板
       points:
-        - en: Launch, Stop and a design change are requests to the main session. Clicking never runs anything on its own.
-          zh: 启动、停止和修改设计，都是发给主会话的请求；点击本身不会让任何东西运行。
-        - en: The coordinator compiles the prompt, picks the subagent and decides the order.
-          zh: 编译提示词、挑选子代理、决定先后顺序，都由协调者负责。
-        - en: Change a design while it runs, and the coordinator is told which blocks it touched.
-          zh: 运行中改了设计，协调者会收到通知，知道哪些块受影响。
+        - en: Launch, Stop, and design edits send requests to the main session rather than running code directly.
+          zh: 点击启动、停止或改设计都只是向主会话发请求，面板本身不直接跑任务。
+        - en: The coordinator compiles prompts, picks subagents, and tracks which blocks a mid-run edit invalidates.
+          zh: 协调者负责编译提示词、指派子代理并追踪中途改设计受影响的块。
     - title:
         en: Status lives in the file
-        zh: 状态写在文件里
+        zh: 状态写回文件
       points:
-        - en: Each subagent writes its block's status and a report back into the Playbook.
-          zh: 每个子代理把自己那块的状态和报告写回 Playbook。
-        - en: A run copies the Playbook with fresh state, so the template stays clean for the next time.
-          zh: 每次运行都复制一份带全新状态的 Playbook，模板留着下次用。
-        - en: Another coordinator can pick the document up where the last one stopped.
-          zh: 换一个协调者，也能从上一个停下的地方接着做。
+        - en: Each subagent writes its status and completion report back into the Playbook file.
+          zh: 子代理把本块的状态与完成报告直接写回 Playbook。
+        - en: Every run forks a fresh state copy so the template stays clean and another coordinator can resume mid-run.
+          zh: 每次运行都会复制一份带全新状态的副本，保留干净模板，也允许新协调者随时接手。
   roles:
     hub:
       name:
@@ -54,22 +51,37 @@ playbooks:
         role:
           en: Edit blocks, read designs, ask for launches and changes.
           zh: 编辑卡片、审阅设计，提出启动和修改请求。
+        edge:
+          en: launch / edit request
+          zh: 启动 / 改设计请求
+        dir: in
       - name:
           en: Document service
           zh: 文档服务
         role:
           en: Stores the file, resolves references, draws the pane, notifies the coordinator.
           zh: 存储文件、解析引用、绘制面板、通知协调者。
+        edge:
+          en: file + notices
+          zh: 文件与通知
+        dir: both
       - name:
           en: Subagent
           zh: 子代理
         role:
           en: Runs one compiled prompt and writes status and report back.
           zh: 执行一份编译好的提示词，把状态和报告写回文件。
+        edge:
+          en: compiled prompt · status + report
+          zh: 编译提示词 · 状态与报告
+        dir: both
 dispatch:
   order: 2
   name: omp-dispatch
   repo: https://github.com/oh-my-omp/omp-dispatch
+  headline:
+    en: Hand over an issue tree; fresh sessions deliver and judge every ticket
+    zh: 交出一棵工单树，每个工单由新会话交付并裁决
   tagline:
     en: "Hand over a GitHub issue tree: each ticket is delivered by a new session, and every verdict comes from a new judge."
     zh: 交出一棵 GitHub issue 树：每张工单由新会话交付，每次裁决都由新的判定者做出。
@@ -79,34 +91,28 @@ dispatch:
   sections:
     - title:
         en: Tickets move through a state machine
-        zh: 每张工单走一台状态机
+        zh: 每张工单走状态机
       points:
-        - en: The default path runs from coding to a PR, checks, review, merge, verification and close.
-          zh: 默认路径：编码、开 PR、等检查、评审、合并、验证、关闭。
-        - en: The workflow is a YAML file. Add a judge, reroute a rejection, or skip a step for first-round work.
-          zh: 工作流是一个 YAML 文件：加一个判定者，改掉退回的去向，或者让首轮跳过某一步。
-        - en: The coordinator decides which tickets run side by side and which wait on a dependency.
-          zh: 哪些工单并行、哪些等依赖，由协调者决定。
+        - en: A YAML workflow drives each ticket through coding, PR creation, checks, review, merge, verification, and close.
+          zh: YAML 工作流驱动每张工单依次经过编码、开 PR、检查、评审、合并、验证与关闭。
+        - en: The coordinator schedules independent tickets in parallel and holds dependents.
+          zh: 哪些工单并行、哪些等待依赖，由协调者统一调度。
     - title:
         en: Every seat is new
-        zh: 每个席位都是新的
+        zh: 每个席位都是全新会话
       points:
-        - en: The work on a ticket is done by a one-shot session in its own checkout. It pushes a branch and submits.
-          zh: 每张工单由一次性会话在独立工作树里完成，推送分支后提交。
-        - en: A judge is always a fresh session, pinned to the exact PR head or merge commit it rules on.
-          zh: 判定者永远是新会话，钉在它所裁决的那个 PR head 或合并提交上。
-        - en: A new push drops every approval given to the old one.
-          zh: 一推新提交，旧提交上的批准全部作废。
+        - en: An owner is a one-shot session in an isolated checkout; a judge is a fresh session pinned to one exact commit.
+          zh: 负责人是在独立工作树里跑完即退的一次性会话；判定者是钉死在特定提交上的新会话。
+        - en: Any new push invalidates prior approvals on that PR.
+          zh: 一旦推入新提交，旧提交上的批准自动作废。
     - title:
         en: Nothing counts until GitHub confirms it
-        zh: GitHub 确认了才算数
+        zh: GitHub 确认后才作数
       points:
-        - en: Every write to GitHub is recorded first, then confirmed by reading it back.
-          zh: 每次写 GitHub 都先记录，再读回来确认。
-        - en: The agenda survives a crash. A new coordinator resumes it only when the old one is gone.
-          zh: 议程在崩溃后仍然保留；只有确认旧协调者已退出，新协调者才会接手。
-        - en: A failed or uncertain write goes to the coordinator, never silently retried.
-          zh: 写失败或结果不明，一律交给协调者处理，不会悄悄重试。
+        - en: Every GitHub write is logged before execution and verified by readback.
+          zh: 每次写入 GitHub 前先落盘记录，写完再回读确认。
+        - en: On crash or ambiguous write, the coordinator reconciles state from GitHub instead of blindly retrying.
+          zh: 遇到崩溃或结果不明的写入时，协调者先核对 GitHub 实况，绝不暗中重试。
   roles:
     hub:
       name:
@@ -122,22 +128,37 @@ dispatch:
         role:
           en: File the issue tree and click its link.
           zh: 写好 issue 树，点一下链接。
+        edge:
+          en: issue tree + link
+          zh: 工单树与启动链接
+        dir: in
       - name:
           en: Owner
           zh: 负责人
         role:
           en: A one-shot session that delivers one ticket.
           zh: 一次性会话，交付一张工单。
+        edge:
+          en: ticket brief · branch + submit
+          zh: 工单简报 · 分支与提交
+        dir: both
       - name:
           en: Judge
           zh: 判定者
         role:
           en: A fresh session that rules on one exact commit.
           zh: 全新会话，只对一个确定的提交做裁决。
+        edge:
+          en: seat brief · verdict
+          zh: 席位简报 · 裁决
+        dir: both
 remote-build:
   order: 3
   name: omp-remote-build
   repo: https://github.com/oh-my-omp/omp-remote-build
+  headline:
+    en: Edit files locally, build and test in one remote container per worktree
+    zh: 本机改文件，每个 worktree 一套远程容器跑构建测试
   tagline:
     en: The agent edits files on your machine while builds and tests run in a remote container, one per worktree.
     zh: 代理在本机改文件，构建和测试在远程容器里跑，每个 worktree 一个容器。
@@ -149,28 +170,22 @@ remote-build:
         en: One environment per worktree
         zh: 每个 worktree 一套环境
       points:
-        - en: Each worktree is mirrored one way to the build host, and a long-lived container mounts the mirror.
-          zh: 每个 worktree 单向同步到构建主机，由长驻容器挂载该同步目录。
-        - en: After any tool call that could have changed files, the mirror is flushed before the agent moves on.
-          zh: 任何可能改了文件的工具调用之后，都先刷新同步，代理才继续下一步。
-        - en: A project opts in with one file. Projects without it are never touched.
-          zh: 项目只需一个配置文件即可接入；未配置的项目一概不碰。
+        - en: Each opted-in worktree syncs one way to a long-lived container on the build host, flushed automatically after every file-writing tool call.
+          zh: 接入配置的 worktree 会单向同步到构建主机上的长驻容器，每次写入类工具调用后自动刷新同步，未配置的项目不受影响。
     - title:
         en: The image is part of the repository
-        zh: 镜像写进仓库
+        zh: 镜像定义随仓库走
       points:
-        - en: The toolchain comes from a named image, the worktree's own Dockerfile, or one a subagent prepares and commits.
-          zh: 工具链来自指定镜像、worktree 自带的 Dockerfile，或由子代理准备好并提交的 Dockerfile。
-        - en: Built images are cached by Dockerfile content, so worktrees with the same file share one.
-          zh: 构建好的镜像按 Dockerfile 内容缓存，同一份文件的 worktree 共用一个镜像。
+        - en: Containers boot from a named image or the worktree's own Dockerfile.
+          zh: 容器环境来自指定镜像或 worktree 内的 Dockerfile。
+        - en: Images are cached by Dockerfile hash, so worktrees with identical files share one build.
+          zh: 构建好的镜像按 Dockerfile 内容哈希缓存，相同文件的 worktree 直接共用。
     - title:
         en: The agent gets a terminal inside
-        zh: 代理在容器里有自己的终端
+        zh: 代理在容器内拥有终端
       points:
-        - en: Container tools open interactive terminal sessions in the remote container.
-          zh: 容器工具在远端容器里打开交互式终端会话。
-        - en: The tools are on from the start of a session, so switching worktrees never changes the prompt prefix.
-          zh: 这些工具在会话一开始就启用，换 worktree 也不会改动提示词前缀。
+        - en: Container tools open persistent shell sessions inside the remote container and stay registered from session start, keeping the prompt prefix stable across worktrees.
+          zh: 容器工具在远端容器内打开交互式终端，并从会话启动起保持挂载，切换 worktree 不会改动提示词前缀。
   roles:
     hub:
       name:
@@ -186,15 +201,27 @@ remote-build:
         role:
           en: Mirrors the worktree one way to the build host.
           zh: 把 worktree 单向同步到构建主机。
+        edge:
+          en: one-way replica
+          zh: 单向副本
+        dir: out
       - name:
           en: Komodo
           zh: Komodo
         role:
           en: Deploys and runs the container on the build host.
           zh: 在构建主机上部署并运行容器。
+        edge:
+          en: deployment
+          zh: 部署
+        dir: out
       - name:
           en: Container
           zh: 容器
         role:
           en: Builds, tests and runs, with the mirror as its working directory.
           zh: 以同步过来的目录为工作目录，构建、测试、运行。
+        edge:
+          en: container_exec
+          zh: 容器执行
+        dir: both

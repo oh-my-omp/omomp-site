@@ -1,4 +1,5 @@
 import type { Lang } from "../i18n";
+import type { Art } from "./Art";
 
 /**
  * Content for the omp-playbooks stage: one Playbook YAML shown next to the
@@ -199,3 +200,45 @@ const zh: PlaybooksStageData = {
 };
 
 export const playbooksStage: Record<Lang, PlaybooksStageData> = { en, zh };
+
+/**
+ * The slice above each cell of the page's How it works grid, in cell order:
+ * a design block reached by `((b1))`, the launch request notice the pane sends
+ * the coordinator, and the status and report a subagent wrote into a run file.
+ * The reference syntax, notice header, notice JSON and YAML field order are
+ * verbatim from the extension; the paths and titles come from the scenario.
+ */
+const sectionArt: readonly [Art, Art, Art] = [
+  {
+    kind: "code",
+    title: "rate-limit.yaml",
+    lines: [
+      "- id: b1",
+      "  design: |2",
+      "      bucket(key) → { tokens, refill }",
+      "- id: b2",
+      "  body: |2",
+      "      Implement the bucket from ((b1)).",
+    ],
+  },
+  {
+    kind: "code",
+    title: "notice",
+    lines: [
+      "This is a Playbook document service notice, not a user message",
+      '{"doc":"/work/shop-api/rate-limit.yaml","event":"launch_requested","data":{"blocks":["b3"]}}',
+    ],
+  },
+  {
+    kind: "code",
+    title: "rate-limit.runs/r1.yaml",
+    lines: [
+      "- id: b2",
+      "  status: done",
+      "  report: |2",
+      "      rate-limit.ts added; bucket math covered by token-bucket.test.ts.",
+    ],
+  },
+];
+
+export const playbooksSectionArt: Record<Lang, readonly [Art, Art, Art]> = { en: sectionArt, zh: sectionArt };

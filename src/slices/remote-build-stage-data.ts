@@ -1,4 +1,5 @@
 import type { Lang, Text } from "../i18n";
+import type { Art } from "./Art";
 
 /**
  * Demo data for the omp-remote-build stage: this machine's worktrees, the one-way
@@ -181,3 +182,44 @@ export const remoteBuildStage: Record<Lang, RemoteBuildStageData> = {
     },
   },
 } as const satisfies Record<Lang, RemoteBuildStageData>;
+
+/**
+ * The slice above each cell of the page's How it works grid, in cell order:
+ * the opt-in file and the flush that follows a write-type tool call, the
+ * Dockerfile-content image tag, and the container tools registered at session
+ * start. Config keys, the flush command, the tag shape and tool names are
+ * verbatim from the plugin.
+ */
+const sectionArt: readonly [Art, Art, Art] = [
+  {
+    kind: "code",
+    title: ".omp/remote-build.json",
+    lines: [
+      '{"dockerfile": ".devcontainer/Dockerfile"}',
+      "$ mutagen sync flush rb-rate-limit-a3f9c1b7e2",
+    ],
+  },
+  {
+    kind: "code",
+    title: "image",
+    lines: [
+      "sha256(.devcontainer/Dockerfile)",
+      "  a3f9c1b7e2cc41d0",
+      "tag rb-project-<project-id>:",
+      "  a3f9c1b7e2cc41d0",
+    ],
+  },
+  {
+    kind: "code",
+    title: "container_*",
+    lines: [
+      "container_exec",
+      "container_write_stdin",
+      "container_list_sessions",
+      "container_kill_session",
+      "# registered at session start; prompt prefix unchanged",
+    ],
+  },
+];
+
+export const remoteBuildSectionArt: Record<Lang, readonly [Art, Art, Art]> = { en: sectionArt, zh: sectionArt };

@@ -6,9 +6,13 @@ import SplitHead from "../components/SplitHead.astro";
 import Grid from "../components/Grid.astro";
 import Cell from "../components/Cell.astro";
 import Pager from "../components/Pager.astro";
+import ArtView from "../slices/Art";
 import PlaybooksStage from "../slices/PlaybooksStage";
 import DispatchStage from "../slices/DispatchStage";
 import RemoteBuildStage from "../slices/RemoteBuildStage";
+import { playbooksSectionArt } from "../slices/playbooks-stage-data";
+import { dispatchSectionArt } from "../slices/dispatch-stage-data";
+import { remoteBuildSectionArt } from "../slices/remote-build-stage-data";
 import { productPage as copy, replayPage, defaultsPage } from "../copy/pages";
 import { href, t, type Lang } from "../i18n";
 import { ui } from "../ui";
@@ -23,52 +27,70 @@ const index = all.findIndex((p) => p.id === product.id);
 const prev = all[index - 1];
 const next = all[index + 1];
 const stages = { playbooks: PlaybooksStage, dispatch: DispatchStage, "remote-build": RemoteBuildStage } as const;
+const sectionArt = { playbooks: playbooksSectionArt, dispatch: dispatchSectionArt, "remote-build": remoteBuildSectionArt } as const;
 const isStaged = (id: string): id is keyof typeof stages => id in stages;
 if (!isStaged(product.id)) throw new Error(`product \`${product.id}\` has no stage component`);
 const StageView = stages[product.id];
+const arts = sectionArt[product.id][lang];
 const { hub, around } = product.data.roles;
 ---
 
 <Base lang={lang} title={product.data.name} description={product.data.tagline[lang]}>
-  <PageHead kicker={`${t(copy.kicker, lang)} · ${product.data.name}`} title={product.data.tagline[lang]} lede={product.data.intro[lang]}>
-    <div class="top">
-      <a class="btn" href={product.data.repo}>{t(copy.repo, lang)} ↗</a>
-      <nav class="switch" aria-label={t(copy.all, lang)}>
-        {all.map((p) => (
-          <a href={href(`/products/${p.id}/`, lang)} aria-current={p.id === product.id ? "page" : undefined}>
-            {p.data.name}
-          </a>
-        ))}
-      </nav>
-    </div>
-  </PageHead>
+  <div class="head">
+    <PageHead kicker={`${t(copy.kicker, lang)} · ${product.data.name}`} title={product.data.headline[lang]} lede={product.data.intro[lang]}>
+      <div class="top">
+        <a class="btn" href={product.data.repo}>{t(copy.repo, lang)} ↗</a>
+        <nav class="switch" aria-label={t(copy.all, lang)}>
+          {all.map((p) => (
+            <a href={href(`/products/${p.id}/`, lang)} aria-current={p.id === product.id ? "page" : undefined}>
+              {p.data.name}
+            </a>
+          ))}
+        </nav>
+      </div>
+    </PageHead>
+  </div>
 
   <section class="wrap stage">
     <StageView lang={lang} />
   </section>
 
   <section class="section">
-    <SplitHead title={t(copy.how, lang)} />
+    <SplitHead kicker={t(copy.mechanics, lang)} title={t(copy.how, lang)} lede={t(copy.howLede, lang)} />
     <div class="wrap body">
       <Grid cols={3} count={product.data.sections.length}>
-        {product.data.sections.map((s) => <Cell title={s.title[lang]} text={s.points.map((p) => p[lang]).join(lang === "zh" ? "" : " ")} />)}
+        {product.data.sections.map((s, i) => (
+          <Cell title={s.title[lang]} text={s.points.map((p) => p[lang]).join(lang === "zh" ? "" : " ")}>
+            <ArtView lang={lang} art={arts[i]!} />
+          </Cell>
+        ))}
       </Grid>
     </div>
   </section>
 
   <section class="section">
-    <SplitHead title={t(copy.who, lang)} />
-    <div class="wrap body roles" style={`--n:${around.length}`}>
-      <div class="hub">
-        <b>{hub.name[lang]}</b>
-        <p>{hub.role[lang]}</p>
+    <SplitHead kicker={t(copy.roles, lang)} title={t(copy.who, lang)} lede={t(copy.whoLede, lang)} />
+    <div class="wrap body">
+      <div class="roles">
+        <div class="hub">
+          <b>{hub.name[lang]}</b>
+          <p>{hub.role[lang]}</p>
+        </div>
+        <div class="spokes" style={`--n:${around.length}`}>
+          {around.map((r) => (
+            <div class="spoke">
+              <div class="edge" data-dir={r.dir}>
+                <i class="head" aria-hidden="true" />
+                <span>{r.edge[lang]}</span>
+              </div>
+              <div class="node">
+                <b>{r.name[lang]}</b>
+                <p>{r.role[lang]}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-      <div class="spokes" aria-hidden="true">
-        {around.map(() => <span />)}
-      </div>
-      <Grid cols={around.length === 2 ? 2 : 3} count={around.length}>
-        {around.map((r) => <Cell title={r.name[lang]} text={r.role[lang]} />)}
-      </Grid>
     </div>
   </section>
 
@@ -83,35 +105,48 @@ const { hub, around } = product.data.roles;
 </Base>
 
 <style>
+  /* Greedy wrapping keeps a two-character Chinese word off a line boundary. */
+  .head :global(h1) {
+    text-wrap: wrap;
+  }
   .top {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: space-between;
     gap: 16px 24px;
+    width: 100%;
     margin-top: 8px;
   }
+  /* A connected segmented control, like the seam bar on the Lifeline pages. */
   .switch {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 1px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--line);
+    overflow: hidden;
   }
   .switch a {
-    padding: 5px 12px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
+    flex: 1 1 0;
+    min-width: max-content;
+    padding: 8px 14px;
+    background: var(--bg);
     font-family: var(--mono);
     font-size: 12.5px;
     color: var(--muted);
+    text-align: center;
     text-decoration: none;
-    transition: border-color 0.15s, color 0.15s;
+    transition: color 0.15s, background 0.15s;
   }
   .switch a:hover {
     color: var(--text);
-    border-color: var(--line-strong);
+    background: var(--bg-hover);
   }
   .switch a[aria-current="page"] {
     color: var(--text);
-    border-color: var(--muted);
+    background: var(--bg-raised);
   }
   .stage {
     padding-bottom: clamp(72px, 10vw, 128px);
@@ -120,63 +155,201 @@ const { hub, around } = product.data.roles;
     margin-top: clamp(40px, 5vw, 64px);
   }
 
-  /* The hub sits above the parties it connects; one hairline drops to each of them. */
+  /* The hub sits above the parties it connects; one labeled arrow drops to each. */
+  .roles {
+    border: 1px solid var(--line-strong);
+    border-radius: 14px;
+    background:
+      radial-gradient(100% 60% at 50% 0%, rgb(255 255 255 / 0.04), transparent 60%),
+      var(--bg-raised);
+    padding: clamp(24px, 3.5vw, 44px);
+    display: grid;
+  }
   .hub {
     justify-self: center;
     display: grid;
     gap: 6px;
-    width: min(100%, 420px);
-    padding: 20px 24px;
+    width: min(100%, 460px);
+    padding: 18px 22px;
     border: 1px solid var(--line-strong);
-    border-radius: 14px;
-    background: var(--bg-raised);
+    border-radius: 12px;
+    background: var(--bg-panel);
     text-align: center;
+  }
+  .hub b {
+    font-weight: 560;
   }
   .hub p {
     color: var(--muted);
-    font-size: 15px;
-  }
-  .roles {
-    display: grid;
+    font-size: 14.5px;
   }
   .spokes {
+    --arrow: rgb(255 255 255 / 0.22);
     position: relative;
     display: grid;
     grid-template-columns: repeat(var(--n), minmax(0, 1fr));
-    height: 48px;
+    margin-top: 24px;
+    align-items: stretch;
   }
   .spokes::before {
     content: "";
     position: absolute;
     left: 50%;
-    top: 0;
+    top: -24px;
     height: 24px;
-    border-left: 1px solid var(--line-strong);
+    border-left: 1px solid var(--arrow);
   }
   .spokes::after {
     content: "";
     position: absolute;
-    top: 24px;
+    top: 0;
     left: calc(50% / var(--n));
     right: calc(50% / var(--n));
-    border-top: 1px solid var(--line-strong);
+    border-top: 1px solid var(--arrow);
   }
-  .spokes span {
-    justify-self: center;
-    margin-top: 24px;
-    border-left: 1px solid var(--line-strong);
+  .spoke {
+    display: grid;
+    grid-template-rows: 60px 1fr;
+    min-width: 0;
+  }
+  .edge {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-width: 0;
+  }
+  .edge::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    border-left: 1px solid var(--arrow);
+  }
+  .edge::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 7px;
+    height: 7px;
+    border-right: 1px solid var(--arrow);
+    border-bottom: 1px solid var(--arrow);
+    transform: translate(-50%, -1px) rotate(45deg);
+  }
+  .edge .head {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 7px;
+    height: 7px;
+    border-left: 1px solid var(--arrow);
+    border-top: 1px solid var(--arrow);
+    transform: translate(-50%, 1px) rotate(45deg);
+    display: none;
+  }
+  .edge[data-dir="in"]::after {
+    display: none;
+  }
+  .edge[data-dir="in"] .head,
+  .edge[data-dir="both"] .head {
+    display: block;
+  }
+  .edge span {
+    position: relative;
+    z-index: 1;
+    max-width: 90%;
+    padding: 2px 8px;
+    background: var(--bg-raised);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    line-height: 1.4;
+    text-align: center;
+  }
+  .node {
+    display: grid;
+    gap: 4px;
+    align-content: start;
+    min-width: 0;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--bg-panel);
+  }
+  .node b {
+    font-weight: 560;
+  }
+  .node p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
   }
   @media (max-width: 960px) {
-    .spokes {
-      display: none;
-    }
     .hub {
       justify-self: stretch;
       width: auto;
-      margin-bottom: 1px;
       text-align: left;
-      border-radius: 14px 14px 0 0;
-      border-bottom: 0;
+    }
+    /* One spine on the left, one labeled branch into each node. */
+    .spokes {
+      grid-template-columns: minmax(0, 1fr);
+      margin-top: 20px;
+      padding-left: 26px;
+    }
+    .spokes::before {
+      left: 7px;
+      top: -20px;
+      bottom: 0;
+      height: auto;
+    }
+    .spokes::after {
+      display: none;
+    }
+    .spoke {
+      grid-template-rows: auto 1fr;
+    }
+    .spoke + .spoke {
+      margin-top: 14px;
+    }
+    .edge {
+      height: auto;
+      min-height: 26px;
+      margin-left: -26px;
+      padding-left: 34px;
+      place-items: center start;
+    }
+    .edge::before {
+      left: 7px;
+      top: 100%;
+      bottom: auto;
+      width: 19px;
+      height: 0;
+      border-left: 0;
+      border-top: 1px solid var(--arrow);
+    }
+    .edge::after {
+      left: 26px;
+      top: 100%;
+      bottom: auto;
+      transform: translate(-6px, -3.5px) rotate(45deg);
+    }
+    .edge .head {
+      left: 7px;
+      top: 100%;
+      transform: translate(-1px, -3.5px) rotate(-45deg);
+    }
+    .edge[data-dir="in"] .head {
+      display: block;
+    }
+    .edge span {
+      max-width: none;
+      padding: 0;
+      background: none;
+      text-align: left;
+    }
+    .node {
+      max-width: none;
     }
   }
 </style>

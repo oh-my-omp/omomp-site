@@ -1,31 +1,56 @@
-/* omp-remote-build stage: three linked zones (this machine → one-way sync → remote build host). */
+/* omp-remote-build stage: one frame around three linked zones (this machine → one-way sync → remote build host). */
 
 .st-rb {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--bg-panel);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.4),
+    0 24px 60px -24px rgb(0 0 0 / 0.8);
+  overflow: hidden;
   font-size: 13px;
   text-align: left;
 }
 .st-rb-zone {
+  position: relative;
   min-width: 0;
-  padding: 0 18px;
+  padding: 18px 20px 16px;
   display: grid;
+  grid-template-rows: auto 1fr auto;
   gap: 10px;
-  align-content: start;
 }
 .st-rb-zone + .st-rb-zone {
   border-left: 1px solid var(--line);
 }
-.st-rb-zone > :first-child {
-  margin-left: -1px; /* keep titles aligned across hairlines */
+/* The connector sits on the divider, in the direction the data moves. */
+.st-rb-zone + .st-rb-zone::before {
+  content: "→";
+  position: absolute;
+  left: -10px;
+  top: 14px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 18px;
+  background: var(--bg-panel);
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1;
 }
 .st-rb-title {
-  margin: 0 0 2px;
+  margin: 0;
   font-size: 12.5px;
   font-weight: 600;
   letter-spacing: 0.02em;
   color: var(--soft);
+}
+.st-rb-body {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  min-width: 0;
 }
 .st-rb-cap {
   margin: 0;
@@ -198,21 +223,24 @@
   color: var(--agent);
 }
 
-/* Narrow: one column, hairline becomes horizontal */
+/* Narrow: one column, the divider becomes horizontal and its connector points down. */
 @media (max-width: 880px) {
   .st-rb {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .st-rb-zone {
-    padding: 0;
+    padding: 16px;
   }
   .st-rb-zone + .st-rb-zone {
     border-left: 0;
     border-top: 1px solid var(--line);
-    padding-top: 16px;
-    margin-top: 4px;
   }
-  .st-rb-zone > :first-child {
-    margin-left: 0;
+  .st-rb-zone + .st-rb-zone::before {
+    content: "↓";
+    left: 50%;
+    top: -9px;
+    width: 22px;
+    height: 18px;
+    transform: translateX(-50%);
   }
 }

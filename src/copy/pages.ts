@@ -58,7 +58,17 @@ export const productPage = {
   all: { en: "All products", zh: "全部产品" },
   repo: { en: "Repository", zh: "仓库" },
   how: { en: "How it works", zh: "运作方式" },
+  mechanics: { en: "Mechanics", zh: "机制" },
+  howLede: {
+    en: "Three mechanisms, each shown by the file, message or state it produces.",
+    zh: "三个机制，分别用它们产出的文件、消息或状态来说明。",
+  },
   who: { en: "Who does what", zh: "谁负责什么" },
+  roles: { en: "Roles", zh: "角色分工" },
+  whoLede: {
+    en: "What each party does, and what crosses each edge between them.",
+    zh: "每一方各做什么，以及它们之间传递什么。",
+  },
 } satisfies Record<string, Text>
 
 export const defaultsPage = {

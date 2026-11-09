@@ -15,16 +15,17 @@
 
 .st-dispatch-head {
   display: flex;
-  align-items: baseline;
-  gap: 12px;
-  padding: 0 14px;
-  height: 34px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 12px;
+  padding: 8px 14px;
+  min-height: 34px;
   border-bottom: 1px solid var(--line);
 }
 .st-dispatch-title {
-  align-self: center;
   color: var(--soft);
   font-weight: 560;
+  white-space: nowrap;
 }
 .st-dispatch-meta {
   margin-left: auto;
@@ -32,8 +33,6 @@
   font-size: 11px;
   color: var(--dim);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 /* entry | issues over the taller ticket rail | drift */
@@ -342,6 +341,14 @@
 }
 
 @media (max-width: 640px) {
+  .st-dispatch-head {
+    display: grid;
+    gap: 2px;
+    padding: 8px 14px 10px;
+  }
+  .st-dispatch-meta {
+    margin-left: 0;
+  }
   .st-dispatch-grid {
     grid-template-columns: 1fr;
     grid-template-areas:

@@ -25,14 +25,16 @@
   font-family: var(--mono);
   font-size: 11.5px;
   line-height: 1.75;
-  overflow-x: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   min-width: 0;
 }
 .st-pb-yl {
-  display: flex;
-  gap: 0;
+  display: block;
   padding: 0 16px 0 14px;
-  white-space: pre;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  hyphens: none;
   color: var(--dim);
 }
 .st-pb-yl.mark {

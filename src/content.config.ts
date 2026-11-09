@@ -47,6 +47,9 @@ const products = defineCollection({
       order: z.number().int().positive(),
       name: z.string(),
       repo: z.url(),
+      /** The page headline; short enough to hold two lines. */
+      headline: text,
+      /** Meta description and any standalone mention of the product. */
       tagline: text,
       intro: text,
       sections: z.array(z.object({ title: text, points: z.array(text).min(1) }).strict()).min(1),
@@ -54,7 +57,7 @@ const products = defineCollection({
       roles: z
         .object({
           hub: party,
-          around: z.array(party).min(2),
+          around: z.array(party.extend({ edge: text, dir: z.enum(["out", "in", "both"]) }).strict()).min(2),
         })
         .strict(),
     })
