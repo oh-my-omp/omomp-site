@@ -12,14 +12,17 @@ interface Props {
   stage: SeamStage;
   /** Pane labels: what the person sees, and what reached the model. */
   sides: { screen: string; model: string };
-  /** Caption for a layer with a single component: its name and one sentence; the stage then carries the component's anchor id. */
-  only?: { id: string; title: string; text: string } | undefined;
+  /**
+   * The single component of a layer: its name captions the stage and the stage carries its anchor id. Its one-line
+   * description is left out, because the section heading above already says the same thing.
+   */
+  only?: { id: string; title: string } | undefined;
 }
 const { lang, stage, sides, only } = Astro.props;
 ---
 
 <div class="seam-stage" id={only?.id}>
-  <Stage {...(only ? { title: only.title, text: only.text } : {})}>
+  <Stage {...(only ? { title: only.title } : {})}>
     {
       (() => {
         switch (stage.kind) {

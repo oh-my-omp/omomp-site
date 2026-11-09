@@ -80,7 +80,7 @@ const routeHref = (route: string) => (route.startsWith("https://") ? route : hre
 
 /** What each way of installing looks like at work. */
 const tabArts: Readonly<Record<string, readonly Art[]>> = {
-  plugin: [componentArt.sessions[lang], { kind: "panel", panel: sessionQuery(lang) }],
+  plugin: [{ kind: "panel", panel: sessionQuery(lang) }],
   config: [componentArt["isolation-nudge"][lang]],
   tern: [componentArt["todo-panel"][lang]],
 };
@@ -445,7 +445,8 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
       gap: 0.7em;
     }
     /* Stacked on a phone, these slices need their full height to reach the element the caption names. */
-    .card[data-repo="omp-dispatch"] .ca {
+    .card[data-repo="omp-dispatch"] .ca,
+    .card[data-repo="omp-playbooks"] .ca {
       height: auto;
       mask-image: none;
     }
@@ -454,9 +455,6 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     }
     .card[data-repo="omp-unified-exec"] {
       --art-h: 350px;
-    }
-    .card[data-repo="omp-playbooks"] {
-      --art-h: 330px;
     }
     .next {
       grid-template-columns: minmax(0, 1fr);

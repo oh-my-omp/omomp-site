@@ -473,7 +473,6 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
       kind: "code",
       title: "Polish preview",
       lines: [
-        "Polish preview",
         "Back the public API with Redis rate limiting, count each",
         "API key honestly, return a real 429 with Retry-After, and",
         "switch orders, search and webhooks onto it for good.",
@@ -484,7 +483,6 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
       kind: "code",
       title: "润色预览",
       lines: [
-        "润色预览",
         "给公开 API 装上 Redis 限流：每个 API key 都老老实实计数，",
         "超了就干脆回 429 带上 Retry-After，再把 orders、search、",
         "webhooks 三个路由一次性全部切过去。",

@@ -100,8 +100,8 @@ export const home = {
           zh: "单独装上 omp-sessions：不需要 omp-config，也没有要填的配置项，照旧用你现在的终端。",
         },
         after: [
+          { en: "Eval cells query the session history with SQL through `session_query`", zh: "eval 单元格通过 `session_query` 用 SQL 查询会话历史" },
           { en: "`read` and `grep` open other sessions through `session://` paths", zh: "`read` 和 `grep` 通过 `session://` 路径打开其他会话" },
-          { en: "Eval cells query the same history with SQL through `session_query`", zh: "eval 单元格通过 `session_query` 用 SQL 查询同一份历史" },
         ],
       },
       {

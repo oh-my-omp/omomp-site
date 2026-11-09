@@ -95,7 +95,7 @@ const colsFor = (n: number) => (n === 2 || n === 4 ? 2 : 3);
               lang={lang}
               stage={seamStage(seamId, l, lang)}
               sides={sides}
-              only={only && { id: only.id, title: only.data.name, text: only.data.line[lang] }}
+              only={only && { id: only.id, title: only.data.name }}
             />
           </div>
           {!only && (

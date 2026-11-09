@@ -266,7 +266,7 @@ isolation-nudge:
   seam: delegation
   line:
     en: Writers sharing a checkout without stated isolation are sent back.
-    zh: 多个写手共用工作区又没写明是否隔离时，派发被退回。
+    zh: 多个执行者共用工作区又没写明是否隔离时，派发被退回。
 
 task-split-check:
   name: task-split-check

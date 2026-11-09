@@ -910,12 +910,18 @@
 }
 .sl-ctx-bar {
   display: flex;
+  flex-wrap: wrap;
   gap: 3px;
-  height: 2.4em;
 }
+/*
+ * Each span is at least as wide as its label; the remaining width is shared by size. A row whose labels do not fit
+ * continues on a second line in the same order.
+ */
 .sl-ctx-bar span {
   flex-basis: 0;
-  min-width: 0;
+  height: 2.4em;
+  min-width: max-content;
+  padding-inline: 0.45em;
   display: grid;
   place-items: center;
   border-radius: 4px;
