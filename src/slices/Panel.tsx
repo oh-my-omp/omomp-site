@@ -2,6 +2,8 @@ import type { Lang } from "../i18n";
 import Agents, { type AgentRow } from "./Agents";
 import AskPanel, { type AskData } from "./AskPanel";
 import ContextBar, { type ContextRow } from "./ContextBar";
+import ModeMount, { type ModeMountData } from "./ModeMount";
+import SqlQuery, { type SqlQueryData } from "./SqlQuery";
 import Terminals, { type TerminalsData } from "./Terminals";
 import Thinking, { type ThinkingData } from "./Thinking";
 import TodoPanel, { type TodoData } from "./TodoPanel";
@@ -15,7 +17,9 @@ export type Panel =
   | { readonly kind: "terminals"; readonly data: TerminalsData }
   | { readonly kind: "agents"; readonly rows: readonly AgentRow[] }
   | { readonly kind: "context"; readonly rows: readonly ContextRow[] }
-  | { readonly kind: "thinking"; readonly data: ThinkingData };
+  | { readonly kind: "thinking"; readonly data: ThinkingData }
+  | { readonly kind: "modes"; readonly data: ModeMountData }
+  | { readonly kind: "sql"; readonly data: SqlQueryData };
 
 export default function PanelView(props: { lang: Lang; panel: Panel; compact?: boolean }) {
   const p = props.panel;
@@ -34,5 +38,9 @@ export default function PanelView(props: { lang: Lang; panel: Panel; compact?: b
       return <ContextBar rows={p.rows} />;
     case "thinking":
       return <Thinking lang={props.lang} data={p.data} compact={!!props.compact} />;
+    case "modes":
+      return <ModeMount data={p.data} />;
+    case "sql":
+      return <SqlQuery data={p.data} />;
   }
 }
