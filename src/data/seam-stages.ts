@@ -63,6 +63,12 @@ const fileOf = (id: ComponentId, lang: Lang): StageFile => {
   if (art.kind !== "code") throw new Error(`component \`${id}\` art is ${art.kind}, the stage needs its file`);
   return { title: art.title, lines: art.lines };
 };
+/** The todo tool takes one document per call, opened and closed by fixed marker lines. */
+const todoDocumentOf = (id: ComponentId, lang: Lang): StageFile => {
+  const line = linesOf(id, lang)[0];
+  if (line?.kind !== "call" || line.tool !== "todo") throw new Error(`component \`${id}\` art is not a todo call`);
+  return { title: "todo", lines: ["*** Begin Todo", line.args, "*** End Todo"] };
+};
 const resultOf = (id: ComponentId, lang: Lang): StageFile => {
   const line = linesOf(id, lang)[0];
   if (line?.kind !== "call" || !line.result) throw new Error(`component \`${id}\` art has no call result`);
@@ -345,9 +351,11 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
           return { kind: "screen", frame: { tabs: [en ? "Todo" : "待办"], meta: "Tern" }, panels: [panelOf("todo-panel", lang)] };
         case "agent":
           return {
-            kind: "screen",
-            frame: session,
-            panels: [{ kind: "transcript", lines: [...linesOf("todo-tool", lang), ...linesOf("fork-task", lang)] }],
+            kind: "files",
+            files: [
+              todoDocumentOf("todo-tool", lang),
+              { title: en ? "todo · result" : "todo · 返回", lines: resultOf("todo-tool", lang).lines },
+            ],
           };
         case "silent":
           return {
