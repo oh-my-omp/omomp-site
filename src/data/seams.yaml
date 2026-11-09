@@ -100,8 +100,8 @@ memory:
         en: Stopping with open items brings a reminder
         zh: 留着未完成项会被提醒
       lede:
-        en: A turn that ends with items still open gets a reminder listing them with the goal. model-compaction sets, per model and project, when compaction starts.
-        zh: 回合结束时还有未完成项，omp-todo-more 会追加提醒，列出这些条目和目标。model-compaction 按模型和项目设定何时开始压缩。
+        en: A turn that ends with items still open gets a reminder listing them with the goal, and an item that runs past its estimate gets a warning. model-compaction sets, per model and project, when compaction starts.
+        zh: 回合结束时还有未完成项，omp-todo-more 会追加提醒，列出这些条目和目标；某一项超出估时也会收到提醒。model-compaction 按模型和项目设定何时开始压缩。
 
 delegation:
   order: 4

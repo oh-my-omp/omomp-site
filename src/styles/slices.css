@@ -34,6 +34,19 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+/* A transcript slice sits in the same frame as a file slice. */
+.sl-art.k-lines {
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--bg-panel);
+  overflow: hidden;
+}
+/* In a cell or a seam stage a call signature wraps at its spaces instead of trailing off. */
+.sl-art .sl-tx-sig .a,
+.seam-stage .sl-tx-sig .a {
+  white-space: normal;
+  overflow-wrap: break-word;
+}
 
 /* omp-config hook points along the six seams (src/slices/ConfigPipeline.tsx). */
 .sl-pipe {

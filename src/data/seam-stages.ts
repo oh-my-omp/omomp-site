@@ -4,7 +4,7 @@ import type { Hook } from "../slices/HookMessage";
 import type { Panel } from "../slices/Panel";
 import type { TLine } from "../slices/Transcript";
 import { labels } from "../slices/labels";
-import { askPanel, componentArt, type ComponentId } from "./component-art";
+import { askPanel, componentArt, todoStopReminder, type ComponentId } from "./component-art";
 import type { SeamId } from "./scenario";
 
 export type Layer = "human" | "agent" | "silent";
@@ -92,21 +92,10 @@ const fileOf = (id: ComponentId, lang: Lang): StageFile => {
   if (art.kind !== "code") throw new Error(`component \`${id}\` art is ${art.kind}, the stage needs its file`);
   return { title: art.title, lines: art.lines };
 };
-/** The todo tool takes one document per call, opened and closed by fixed marker lines. */
-const todoDocumentOf = (id: ComponentId, lang: Lang): StageFile => {
-  const line = linesOf(id, lang)[0];
-  if (line?.kind !== "call" || line.tool !== "todo") throw new Error(`component \`${id}\` art is not a todo call`);
-  return { title: "todo", lines: ["*** Begin Todo", line.args, "*** End Todo"] };
-};
-const resultOf = (id: ComponentId, lang: Lang): StageFile => {
-  const line = linesOf(id, lang)[0];
-  if (line?.kind !== "call" || !line.result) throw new Error(`component \`${id}\` art has no call result`);
-  return { title: line.tool, lines: line.result.split("\n"), ...(line.gloss && { gloss: line.gloss }) };
-};
 
 /** The count the todo stop reminder names, so the card on screen matches the reminder the model receives. */
 const openTodos = (lang: Lang): number => {
-  const body = hookOf("todo-reminders", lang).body;
+  const body = todoStopReminder(lang).body;
   const m = /You stopped with (\d+) incomplete/.exec(body);
   if (!m) throw new Error("todo reminder art no longer names its open item count");
   return Number(m[1]);
@@ -439,10 +428,32 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
           return { kind: "screen", frame: { tabs: [en ? "Todo" : "待办"], meta: "Tern" }, panels: [panelOf("todo-panel", lang)] };
         case "agent":
           return {
-            kind: "files",
-            files: [
-              todoDocumentOf("todo-tool", lang),
-              { title: en ? "todo · result" : "todo · 返回", lines: resultOf("todo-tool", lang).lines },
+            kind: "screen",
+            frame: session,
+            panels: [
+              {
+                kind: "transcript",
+                lines: [
+                  {
+                    kind: "call",
+                    tool: "todo",
+                    args: en
+                      ? 'DONE "Switch the orders route" "src/routes/orders.ts" "feat: orders route on the shared limiter"'
+                      : 'DONE "改 orders 路由" "src/routes/orders.ts" "feat: orders 路由接入共用限流器"',
+                    status: "ok",
+                    // omp-todo-more src/tool.ts:632-637 and the summary of src/tool.ts:399-465, English only.
+                    result: `Committed 9f31b20 "${en ? "feat: orders route on the shared limiter" : "feat: orders 路由接入共用限流器"}" (src/routes/orders.ts) in /home/dev/shop-api.\nOverall: 3/6 done, 3 open.`,
+                    ...(en ? {} : { gloss: { label: "译文", text: "已提交 9f31b20（src/routes/orders.ts），仓库 /home/dev/shop-api。总计完成 3/6，还剩 3 项。" } }),
+                  },
+                  {
+                    kind: "say",
+                    text: en
+                      ? "WebhooksRoute has already read the signature code, so I'll fork it instead of briefing a new worker."
+                      : "WebhooksRoute 已经读过签名校验的代码，直接从它分出子代理，不用重写一份派工单。",
+                  },
+                  { kind: "call", tool: "fork_task", args: "from: WebhooksRoute · WebhooksFix", status: "running" },
+                ],
+              },
             ],
           };
         case "silent":
@@ -463,18 +474,58 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
                 ],
               },
             ],
-            hooks: [hookOf("todo-reminders", lang)],
+            hooks: [todoStopReminder(lang)],
           };
       }
     case "delegation":
       switch (layer) {
         case "human":
-          return { kind: "files", files: [fileOf("subagent-usage-cmd", lang), resultOf("subagent-usage-tool", lang)] };
+          // omp-config agent/extensions/subagent-usage/index.ts: `on` (249-255) starts calibrateInBackground (202-216),
+          // whose notices are 203-207 and 170-180; `status` (285-287) prints showStatus (220-243).
+          return {
+            kind: "screen",
+            frame: session,
+            panels: [
+              {
+                kind: "transcript",
+                lines: [
+                  { kind: "user", text: "/subagent-usage on" },
+                  {
+                    kind: "card",
+                    tone: "info",
+                    head: en
+                      ? "subagent-usage: calibrating from this machine's sessions and usage history in the background…"
+                      : "subagent-usage：正在后台用本机会话与用量历史校准…",
+                  },
+                  {
+                    kind: "card",
+                    tone: "info",
+                    head: en
+                      ? "subagent-usage: calibrated from 186 transcripts (186 read this time); 3 quota limits priced, 1 still pending."
+                      : "subagent-usage：已用 186 个会话文件完成校准（本次读取 186 个）；3 个额度窗口可换算，1 个暂缺数据。",
+                  },
+                  { kind: "user", text: "/subagent-usage status" },
+                  { kind: "card", tone: "info", head: fileOf("subagent-usage-cmd", lang).lines.join("\n") },
+                ],
+              },
+            ],
+          };
         case "agent":
           return {
             kind: "screen",
             frame: session,
             panels: [
+              {
+                kind: "transcript",
+                lines: [
+                  {
+                    kind: "say",
+                    text: en
+                      ? "One route per worker, each in its own worktree. Steady reviews the webhook exemption without writing anything."
+                      : "三个执行者各改一个路由、各用一个工作树；Steady 只读审查 webhook 免限流的做法。",
+                  },
+                ],
+              },
               {
                 kind: "agents",
                 rows: [
@@ -494,12 +545,12 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
                   },
                 ],
               },
-              { kind: "transcript", lines: linesOf("advisors", lang) },
             ],
           };
         case "silent":
+          // The dispatch as the person watches it: two refused calls, then the one that runs. The refusal texts are the cells below.
           return {
-            kind: "exchange",
+            kind: "screen",
             frame: session,
             panels: [
               {
@@ -511,10 +562,20 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
                     text: en ? "One topic per worker: the three routes go out separately." : "一个执行者只做一个主题，三个路由分开派发。",
                   },
                   { kind: "call", tool: "task", args: `${workers.join(", ")} · task:low`, status: "blocked" },
+                  {
+                    kind: "say",
+                    text: en ? "All three write files, so each gets its own worktree." : "三个都要改文件，各给一个独立的工作树。",
+                  },
+                  {
+                    kind: "call",
+                    tool: "task",
+                    args: `${workers.join(", ")} · task:low · isolated: true`,
+                    status: "ok",
+                    result: [`Spawned ${workers.length} background agents using task:low.`, ...workers.map((w) => `- \`${w}\` (job \`${w}\`)`)].join("\n"),
+                  },
                 ],
               },
             ],
-            hooks: [hookOf("task-split-check", lang), hookOf("isolation-nudge", lang)],
           };
       }
     case "execution":

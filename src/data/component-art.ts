@@ -1,5 +1,6 @@
 import type { Lang } from "../i18n";
 import type { Art } from "../slices/Art";
+import type { Hook } from "../slices/HookMessage";
 
 /**
  * The art for every component on the seam page: the small interface slice above its name.
@@ -148,20 +149,90 @@ const pathRules = (lang: Lang): string =>
     "</path-scoped-rules>",
   ].join("\n");
 
+/**
+ * omp-todo-more src/reminders.ts:416-431: the stop reminder after the middleware phase closed, four items open.
+ * Items past the first and the goal's last two lines are elided.
+ */
 const todoReminder = (lang: Lang): string => {
   const i = items[lang];
-  const item = (it: { title: string; explanation: string; estimate: number }) =>
-    `  - ${it.title}\n    ${it.explanation}\n    Estimate: ${it.estimate} min`;
   return [
     "<system-reminder>",
     "You stopped with 4 incomplete todo item(s):",
     `- ${i.phases.routes}`,
-    item(i.orders),
+    `  - ${i.orders.title}`,
+    `    ${i.orders.explanation}`,
+    `    Estimate: ${i.orders.estimate} min`,
     "  - …",
+    "",
+    "Goal:",
+    `  Objective: ${goal[lang].objective}`,
+    "  …",
+    "",
     "Please continue working on these tasks or mark them complete if finished.",
+    "(Reminder 1/3)",
     "</system-reminder>",
   ].join("\n");
 };
+
+/** The stop reminder as the model receives it at turn end; the seam page's memory stage shows it beside the card the person sees. */
+export const todoStopReminder = (lang: Lang): Hook =>
+  lang === "en"
+    ? { kind: "reminder", source: "omp-todo-more", at: "turn end", label: "appended", body: todoReminder("en") }
+    : {
+        kind: "reminder",
+        source: "omp-todo-more",
+        at: "回合结束",
+        label: "追加",
+        body: todoReminder("zh"),
+        gloss: {
+          label: "译文",
+          text: "你停下时还有 4 个待办没完成：路由阶段的“改 orders 路由”等。目标：用 Redis 按 API key 给公开 API 限流……请继续做这些任务，已经做完的标记为完成。（第 1/3 次提醒）",
+        },
+      };
+
+/** omp-todo-more src/overtime.ts:38-45: the warning once an in-progress item runs past its estimate; the third line is elided. */
+const overtimeWarning = (lang: Lang): string =>
+  [
+    '<system-reminder source="todo-more" kind="overtime">',
+    `Todo item "${items[lang].tests.title}" has exceeded its estimated time: estimate ${items[lang].tests.estimate} min; elapsed 31.40 min of in_progress wall time.`,
+    "The estimate is a forecast, not a deadline or permission to reduce scope. Do not lower the expected outcome, acceptance criteria, or quality, and do not stop because of this warning.",
+    "…",
+    "Keep the todo aligned with actual progress. Do not reset the list or inflate an estimate just to hide an overrun.",
+    "</system-reminder>",
+  ].join("\n");
+
+/** omp-config agent/extensions/fork-task/index.ts:262-281: the notice appended to the copied transcript of a child forked `from` another agent. */
+const forkNotice = [
+  '<system-notice cause="fork_task">',
+  "Above: the conversation of agent `WebhooksRoute`, copied as background. You continue under its system prompt and tools, but `WebhooksRoute` is not your parent: the agent that spawned you receives your result. The parent keeps the conversation with the user. A <role> block opening the assignment defines how you work on it. Deliver your result with `yield` when available, otherwise finish with your final report.",
+  "- Use it only for the facts, decisions, and constraints it established.",
+  "…",
+  "</system-notice>",
+].join("\n");
+
+/** omp-todo-more src/ctx/inventory.ts:1551-1568: `ctx show` for a finished worker; the handoff is the worker's own report. */
+const ctxShow = (handoff: string): string =>
+  [
+    "# Context OrdersRoute",
+    "",
+    "Breadcrumb: Main > OrdersRoute",
+    "",
+    "## Handoff",
+    "",
+    handoff,
+    "",
+    "## Tasks",
+    "",
+    "(none)",
+    "",
+    "Transcript: history://OrdersRoute",
+  ].join("\n");
+
+/** The OrdersRoute worker's report, in the language the session runs in. */
+const ordersHandoff = {
+  en: "Done. src/routes/orders.ts now calls the limiter from src/middleware/rate-limit.ts; orders.test.ts passes (4 tests). Changed: src/routes/orders.ts.",
+  zh: "已完成。src/routes/orders.ts 改用 src/middleware/rate-limit.ts 的限流器；orders.test.ts 通过（4 个测试）。改动文件：src/routes/orders.ts。",
+} as const;
 
 const deleteGuard =
   "delete-guard: deletion commands are disabled; this call did not run. Deletion command: `rm -rf node_modules/.vite/vitest` (`rm` deletes files). To delete files, call the `delete` tool with literal paths and leave `mode` unset; the default moves them to the system trash.";
@@ -568,57 +639,59 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
   "todo-tool": {
     en: {
       kind: "lines",
-      lines: [
-        {
-          kind: "call",
-          tool: "todo",
-          args: 'DONE "Switch the orders route" "src/routes/orders.ts" "feat: orders route on the shared limiter"',
-          status: "ok",
-          result: 'Committed 9f31b20 "feat: orders route on the shared limiter" (src/routes/orders.ts) in /home/dev/shop-api.\nOverall: 3/6 done, 3 open.',
-        },
-      ],
+      lines: [{ kind: "call", tool: "ctx", args: "op: show · id: OrdersRoute", status: "ok", result: ctxShow(ordersHandoff.en) }],
     },
     zh: {
       kind: "lines",
       lines: [
         {
           kind: "call",
-          tool: "todo",
-          args: 'DONE "改 orders 路由" "src/routes/orders.ts" "feat: orders 路由接入共用限流器"',
+          tool: "ctx",
+          args: "op: show · id: OrdersRoute",
           status: "ok",
-          result: 'Committed 9f31b20 "feat: orders 路由接入共用限流器" (src/routes/orders.ts) in /home/dev/shop-api.\nOverall: 3/6 done, 3 open.',
+          result: ctxShow(ordersHandoff.zh),
+          gloss: { label: "译文", text: "OrdersRoute 这个上下文：它在会话树里的位置、交给上级的报告、它的待办，以及完整记录的地址。" },
         },
       ],
     },
   },
   "fork-task": {
     en: {
-      kind: "lines",
-      lines: [
-        { kind: "call", tool: "fork_task", args: "from: WebhooksRoute", status: "running" },
-      ],
+      kind: "hook",
+      hook: { kind: "reminder", source: "fork_task", at: "child's first turn", label: "appended", body: forkNotice },
     },
     zh: {
-      kind: "lines",
-      lines: [
-        { kind: "call", tool: "fork_task", args: "from: WebhooksRoute", status: "running" },
-      ],
+      kind: "hook",
+      hook: {
+        kind: "reminder",
+        source: "fork_task",
+        at: "子代理第一轮",
+        label: "追加",
+        body: forkNotice,
+        gloss: {
+          label: "译文",
+          text: "上面是代理 `WebhooksRoute` 的对话，作为背景复制过来。你沿用它的系统提示词和工具，但它不是你的上级，派生你的代理才接收你的结果。上级继续和用户对话；任务开头的 <role> 块规定你的做法；有 `yield` 就用它交付，否则以最终报告结束。这段对话只用来提供它已确立的事实、决定和约束。",
+        },
+      },
     },
   },
   "todo-reminders": {
     en: {
       kind: "hook",
-      hook: { kind: "reminder", source: "omp-todo-more", at: "turn end", label: "appended", body: todoReminder("en") },
+      hook: { kind: "reminder", source: "omp-todo-more", at: "past an estimate", label: "appended", body: overtimeWarning("en") },
     },
     zh: {
       kind: "hook",
       hook: {
         kind: "reminder",
         source: "omp-todo-more",
-        at: "回合结束",
+        at: "超出估时",
         label: "追加",
-        body: todoReminder("zh"),
-        gloss: { label: "译文", text: "你停下时还有 4 个待办没完成。请继续做这些任务，已经做完的标记为完成。" },
+        body: overtimeWarning("zh"),
+        gloss: {
+          label: "译文",
+          text: "待办“令牌补充与 429 测试”超出了估时：估计 25 分钟，进行中已用 31.40 分钟。估时是预测，不是期限，也不是缩小范围的许可：不要降低预期结果、验收标准或质量，也不要因为这条提醒停下。……让待办与实际进度一致，不要为掩盖超时而重置清单或抬高估时。",
+        },
       },
     },
   },

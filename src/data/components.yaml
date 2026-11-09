@@ -160,8 +160,8 @@ todo-tool:
   layer: agent
   seam: memory
   line:
-    en: The plan lives outside the context, with a commit per closed item.
-    zh: 代理维护目标、阶段和带估时的条目，完成一项提交一次。
+    en: Items commit as they close; ctx reads back what each context did.
+    zh: 条目完成即提交；ctx 回看每个上下文做过什么、交了什么报告。
 
 fork-task:
   name: fork_task
@@ -178,8 +178,8 @@ todo-reminders:
   layer: silent
   seam: memory
   line:
-    en: Ending a turn with open items brings a reminder listing them.
-    zh: 回合结束时还有未完成项，就会收到列出这些条目的提醒。
+    en: Open items at a stop, or an item past its estimate, bring a reminder.
+    zh: 停下时还有未完成项，或某一项超出估时，都会收到提醒。
 
 model-compaction:
   name: model-compaction
