@@ -75,7 +75,7 @@ const colsFor = (n: number) => (n === 1 ? 1 : n === 2 || n === 4 ? 2 : 3);
           <div class="wrap cells">
             <Grid cols={cols} count={cells.length}>
               {cells.map((c) => (
-                <Cell title={c.data.name} text={c.data.line[lang]} href={c.data.repo} mono>
+                <Cell title={c.data.name} text={c.data.line[lang]} href={c.data.repo} mono wide={cols === 1}>
                   <ArtView lang={lang} art={artOf(c.id)} />
                 </Cell>
               ))}

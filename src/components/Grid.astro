@@ -25,6 +25,7 @@ const blanks = count === undefined ? 0 : (cols - (count % cols)) % cols;
     overflow: hidden;
   }
   .blank {
+    grid-row: span 2;
     background: var(--bg);
   }
   @media (max-width: 960px) {

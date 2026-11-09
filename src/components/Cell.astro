@@ -8,13 +8,15 @@ interface Props {
   href?: string;
   /** Title is a code name (a plugin, tool or extension) and is set in the monospace face. */
   mono?: boolean;
+  /** The only cell in a one-column grid: text on the left, art on the right. */
+  wide?: boolean;
 }
-const { title, text, tag, href, mono } = Astro.props;
+const { title, text, tag, href, mono, wide } = Astro.props;
 const Tag = href ? "a" : "div";
 const hasArt = Astro.slots.has("default");
 ---
 
-<Tag class:list={["cell", { link: href, bare: !hasArt }]} href={href}>
+<Tag class:list={["cell", { link: href, bare: !hasArt, wide: wide && hasArt }]} href={href}>
   {hasArt && <div class="art"><slot /></div>}
   <div class="txt">
     {tag && <span class="tag" set:html={inlineCode(tag)} />}
@@ -24,14 +26,26 @@ const hasArt = Astro.slots.has("default");
 </Tag>
 
 <style>
+  /* Each cell spans two rows of its grid and shares them, so art and text line up across a row. */
   .cell {
+    grid-row: span 2;
     display: grid;
-    grid-template-rows: minmax(240px, 1fr) auto;
+    grid-template-rows: subgrid;
     background: var(--bg);
     min-width: 0;
   }
-  .bare {
-    grid-template-rows: auto;
+  @media (min-width: 761px) {
+    .wide {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    }
+    .wide .txt {
+      order: -1;
+      align-content: center;
+      padding: 32px 28px 32px 36px;
+    }
+    .wide .art {
+      padding: 32px 28px;
+    }
   }
   .link {
     transition: background 0.15s;
@@ -42,12 +56,14 @@ const hasArt = Astro.slots.has("default");
   .art {
     display: grid;
     place-items: center;
+    min-height: 240px;
     padding: 32px 28px 8px;
     min-width: 0;
     overflow: hidden;
   }
   .txt {
     display: grid;
+    align-content: start;
     gap: 6px;
     padding: 20px 28px 30px;
   }
