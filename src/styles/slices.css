@@ -1,0 +1,113 @@
+/* Rendered interface slices (src/slices). Shared by static pages and the replay island. */
+
+/* Window chrome */
+.sl-win {
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--bg-panel);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.4),
+    0 24px 60px -24px rgb(0 0 0 / 0.8);
+  overflow: hidden;
+  min-width: 0;
+  text-align: left;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.sl-win-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  height: 36px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12.5px;
+}
+.sl-win-tabs {
+  display: flex;
+  gap: 2px;
+  min-width: 0;
+  overflow: hidden;
+}
+.sl-win-tabs span {
+  padding: 3px 9px;
+  border-radius: 6px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.sl-win-tabs span.on {
+  color: var(--text);
+  background: rgb(255 255 255 / 0.06);
+}
+.sl-win-meta {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sl-win-body {
+  min-width: 0;
+}
+
+/* Hook message: what a silent hook put in front of the model */
+.sl-hook {
+  --tone: var(--silent);
+  border: 1px solid color-mix(in srgb, var(--tone) 28%, transparent);
+  border-left-width: 2px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--tone) 5%, var(--bg-panel));
+  padding: 10px 12px 12px;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  text-align: left;
+}
+.sl-hook.k-block {
+  --tone: var(--danger);
+}
+.sl-hook.k-judge {
+  --tone: var(--warn);
+}
+.sl-hook-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  font-size: 11.5px;
+}
+.sl-hook-label {
+  color: var(--tone);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 10.5px;
+}
+:lang(zh) .sl-hook-label {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 11.5px;
+}
+.sl-hook-src {
+  font-size: 11.5px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--soft);
+}
+.sl-hook-at {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+}
+.sl-hook-body {
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--soft);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
