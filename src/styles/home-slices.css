@@ -1,0 +1,580 @@
+/* Slices drawn for home-page cards: the omp-config pipeline, the product cards and the terminal card. */
+
+/* omp-config along the six seams (src/slices/ConfigPipeline.tsx). */
+.cp {
+  display: grid;
+  gap: 14px;
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+.cp-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-rows: auto repeat(3, auto);
+  column-gap: 0;
+}
+.cp-seam {
+  grid-row: span 4;
+  display: grid;
+  grid-template-rows: subgrid;
+  min-width: 0;
+}
+.cp-head {
+  position: relative;
+  margin: 0;
+  padding: 0 8px 12px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: 0;
+}
+/* The rail runs through every seam's node, left to right. */
+.cp-seam .cp-head::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--line-strong);
+}
+.cp-node {
+  position: absolute;
+  left: 8px;
+  bottom: -4px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid var(--muted);
+  background: var(--bg);
+  z-index: 1;
+}
+.cp-head {
+  padding-bottom: 14px;
+}
+/* The layer key leads the legend; each lane's left stripe carries the same colour. */
+.cp-legend .cp-key {
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.cp-key::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--layer);
+}
+.cp-legend .cp-key.layer-silent {
+  margin-right: 10px;
+}
+.cp-lane {
+  list-style: none;
+  margin: 0;
+  padding: 8px 8px 6px;
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  border-top: 1px solid var(--line);
+  border-left: 2px solid color-mix(in srgb, var(--layer) 55%, transparent);
+  min-width: 0;
+}
+.cp-seam .cp-lane:first-of-type {
+  border-top: 0;
+}
+.cp-lane li {
+  --tone: var(--layer);
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.cp-lane li.k-reminder {
+  --tone: var(--silent);
+}
+.cp-lane li.k-block {
+  --tone: var(--danger);
+}
+.cp-lane li.k-judge {
+  --tone: var(--warn);
+}
+.cp-lane b,
+.cp-legend b {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--tone);
+}
+.cp-lane code {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 10.5px;
+  color: var(--soft);
+}
+.cp-legend {
+  list-style: none;
+  margin: 0;
+  padding: 10px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 22px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+}
+.cp-legend li {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+.cp-legend li.k-reminder {
+  --tone: var(--silent);
+}
+.cp-legend li.k-block {
+  --tone: var(--danger);
+}
+.cp-legend li.k-judge {
+  --tone: var(--warn);
+}
+.cp-legend code {
+  font-size: 10.5px;
+}
+/* Narrow screens read the pipeline top to bottom, one seam at a time; the layer is the stripe colour. */
+@media (max-width: 760px) {
+  .cp-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: none;
+    gap: 14px 10px;
+  }
+  .cp-seam {
+    grid-row: auto;
+    grid-template-rows: none;
+    align-content: start;
+  }
+  .cp-lane:empty {
+    display: none;
+  }
+}
+
+/* Product cards (src/slices/HomeProductArt.tsx). */
+.hp {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--soft);
+  min-width: 0;
+}
+.hp code {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: inherit;
+}
+.hp-pb {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-panel);
+}
+.hp-file {
+  border-right: 1px solid var(--line);
+  min-width: 0;
+}
+.hp-file-head,
+.hp-pane-head {
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+.hp-file pre {
+  margin: 0;
+  padding: 8px 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.6;
+  white-space: pre;
+  overflow: hidden;
+}
+.hp-file pre span {
+  display: block;
+  padding: 0 12px;
+  border-left: 2px solid transparent;
+}
+.hp-file pre span.mark {
+  border-left-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--text);
+}
+.hp-pane {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding-bottom: 8px;
+  min-width: 0;
+}
+.hp-pane-head {
+  margin-bottom: 0;
+}
+.hp-card {
+  margin: 0 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 7px;
+  background: var(--bg-raised);
+  overflow: hidden;
+}
+.hp-card.run {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.hp-card header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  color: var(--text);
+}
+.hp-ic {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid var(--dim);
+}
+.hp-ic-running {
+  border-color: var(--accent);
+  border-right-color: transparent;
+}
+.hp-ic-done {
+  background: var(--silent);
+  border-color: var(--silent);
+}
+.hp-card-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 6px 10px;
+  border-top: 1px solid var(--line);
+}
+.hp-card-foot em {
+  margin-right: 6px;
+  font-style: normal;
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  color: var(--dim);
+}
+.hp-card-foot .sl-btn {
+  margin-left: auto;
+  font-size: 10.5px;
+}
+.hp-card-foot .sl-btn.off {
+  color: var(--muted);
+  border-style: dashed;
+}
+.hp-dock {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 10px;
+  color: var(--muted);
+}
+.hp-online {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--silent);
+}
+
+.hp-dp {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  grid-template-rows: auto auto;
+  gap: 10px;
+}
+.hp-tree,
+.hp-rail,
+.hp-gate {
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--bg-panel);
+}
+.hp-tree {
+  padding: 8px 10px;
+  display: grid;
+  gap: 5px;
+  align-content: start;
+}
+.hp-issue {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: baseline;
+  padding-left: 16px;
+  position: relative;
+}
+.hp-issue::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: -6px;
+  height: 14px;
+  width: 8px;
+  border-left: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+.hp-issue.root {
+  padding-left: 0;
+  color: var(--text);
+}
+.hp-issue.root::before {
+  display: none;
+}
+.hp-issue .n {
+  font-family: var(--mono);
+  color: var(--dim);
+}
+.hp-issue em {
+  font-style: normal;
+  font-size: 10.5px;
+  color: var(--dim);
+}
+.hp-issue.live em {
+  color: var(--warn);
+}
+.hp-rail {
+  grid-row: span 2;
+  list-style: none;
+  margin: 0;
+  padding: 10px 12px;
+  display: grid;
+  align-content: start;
+  gap: 0;
+}
+.hp-rail li {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  padding: 0 0 9px 18px;
+  color: var(--dim);
+}
+.hp-rail li::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 12px;
+  bottom: 0;
+  border-left: 1px solid var(--line-strong);
+}
+.hp-rail li:last-child::after {
+  display: none;
+}
+.hp-rail li i {
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid var(--dim);
+}
+.hp-rail li.m-done {
+  color: var(--soft);
+}
+.hp-rail li.m-done i {
+  background: var(--silent);
+  border-color: var(--silent);
+}
+.hp-rail li.m-current {
+  color: var(--text);
+  font-weight: 600;
+}
+.hp-rail li.m-current i {
+  border-color: var(--warn);
+}
+.hp-rail code {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--dim);
+}
+.hp-gate {
+  padding: 8px 10px;
+  display: grid;
+  gap: 4px;
+  border-color: color-mix(in srgb, var(--warn) 45%, transparent);
+}
+.hp-gate-head {
+  color: var(--text);
+}
+.hp-gate-head code {
+  font-family: var(--mono);
+}
+.hp-gate-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 11px;
+}
+.hp-gate-row em {
+  font-style: normal;
+  color: var(--warn);
+}
+/* What the new head voided: the previous fingerprint and the approval given on it. */
+.hp-gate-row.old {
+  color: var(--dim);
+}
+.hp-gate-row.old code {
+  text-decoration: line-through;
+}
+
+.hp-rb {
+  display: grid;
+  gap: 6px;
+}
+.hp-rb-head,
+.hp-rb-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) 70px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+}
+.hp-rb-head {
+  font-size: 10.5px;
+  color: var(--dim);
+}
+.hp-rb-head span:nth-child(2) {
+  text-align: center;
+  font-family: var(--mono);
+}
+.hp-rb-wt,
+.hp-rb-ct {
+  display: grid;
+  gap: 1px;
+  padding: 6px 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: 7px;
+  background: var(--bg-panel);
+  min-width: 0;
+}
+.hp-rb-wt code,
+.hp-rb-ct code {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.hp-rb-wt span,
+.hp-rb-ct span {
+  font-size: 10.5px;
+  color: var(--dim);
+}
+.hp-rb-row.live .hp-rb-wt,
+.hp-rb-row.live .hp-rb-ct {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.hp-rb-row.none .hp-rb-ct {
+  border-style: dashed;
+  background: transparent;
+}
+.hp-rb-flow {
+  position: relative;
+  height: 1px;
+  background: var(--line-strong);
+}
+.hp-rb-row.live .hp-rb-flow {
+  background: var(--accent);
+}
+.hp-rb-row.none .hp-rb-flow {
+  background: none;
+  border-top: 1px dashed var(--line-strong);
+}
+.hp-rb-flow i {
+  position: absolute;
+  right: -1px;
+  top: -4px;
+  border: 4.5px solid transparent;
+  border-left-color: var(--line-strong);
+}
+.hp-rb-row.live .hp-rb-flow i {
+  border-left-color: var(--accent);
+}
+.hp-rb-row.none .hp-rb-flow i {
+  display: none;
+}
+.hp-rb-term {
+  margin: 4px 0 0;
+  padding: 8px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 7px;
+  background: #0b0c0d;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  line-height: 1.55;
+  color: var(--soft);
+  white-space: pre;
+  overflow: hidden;
+}
+.hp-rb-term .by-agent {
+  color: var(--agent);
+}
+
+/* The terminal card (src/slices/HomeExecArt.tsx): the Terminals view, one session opened over it. */
+.hx {
+  position: relative;
+  display: grid;
+  min-width: 0;
+}
+.hx-view {
+  max-height: 150px;
+  overflow: hidden;
+  opacity: 0.7;
+}
+.hx-page {
+  margin: -58px 0 0 28px;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 -10px 24px rgb(0 0 0 / 0.45);
+  border-radius: 8px;
+}
+.hx-key {
+  display: flex;
+  gap: 14px;
+  justify-content: flex-end;
+  padding-top: 8px;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+.hx-key span::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 6px;
+  border-radius: 2px;
+}
+.hx-key .by-you::before {
+  background: var(--human);
+}
+.hx-key .by-agent::before {
+  background: var(--agent);
+}
+@media (max-width: 680px) {
+  .hp-pb,
+  .hp-dp {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .hp-rail {
+    grid-row: auto;
+  }
+  .hp-rb-head,
+  .hp-rb-row {
+    grid-template-columns: minmax(0, 1.2fr) 34px minmax(0, 1fr);
+  }
+  .hp-rb-head span:nth-child(2) {
+    font-size: 0;
+  }
+}

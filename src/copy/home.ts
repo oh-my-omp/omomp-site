@@ -9,11 +9,14 @@ export const home = {
     },
   },
   hero: {
-    kicker: { en: "Extensions for the Oh My Pi (omp) coding agent", zh: "Oh My Pi（omp）编码代理的扩展" },
-    title: { en: "Governance, panels and workflows", zh: "治理、面板与工作流" },
+    /** Two lines; the second is set in the accent colour. */
+    title: [
+      { en: "Governance and panels", zh: "给 omp 编码代理" },
+      { en: "for the omp agent", zh: "加上治理与面板" },
+    ],
     lede: {
-      en: "A request passes through prompts, plans, subagents and terminals before it becomes code. omomp adds a check, a tool or a panel at each of those handoffs, so a misread instruction is caught where it starts.",
-      zh: "一条需求要经过提示词、计划、子代理和终端才会变成代码。omomp 在每次交接处加上检查、工具或面板，哪一步理解偏了，就在哪一步拦下。",
+      en: "omomp runs on the Oh My Pi (omp) coding agent and the Tern terminal: omp-config checks each handoff, plugins add tools and panels, and products run whole workflows.",
+      zh: "omomp 运行在 Oh My Pi（omp）编码代理和 Tern 终端之上：omp-config 在每次交接处做检查，插件补上工具和面板，独立产品承担完整的工作流。",
     },
     primary: { en: "See the demo", zh: "查看演示" },
     secondary: { en: "Walk the lifeline", zh: "浏览生命线" },
@@ -27,13 +30,31 @@ export const home = {
       tool: { en: "Tool", zh: "工具" },
     },
     allSeams: { en: "All seams", zh: "六道接缝" },
+    pipeline: {
+      kinds: {
+        reminder: { en: "appends", zh: "追加" },
+        block: { en: "refuses", zh: "拦下" },
+        judge: { en: "judges", zh: "裁决" },
+      },
+      legend: {
+        reminder: { en: "a `<system-reminder>` added after the prompt", zh: "在提示词之后追加一条 `<system-reminder>`" },
+        block: { en: "the call is blocked and the reason returned", zh: "调用被拦下，原因返回给模型" },
+        judge: { en: "a judge sends the turn or the handoff back", zh: "判定者把这一轮或这次交付退回" },
+      },
+    },
+    exec: {
+      you: { en: "your keys", zh: "你的按键" },
+      agent: { en: "agent's write_stdin", zh: "代理的 write_stdin" },
+    },
+  },
+  bridge: {
+    lead: { en: "Use one plugin or the whole set.", zh: "单装一个插件，或整套接入。" },
+    rest: {
+      en: "Each plugin works on stock omp; omp-config adds the shared checks, and Tern draws the panels.",
+      zh: "每个插件都能在原生 omp 上单独使用；omp-config 加上共用的检查，Tern 负责绘制面板。",
+    },
   },
   hosts: {
-    title: { en: "Runs on omp and Tern; install as much as you need", zh: "运行在 omp 和 Tern 上，按需安装" },
-    lede: {
-      en: "omomp replaces neither the agent nor the terminal. Each plugin works on stock omp by itself; omp-config adds the shared checks on top.",
-      zh: "omomp 不替换代理，也不替换终端。每个插件都能在原生 omp 上单独使用；omp-config 在此之上加一层共用的检查。",
-    },
     omomp: {
       name: { en: "oh-my-omp (omomp)", zh: "oh-my-omp（omomp）" },
       role: { en: "Configuration, plugins and products layered on both hosts.", zh: "运行在两个宿主之上的配置、插件和产品。" },
@@ -64,52 +85,57 @@ export const home = {
         },
       },
     },
+    install: { en: "Install", zh: "安装" },
+    start: { en: "Start", zh: "启动" },
     tabs: [
       {
         id: "plugin",
-        label: { en: "One plugin", zh: "单个插件" },
+        label: { en: "One plugin", zh: "单装插件" },
         uses: ["plugins", "omp"],
-        lines: ["omp install https://github.com/oh-my-omp/omp-sessions"],
+        window: { en: "omp · terminal", zh: "omp · 终端" },
+        install: ["omp install https://github.com/oh-my-omp/omp-sessions"],
+        start: ["omp"],
         text: {
-          en: "Every plugin works on stock omp without omp-config, in the terminal you already use.",
-          zh: "每个插件都能在原生 omp 上运行，不需要 omp-config，就在你现在用的终端里。",
+          en: "Every plugin works on stock omp without omp-config, in the terminal you already use. omp-sessions adds a URL scheme and a SQL tool, and has no settings.",
+          zh: "每个插件都能在原生 omp 上运行，不需要 omp-config，就在你现在用的终端里。omp-sessions 加上一个 URL 协议和一个 SQL 工具，没有需要填写的设置。",
         },
         after: [
           { en: "`read` and `grep` open other sessions through `session://` paths", zh: "`read` 和 `grep` 通过 `session://` 路径打开其他会话" },
           { en: "Eval cells query the same history with SQL through `session_query`", zh: "eval 单元格通过 `session_query` 用 SQL 查询同一份历史" },
-          { en: "No settings to fill in", zh: "没有需要填写的设置" },
         ],
       },
       {
         id: "config",
-        label: { en: "With omp-config", zh: "接入 omp-config" },
+        label: { en: "Full governance with omp-config", zh: "接入 omp-config 完整治理" },
         uses: ["config", "plugins", "omp"],
-        lines: ["git clone https://github.com/oh-my-omp/omp-config.git", "cd omp-config && omp", "/onboard-omp"],
+        window: { en: "omp · full mode", zh: "omp · 完整模式" },
+        install: ["git clone https://github.com/oh-my-omp/omp-config.git", "cd omp-config", "omp", "/onboard-omp"],
+        start: ["omp          # full mode", "omp-light    # light mode"],
         text: {
-          en: "The agent first walks through your existing rules and skills without changing anything, and installs only when you ask. The plugins then run under the shared dispatch checks and turn judges.",
-          zh: "代理先只读地梳理你现有的规则和技能，不做任何改动，你明确要求后才安装。之后各插件统一受共用的派发检查和回合判定约束。",
+          en: "/onboard-omp first walks through your existing rules and skills without changing anything, and installs only when you ask. After that every plugin runs under the shared checks.",
+          zh: "/onboard-omp 先只读地梳理你现有的规则和技能，不做任何改动，你明确要求后才安装。之后所有插件都在共用的检查之下运行。",
         },
         after: [
           { en: "Dispatch checks before subagents start", zh: "子代理启动前的派发检查" },
           { en: "Turn and completion judges before the agent stops", zh: "代理停下前的回合判定与完成度判定" },
           { en: "Guards on deletion and long-running shell commands", zh: "对删除和长时间 shell 命令的拦截" },
-          { en: "Defaults kept as files you can edit", zh: "默认策略保存为可以直接修改的文件" },
         ],
       },
       {
         id: "tern",
-        label: { en: "In Tern", zh: "搭配 Tern" },
+        label: { en: "With the Tern terminal", zh: "搭配 Tern 图形终端" },
         uses: ["config", "plugins", "products", "omp", "tern"],
-        lines: [],
+        window: { en: "Tern · omp", zh: "Tern · omp" },
+        install: ["omp install https://github.com/oh-my-omp/omp-todo-more"],
+        start: ["tern -e omp"],
         text: {
-          en: "In Tern, ⇧⌘A opens an agent block that runs omp. The plugins draw their panels there: the todo panel, the Terminals view and decision sheets. omp-playbooks shows its blocks as cards in a Tern pane.",
-          zh: "在 Tern 里按 ⇧⌘A 打开一个运行 omp 的代理块，插件就在其中绘制面板：待办面板、终端视图和决策页。omp-playbooks 在 Tern 面板里把各个块显示成卡片。",
+          en: "Run omp in a Tern tab and the plugins draw their panels there. omp-todo-more installs its Tern stylesheet itself once it finds Tern on the machine.",
+          zh: "在 Tern 的标签页里运行 omp，插件就在其中绘制面板。omp-todo-more 发现本机装有 Tern 时，会自己装好它的 Tern 样式。",
         },
         after: [
           { en: "The todo panel beside the conversation", zh: "对话旁边的待办面板" },
           { en: "Terminals that you and the agent type into", zh: "你和代理都能输入的终端" },
-          { en: "Decision sheets for the agent's questions", zh: "代理提问时的决策页" },
-          { en: "Playbook blocks as cards in a pane", zh: "以卡片形式排在面板里的 Playbook 块" },
+          { en: "Decision sheets and Playbook cards", zh: "决策页和 Playbook 卡片" },
         ],
       },
     ],

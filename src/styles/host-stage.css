@@ -39,10 +39,27 @@
   border-radius: 14px;
   overflow: hidden;
 }
-.hs-map,
+.hs-left,
 .hs-how {
   padding: clamp(20px, 3vw, 36px);
   background: var(--bg-raised);
+}
+.hs-left {
+  display: grid;
+  align-content: start;
+  gap: 22px;
+  min-width: 0;
+}
+/* The interface you work in once this way is installed. */
+.hs-screen {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  min-height: 260px;
+  align-content: start;
+}
+.hs-map {
+  display: grid;
 }
 .hs-how {
   display: grid;
@@ -52,8 +69,8 @@
 }
 .hs-box {
   display: grid;
-  gap: 6px;
-  padding: 18px 20px;
+  gap: 4px;
+  padding: 12px 16px;
   border: 1px solid var(--line-strong);
   border-radius: 12px;
   background: var(--bg-panel);
@@ -64,7 +81,7 @@
 }
 .hs-box span {
   color: var(--muted);
-  font-size: 14.5px;
+  font-size: 13px;
 }
 .hs-box.top {
   border-color: color-mix(in srgb, var(--accent) 55%, transparent);
@@ -80,7 +97,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 .hs-parts code {
   padding: 3px 9px;
@@ -103,7 +120,7 @@
 }
 .hs-links span {
   position: relative;
-  padding: 16px 0 16px 22px;
+  padding: 10px 0 10px 22px;
   font-family: var(--mono);
   font-size: 12px;
   color: var(--muted);
@@ -120,6 +137,14 @@
   top: 0;
   bottom: 0;
   border-left: 1px dashed var(--line-strong);
+}
+.hs-cmd {
+  display: grid;
+  gap: 6px;
+}
+.hs-cmd > span {
+  font-size: 12px;
+  color: var(--dim);
 }
 .hs-how pre {
   margin: 0;

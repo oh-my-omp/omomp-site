@@ -1,91 +1,77 @@
-import { For } from "solid-js";
+import { For, Show } from "solid-js";
 import type { Lang } from "../i18n";
 import type { HookKind } from "./HookMessage";
+import "../styles/home-slices.css";
 
-type SeamId = "intent" | "prompt" | "memory" | "delegation" | "execution" | "delivery";
+export type Layer = "human" | "agent" | "silent";
 
-interface Stop {
-  /** Where in a turn the hook acts. */
-  readonly at: Readonly<Record<Lang, string>>;
-  readonly kind: HookKind;
-  readonly sources: readonly string[];
+/** One omp-config component placed on the lifeline; `hook` is how a silent hook acts on the model, null when it is not a hook. */
+export interface PipeItem {
+  readonly name: string;
+  readonly layer: Layer;
+  readonly hook: HookKind | null;
 }
 
-const seamNames: Readonly<Record<SeamId, Readonly<Record<Lang, string>>>> = {
-  intent: { en: "Intent", zh: "意图" },
-  prompt: { en: "Prompt", zh: "提示词" },
-  memory: { en: "Memory", zh: "记忆" },
-  delegation: { en: "Delegation", zh: "派发" },
-  execution: { en: "Execution", zh: "执行" },
-  delivery: { en: "Delivery", zh: "交付" },
-};
+export interface PipeSeam {
+  readonly name: string;
+  readonly items: readonly PipeItem[];
+}
 
-/** omp-config's silent hooks and the extensions they belong to, in the order a task meets them. */
-const stops: ReadonlyArray<readonly [SeamId, readonly Stop[]]> = [
-  ["intent", [{ at: { en: "ask result", zh: "ask 返回" }, kind: "block", sources: ["ask readability"] }]],
-  [
-    "prompt",
-    [
-      {
-        at: { en: "turn start · tool result", zh: "回合开始 · 工具结果" },
-        kind: "reminder",
-        sources: ["repo-rules", "tool-topics", "system-prompt-replace", "append-system-model"],
-      },
-    ],
-  ],
-  ["memory", [{ at: { en: "turn end", zh: "回合结束" }, kind: "reminder", sources: ["todo reminders"] }]],
-  [
-    "delegation",
-    [
-      { at: { en: "task call", zh: "task 调用前" }, kind: "block", sources: ["isolation-nudge", "task-split-check"] },
-      { at: { en: "advisor model call", zh: "顾问调用模型" }, kind: "reminder", sources: ["user-prompt-inject"] },
-    ],
-  ],
-  [
-    "execution",
-    [
-      { at: { en: "bash · eval call", zh: "bash · eval 调用前" }, kind: "block", sources: ["delete-guard", "tool-policy-nag"] },
-      { at: { en: "tool result", zh: "工具结果" }, kind: "reminder", sources: ["tool-policy-nag"] },
-    ],
-  ],
-  [
-    "delivery",
-    [
-      { at: { en: "subagent yield", zh: "子代理 yield" }, kind: "judge", sources: ["task-completion-judge"] },
-      { at: { en: "turn end", zh: "回合结束" }, kind: "judge", sources: ["turn-judge", "lang-nag"] },
-    ],
-  ],
-];
+export interface PipeLabels {
+  readonly layers: Readonly<Record<Layer, string>>;
+  readonly kinds: Readonly<Record<HookKind, string>>;
+  /** One line per hook kind under the pipeline: what reaches the model. */
+  readonly legend: Readonly<Record<HookKind, string>>;
+}
 
-const kindLabel: Readonly<Record<HookKind, Readonly<Record<Lang, string>>>> = {
-  reminder: { en: "appends", zh: "追加" },
-  block: { en: "refuses", zh: "拦下" },
-  judge: { en: "judges", zh: "裁决" },
-};
+const layers: readonly Layer[] = ["human", "agent", "silent"];
+const kinds: readonly HookKind[] = ["reminder", "block", "judge"];
 
-/** The six seams as one pipeline, with each point where an omp-config hook appends, refuses or judges. */
-export default function ConfigPipeline(props: { lang: Lang }) {
+/**
+ * omp-config along the six seams: a rail through the seams, and under each seam what omp-config puts on the
+ * human surface, among the agent's primitives and in silent governance; silent hooks are marked by how they
+ * reach the model (an appended `<system-reminder>`, a refused call, a verdict).
+ */
+export default function ConfigPipeline(props: { seams: readonly PipeSeam[]; labels: PipeLabels; lang: Lang }) {
   return (
-    <ol class="sl-pipe">
-      <For each={stops}>
-        {([seam, list], i) => (
-          <li>
-            <div class="sl-pipe-seam">
-              <span class="n">{String(i() + 1).padStart(2, "0")}</span>
-              {seamNames[seam][props.lang]}
-            </div>
-            <For each={list}>
-              {(s) => (
-                <div class={`sl-pipe-stop k-${s.kind}`}>
-                  <span class="sl-pipe-kind">{kindLabel[s.kind][props.lang]}</span>
-                  <span class="sl-pipe-at">{s.at[props.lang]}</span>
-                  <code>{s.sources.join(" · ")}</code>
-                </div>
-              )}
-            </For>
-          </li>
-        )}
-      </For>
-    </ol>
+    <div class="cp" lang={props.lang}>
+      <div class="cp-grid">
+        <For each={props.seams}>
+          {(s) => (
+            <section class="cp-seam">
+              <h4 class="cp-head">
+                <i class="cp-node" />
+                {s.name}
+              </h4>
+              <For each={layers}>
+                {(l) => (
+                  <ul class={`cp-lane layer-${l}`} aria-label={props.labels.layers[l]}>
+                    <For each={s.items.filter((it) => it.layer === l)}>
+                      {(it) => (
+                        <li class={it.hook ? `k-${it.hook}` : undefined}>
+                          <Show when={it.hook}>{(k) => <b>{props.labels.kinds[k()]}</b>}</Show>
+                          <code>{it.name}</code>
+                        </li>
+                      )}
+                    </For>
+                  </ul>
+                )}
+              </For>
+            </section>
+          )}
+        </For>
+      </div>
+      <ul class="cp-legend">
+        <For each={layers}>{(l) => <li class={`cp-key layer-${l}`}>{props.labels.layers[l]}</li>}</For>
+        <For each={kinds}>
+          {(k) => (
+            <li class={`k-${k}`}>
+              <b>{props.labels.kinds[k]}</b>
+              <span innerHTML={props.labels.legend[k]} />
+            </li>
+          )}
+        </For>
+      </ul>
+    </div>
   );
 }

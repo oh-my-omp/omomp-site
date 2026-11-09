@@ -2,29 +2,17 @@ import type { Lang, Text } from "../i18n";
 import type { Art } from "../slices/Art";
 import type { ComponentId } from "./component-art";
 import type { SeamId } from "./scenario";
-import { remoteBuildScene as rb } from "../slices/remote-build-stage-data";
+import type { ProductArtId } from "../slices/HomeProductArt";
 
-/** The remote-build card: environment init, then a test run in the worktree's container. */
-const remoteBuildArt: readonly Art[] = [
-  {
-    kind: "lines",
-    lines: [
-      { kind: "call", tool: "remote_env_init", args: "", status: "ok", result: rb.report.join("\n") },
-      {
-        kind: "call",
-        tool: "container_exec",
-        args: rb.execArgs,
-        status: "ok",
-        result: [rb.resultHead[0], "---", ...rb.screen.slice(2, 4).map((l) => l.text), "…"].join("\n"),
-      },
-    ],
-  },
-];
-
-/** The slice a home-page card shows: the hook pipeline, a component's own art, or slices written for the card. */
+/**
+ * The slice a home-page card shows: omp-config's pipeline, a component's own art, a compressed product stage,
+ * the terminal card, or slices written for the card.
+ */
 export type RepoArt =
   | { readonly from: "pipeline" }
   | { readonly from: "component"; readonly id: ComponentId }
+  | { readonly from: "product"; readonly id: ProductArtId }
+  | { readonly from: "exec" }
   | { readonly from: "own"; readonly arts: Readonly<Record<Lang, readonly Art[]>> };
 
 /** A repository shown as a card on the home page. */
@@ -48,8 +36,8 @@ export const repos: readonly Repo[] = [
     seams: ["intent", "prompt", "memory", "delegation", "execution", "delivery"],
     art: { from: "pipeline" },
     line: {
-      en: "The governance layer: prompt cleanup, dispatch checks, turn judges and execution guards, wired into one runtime.",
-      zh: "治理层：把提示词整理、派发检查、回合判定和执行防护放进同一套运行时。",
+      en: "The governance runtime: checks, guards and judges at every seam of a task.",
+      zh: "治理运行时：在任务的每道接缝上做检查、拦截和判定。",
     },
   },
   {
@@ -58,8 +46,8 @@ export const repos: readonly Repo[] = [
     seams: ["intent"],
     art: { from: "component", id: "ask-more-panel" },
     line: {
-      en: "When the agent needs a decision, the question opens as a full page with the context and a tradeoff for each option.",
-      zh: "代理需要你做决定时，问题以整页打开，写明背景和每个选项的取舍。",
+      en: "A decision the agent needs opens as a full page, with a tradeoff per option.",
+      zh: "代理要你拍板时，问题整页打开，每个选项写明取舍。",
     },
   },
   {
@@ -68,18 +56,29 @@ export const repos: readonly Repo[] = [
     seams: ["memory"],
     art: { from: "component", id: "todo-panel" },
     line: {
-      en: "The agent keeps its plan as a goal, phases and estimated items, and commits as each item closes.",
-      zh: "代理把计划写成目标、阶段和带估时的条目，每完成一项就提交。",
+      en: "The plan as goal, phases and estimates; each finished item is committed.",
+      zh: "计划写成目标、阶段和估时，每完成一项就提交。",
     },
   },
   {
     name: "omp-unified-exec",
     kind: "plugin",
     seams: ["execution"],
-    art: { from: "component", id: "terminals-hud" },
+    art: { from: "exec" },
     line: {
-      en: "Long-running commands live in terminals the agent drives; open one in Tern to watch it or type into it.",
-      zh: "长时间运行的命令放在代理驱动的终端里；在 Tern 里打开，可以旁观，也可以直接输入。",
+      en: "Long commands run in terminals you can open in Tern, watch or type into.",
+      zh: "长时间命令跑在终端里，可在 Tern 中打开旁观或直接输入。",
+    },
+  },
+  {
+    name: "omp-playbooks",
+    kind: "product",
+    seams: [],
+    page: "/products/playbooks/",
+    art: { from: "product", id: "playbooks" },
+    line: {
+      en: "Write the design with the agent in one YAML file, then launch it block by block.",
+      zh: "和代理在一个 YAML 里写设计，再逐块启动执行。",
     },
   },
   {
@@ -88,8 +87,8 @@ export const repos: readonly Repo[] = [
     seams: ["delivery"],
     art: { from: "component", id: "thinking-translator" },
     line: {
-      en: "Each line of the model's thinking appears translated under the original; the model never sees the translation.",
-      zh: "模型的每一行思考下方都附上译文；译文只给人看，不发给模型。",
+      en: "Each thinking line is translated under the original; the model never sees it.",
+      zh: "思考逐行附上译文，译文只给人看，不发给模型。",
     },
   },
   {
@@ -98,8 +97,30 @@ export const repos: readonly Repo[] = [
     seams: ["delivery"],
     art: { from: "component", id: "sessions" },
     line: {
-      en: "Every past session on the machine can be read as files and queried with SQL.",
-      zh: "本机所有历史会话都能当文件读，也能用 SQL 查。",
+      en: "Read any past session by URL, or query them all with SQL.",
+      zh: "按 URL 读任意历史会话，也能用 SQL 一起查。",
+    },
+  },
+  {
+    name: "omp-dispatch",
+    kind: "product",
+    seams: [],
+    page: "/products/dispatch/",
+    art: { from: "product", id: "dispatch" },
+    line: {
+      en: "Hand over an issue tree: a fresh session delivers each ticket, a fresh judge rules on it.",
+      zh: "交出一棵 issue 树：每张工单由新会话交付，由新判定者裁决。",
+    },
+  },
+  {
+    name: "omp-remote-build",
+    kind: "product",
+    seams: [],
+    page: "/products/remote-build/",
+    art: { from: "product", id: "remote-build" },
+    line: {
+      en: "Edit on your machine; build and test in a remote container per worktree.",
+      zh: "在本机改代码，在每个 worktree 对应的远程容器里构建测试。",
     },
   },
   {
@@ -108,123 +129,8 @@ export const repos: readonly Repo[] = [
     seams: ["delivery"],
     art: { from: "component", id: "peers" },
     line: {
-      en: "Sessions in separate omp processes find each other, ask side questions and send messages.",
-      zh: "分属不同 omp 进程的会话可以互相发现、旁路提问、互发消息。",
-    },
-  },
-  {
-    name: "omp-playbooks",
-    kind: "product",
-    seams: [],
-    page: "/products/playbooks/",
-    art: {
-      from: "own",
-      arts: {
-        en: [
-          {
-            kind: "code",
-            title: "rate-limit.yaml",
-            lines: [
-              "- id: b3",
-              '  title: "Wire src/routes/orders.ts"',
-              "  agent: task:low",
-              "  isolated: true",
-              "  status: running",
-              "- id: b4",
-              '  title: "Wire src/routes/search.ts"',
-              "  agent: task:low",
-              "  isolated: true",
-              "  status: todo",
-            ],
-          },
-        ],
-        zh: [
-          {
-            kind: "code",
-            title: "rate-limit.yaml",
-            lines: [
-              "- id: b3",
-              '  title: "接 src/routes/orders.ts"',
-              "  agent: task:low",
-              "  isolated: true",
-              "  status: running",
-              "- id: b4",
-              '  title: "接 src/routes/search.ts"',
-              "  agent: task:low",
-              "  isolated: true",
-              "  status: todo",
-            ],
-          },
-        ],
-      },
-    },
-    line: {
-      en: "Write the design together with the agent in one YAML file, then launch it block by block.",
-      zh: "和代理在同一个 YAML 文件里写设计，再一块一块启动执行。",
-    },
-  },
-  {
-    name: "omp-dispatch",
-    kind: "product",
-    seams: [],
-    page: "/products/dispatch/",
-    art: {
-      from: "own",
-      arts: {
-        en: [
-          {
-            kind: "code",
-            title: "shop-api#48 · owner: 48",
-            lines: [
-              "Coding → Publishing → AwaitingChecks → Reviewing",
-              "→ Merging → Verifying → Closing → Done",
-              "",
-              "Open PR changed to head e4f5a6b; gates restart on the new fingerprint.",
-              "",
-              "Reviewing · head e4f5a6b",
-              "  review  pending",
-              "  accept  pending",
-            ],
-          },
-        ],
-        zh: [
-          {
-            kind: "code",
-            title: "shop-api#48 · owner: 48",
-            lines: [
-              "Coding → Publishing → AwaitingChecks → Reviewing",
-              "→ Merging → Verifying → Closing → Done",
-              "",
-              "Open PR changed to head e4f5a6b; gates restart on the new fingerprint.",
-              "",
-              "Reviewing · head e4f5a6b",
-              "  review  pending",
-              "  accept  pending",
-            ],
-          },
-        ],
-      },
-    },
-    line: {
-      en: "Hand over a GitHub issue tree; each ticket is delivered by a new session and every verdict comes from a new judge.",
-      zh: "把一棵 GitHub issue 树交给它：每张工单由一个新会话交付，每次裁决由一个新的判定会话做出。",
-    },
-  },
-  {
-    name: "omp-remote-build",
-    kind: "product",
-    seams: [],
-    page: "/products/remote-build/",
-    art: {
-      from: "own",
-      arts: {
-        en: remoteBuildArt,
-        zh: remoteBuildArt,
-      },
-    },
-    line: {
-      en: "The agent edits files on your machine while builds and tests run in a remote container, one per worktree.",
-      zh: "代理在本机改文件，构建和测试在远程容器里跑，每个 worktree 一个容器。",
+      en: "Sessions in other omp processes can be found, asked a side question or messaged.",
+      zh: "找到其他 omp 进程里的会话，旁路提问或发消息。",
     },
   },
   {
@@ -259,8 +165,8 @@ export const repos: readonly Repo[] = [
       },
     },
     line: {
-      en: "Generates and edits images through the Codex login omp already holds.",
-      zh: "借用 omp 已有的 Codex 登录来生成和编辑图片。",
+      en: "Generate and edit images through the Codex login omp already has.",
+      zh: "借用 omp 已有的 Codex 登录生成和编辑图片。",
     },
   },
 ];

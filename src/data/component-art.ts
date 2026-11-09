@@ -272,7 +272,8 @@ const todoPanel = (lang: Lang) =>
     },
   }) as const;
 
-const terminalsPanel = {
+const terminalsPanel = (lang: Lang) =>
+  ({
     kind: "terminals",
     data: {
       mode: "view",
@@ -283,7 +284,7 @@ const terminalsPanel = {
           title: "pnpm test --watch",
           command: "pnpm test --watch",
           state: "running",
-          elapsed: "4m 12s",
+          elapsed: lang === "en" ? "4m12s" : "4分12秒",
           cwd: "~/code/shop-api",
           size: "120×32",
           screen: [
@@ -303,7 +304,7 @@ const terminalsPanel = {
           title: "redis-cli monitor",
           command: "redis-cli monitor",
           state: "running",
-          elapsed: "3m 58s",
+          elapsed: lang === "en" ? "3m58s" : "3分58秒",
           cwd: "~/code/shop-api",
           size: "120×32",
           screen: [
@@ -314,7 +315,32 @@ const terminalsPanel = {
         },
       ],
     },
-} as const;
+}) as const;
+
+/** omp-sessions at work: a past session read through its URL, then the same history queried with DuckDB SQL from eval. Results stay English, as the plugin writes them. */
+const sessionLines = [
+  {
+    kind: "call",
+    tool: "read",
+    args: "session://b8d2c4f9/timeline",
+    status: "ok",
+    result:
+      "session b8d2c4f9-… · ~/code/shop-api\ntitle rate-limit the public API\nstart 2026-11-09 13:58:12 +08:00 · 214 entries · 198 on the active branch (leaf #e96)\n…",
+  },
+  {
+    kind: "call",
+    tool: "eval",
+    args: 'await tool.session_query({ action: "sql", query: "SELECT title, assistant_turns FROM src.sessions WHERE cwd LIKE \'%shop-api\' ORDER BY modified DESC LIMIT 3" })',
+    status: "ok",
+    result: [
+      '{"kind":"rows","columns":["title","assistant_turns"],"rows":[',
+      '  {"title":"rate-limit the public API","assistant_turns":41},',
+      '  {"title":"orders route pagination","assistant_turns":18},',
+      '  {"title":"webhook signature check","assistant_turns":12}',
+      '],"truncated":false}',
+    ].join("\n"),
+  },
+] as const;
 
 const thinkingPanel = {
     kind: "thinking",
@@ -771,8 +797,8 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
   },
   // execution
   "terminals-hud": {
-    en: { kind: "panel", panel: terminalsPanel },
-    zh: { kind: "panel", panel: terminalsPanel },
+    en: { kind: "panel", panel: terminalsPanel("en") },
+    zh: { kind: "panel", panel: terminalsPanel("zh") },
   },
   "watchdog-cmd": {
     en: {
@@ -968,32 +994,8 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
     },
   },
   sessions: {
-    en: {
-      kind: "lines",
-      lines: [
-        {
-          kind: "call",
-          tool: "read",
-          args: "session://b8d2c4f9/timeline",
-          status: "ok",
-          result:
-            "session b8d2c4f9-… · ~/code/shop-api\ntitle rate-limit the public API\nstart 2026-11-09 13:58:12 +08:00 · 214 entries · 198 on the active branch (leaf #e96)\ndetails session://b8d2c4f9/entry/e96 · events session://b8d2c4f9/events.jsonl · raw session://b8d2c4f9/raw.jsonl\n── turn 3 · 2026-11-09 14:22→14:41 (18m) · 12 calls (bash×5 read×4 edit×2 exec_command×1)\n…",
-        },
-      ],
-    },
-    zh: {
-      kind: "lines",
-      lines: [
-        {
-          kind: "call",
-          tool: "read",
-          args: "session://b8d2c4f9/timeline",
-          status: "ok",
-          result:
-            "session b8d2c4f9-… · ~/code/shop-api\ntitle rate-limit the public API\nstart 2026-11-09 13:58:12 +08:00 · 214 entries · 198 on the active branch (leaf #e96)\ndetails session://b8d2c4f9/entry/e96 · events session://b8d2c4f9/events.jsonl · raw session://b8d2c4f9/raw.jsonl\n── turn 3 · 2026-11-09 14:22→14:41 (18m) · 12 calls (bash×5 read×4 edit×2 exec_command×1)\n…",
-        },
-      ],
-    },
+    en: { kind: "lines", lines: sessionLines },
+    zh: { kind: "lines", lines: sessionLines },
   },
   peers: {
     en: {

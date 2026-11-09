@@ -6,16 +6,16 @@ import Grid from "../components/Grid.astro";
 import Cell from "../components/Cell.astro";
 import Fig from "../components/Fig.astro";
 import HostStage from "../islands/HostStage";
-import ArtView from "../slices/Art";
-import ConfigPipeline from "../slices/ConfigPipeline";
-import HookMessage from "../slices/HookMessage";
-import Transcript from "../slices/Transcript";
-import Window from "../slices/Window";
+import ArtView, { type Art } from "../slices/Art";
+import ConfigPipeline, { type PipeSeam } from "../slices/ConfigPipeline";
+import HomeExecArt from "../slices/HomeExecArt";
+import HomeProductArt from "../slices/HomeProductArt";
+import type { HookKind } from "../slices/HookMessage";
 import { home } from "../copy/home";
-import { componentArt } from "../data/component-art";
+import { componentArt, type ComponentId } from "../data/component-art";
 import { repos, repoUrl, type Repo } from "../data/repos";
-import { playerLabels, scenario } from "../data/scenario";
 import { href, inlineCode, t, type Lang } from "../i18n";
+import { ui } from "../ui";
 
 interface Props {
   lang: Lang;
@@ -23,26 +23,51 @@ interface Props {
 const { lang } = Astro.props;
 const seams = (await getCollection("seams")).sort((a, b) => a.data.order - b.data.order);
 const principles = (await getCollection("principles")).sort((a, b) => a.data.order - b.data.order);
+const components = await getCollection("components");
 const figs = ["append", "signals", "roles", "policy"] as const;
 type FigId = (typeof figs)[number];
 const isFig = (id: string): id is FigId => (figs as readonly string[]).includes(id);
+const isComponent = (id: string): id is ComponentId => id in componentArt;
 
-/** The hero shows the demo step where a dispatch is held back: what the person sees beside what the model receives. */
-const heroStep = scenario[lang].find((s) => s.hooks.some((h) => h.hook.source === "isolation-nudge"));
-if (!heroStep) throw new Error("demo scenario has no isolation-nudge step");
-const heroFront = heroStep.front[0];
-if (heroFront?.kind !== "transcript") throw new Error("hero step must open with a transcript");
-const heroHook = heroStep.hooks[0]!.hook;
+/** How a silent omp-config component reaches the model, read from the hook its own art quotes. */
+const hookOf = (id: string): HookKind | null => {
+  if (!isComponent(id)) return null;
+  const art = componentArt[id].en;
+  return art.kind === "hook" ? art.hook.kind : null;
+};
 
-/** Art slices for a card; the hook pipeline is drawn separately. */
-const artsOf = (r: Repo) => {
+/** omp-config's own components, seam by seam, for the pipeline on its card. */
+const pipeline: readonly PipeSeam[] = seams.map((s) => ({
+  name: s.data.short[lang],
+  items: components
+    .filter((c) => c.data.seam === s.id && c.data.repo.includes("/oh-my-omp/omp-config"))
+    .map((c) => ({ name: c.data.name, layer: c.data.layer, hook: hookOf(c.id) })),
+}));
+const pipeLabels = {
+  layers: { human: t(ui.layers.human, lang), agent: t(ui.layers.agent, lang), silent: t(ui.layers.silent, lang) },
+  kinds: {
+    reminder: t(home.blocks.pipeline.kinds.reminder, lang),
+    block: t(home.blocks.pipeline.kinds.block, lang),
+    judge: t(home.blocks.pipeline.kinds.judge, lang),
+  },
+  legend: {
+    reminder: inlineCode(t(home.blocks.pipeline.legend.reminder, lang)),
+    block: inlineCode(t(home.blocks.pipeline.legend.block, lang)),
+    judge: inlineCode(t(home.blocks.pipeline.legend.judge, lang)),
+  },
+};
+
+/** Art slices of a card drawn from component art or written for the card. */
+const artsOf = (r: Repo): readonly Art[] => {
   switch (r.art.from) {
-    case "pipeline":
-      return [];
     case "component":
       return [componentArt[r.art.id][lang]];
     case "own":
       return r.art.arts[lang];
+    case "pipeline":
+    case "product":
+    case "exec":
+      return [];
   }
 };
 const seamsOf = (r: Repo) =>
@@ -51,27 +76,28 @@ const seamsOf = (r: Repo) =>
     : r.seams.map((id) => seams.find((s) => s.id === id)?.data.short[lang]).join(" · ");
 const target = (r: Repo) => (r.page ? href(r.page, lang) : repoUrl(r.name));
 const routeHref = (route: string) => (route.startsWith("https://") ? route : href(route, lang));
+
+/** What each way of installing looks like at work. */
+const tabArts: Readonly<Record<string, readonly Art[]>> = {
+  plugin: [componentArt.sessions[lang]],
+  config: [componentArt["isolation-nudge"][lang]],
+  tern: [componentArt["todo-panel"][lang]],
+};
 ---
 
 <Base lang={lang} title={t(home.meta.title, lang)} description={t(home.meta.description, lang)}>
   <section class="hero wrap">
     <div class="hl">
-      <p class="kicker">{t(home.hero.kicker, lang)}</p>
-      <h1>{t(home.hero.title, lang)}</h1>
-      <p class="lede">{t(home.hero.lede, lang)}</p>
+      <h1>
+        <span>{t(home.hero.title[0], lang)}</span>
+        <span class="second">{t(home.hero.title[1], lang)}</span>
+      </h1>
       <div class="ctas">
         <a class="btn btn-primary" href={href("/replay/", lang)}>{t(home.hero.primary, lang)}</a>
         <a class="btn" href={href("/lifeline/", lang)}>{t(home.hero.secondary, lang)}</a>
       </div>
     </div>
-    <div class="hr" aria-hidden="true">
-      <span class="side human">{playerLabels[lang].front}</span>
-      <Window tabs={["shop-api"]} meta="omp">
-        <div class="hr-screen"><Transcript lines={heroFront.lines} /></div>
-      </Window>
-      <span class="side silent">{playerLabels[lang].back}</span>
-      <HookMessage hook={heroHook} />
-    </div>
+    <p class="lede">{t(home.hero.lede, lang)}</p>
   </section>
 
   <section class="wrap blocks" aria-label={t(home.blocks.label, lang)}>
@@ -90,7 +116,9 @@ const routeHref = (route: string) => (route.startsWith("https://") ? route : hre
               <p>{t(r.line, lang)}</p>
             </div>
             <div class="ca">
-              {r.art.from === "pipeline" && <ConfigPipeline lang={lang} />}
+              {r.art.from === "pipeline" && <ConfigPipeline lang={lang} seams={pipeline} labels={pipeLabels} />}
+              {r.art.from === "product" && <HomeProductArt lang={lang} id={r.art.id} />}
+              {r.art.from === "exec" && <HomeExecArt lang={lang} you={t(home.blocks.exec.you, lang)} agent={t(home.blocks.exec.agent, lang)} />}
               {artsOf(r).map((art) => (
                 <ArtView lang={lang} art={art} />
               ))}
@@ -99,14 +127,15 @@ const routeHref = (route: string) => (route.startsWith("https://") ? route : hre
         ))
       }
     </div>
-  </section>
-
-  <section class="section">
-    <SplitHead title={t(home.hosts.title, lang)} lede={t(home.hosts.lede, lang)} />
-    <div class="wrap body">
+    <p class="bridge">
+      <b>{t(home.bridge.lead, lang)}</b>{" "}
+      {t(home.bridge.rest, lang)}
+    </p>
+    <div class="hosts">
       <HostStage
         client:visible
         data={{
+          lang,
           omomp: { name: t(home.hosts.omomp.name, lang), role: t(home.hosts.omomp.role, lang) },
           parts: { config: t(home.hosts.parts.config, lang), plugins: t(home.hosts.parts.plugins, lang), products: t(home.hosts.parts.products, lang) },
           hosts: {
@@ -114,12 +143,17 @@ const routeHref = (route: string) => (route.startsWith("https://") ? route : hre
             tern: { name: t(home.hosts.hosts.tern.name, lang), role: t(home.hosts.hosts.tern.role, lang) },
           },
           links: { omp: t(home.hosts.links.omp, lang), tern: t(home.hosts.links.tern, lang) },
+          install: t(home.hosts.install, lang),
+          start: t(home.hosts.start, lang),
           after: t(home.hosts.after, lang),
           tabs: home.hosts.tabs.map((tab) => ({
             id: tab.id,
             label: t(tab.label, lang),
             uses: tab.uses,
-            lines: tab.lines,
+            window: t(tab.window, lang),
+            arts: tabArts[tab.id] ?? [],
+            install: tab.install,
+            start: tab.start,
             text: t(tab.text, lang),
             after: tab.after.map((a) => inlineCode(t(a, lang))),
           })),
@@ -128,7 +162,7 @@ const routeHref = (route: string) => (route.startsWith("https://") ? route : hre
     </div>
   </section>
 
-  <section class="section">
+  <section class="section figs">
     <SplitHead title={t(home.principles.title, lang)} lede={t(home.principles.lede, lang)}>
       <a class="more" href={href("/principles/", lang)}>{t(home.principles.more, lang)} →</a>
     </SplitHead>
@@ -149,86 +183,67 @@ const routeHref = (route: string) => (route.startsWith("https://") ? route : hre
   <section class="section last">
     <SplitHead title={t(home.next.title, lang)} />
     <div class="wrap body">
-      <Grid cols={3} count={home.next.items.length}>
-        {home.next.items.map((i) => <Cell tag={t(i.q, lang)} title={`${t(i.a, lang)} →`} text="" href={routeHref(i.route)} />)}
-      </Grid>
+      <ul class="next">
+        {
+          home.next.items.map((i) => (
+            <li>
+              <a href={routeHref(i.route)}>
+                <span class="q">{t(i.q, lang)}</span>
+                <span class="a">{t(i.a, lang)} →</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 </Base>
 
 <style>
-  /* First screen: text on the left, a slice of the demo on the right, the repositories just below. */
+  /* First screen as supabase.com: a two-line heading and two buttons on the left, a plain three-line lede on
+     the right, and the repositories directly below. */
   .hero {
     display: grid;
-    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
-    gap: clamp(32px, 5vw, 72px);
-    align-items: center;
-    padding-top: clamp(48px, 7vw, 88px);
-    padding-bottom: clamp(40px, 5vw, 56px);
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 24px clamp(32px, 5vw, 64px);
+    align-items: start;
+    padding-top: clamp(40px, 5.5vw, 72px);
+    padding-bottom: clamp(32px, 3.5vw, 44px);
   }
   .hl {
     display: grid;
-    gap: 20px;
+    gap: 26px;
     justify-items: start;
   }
   .hl h1 {
-    font-size: clamp(36px, 4.6vw, 56px);
-    max-width: 14em;
+    display: grid;
+    font-size: clamp(34px, 4vw, 52px);
+    line-height: 1.08;
+  }
+  .hl h1 .second {
+    color: var(--accent);
   }
   .lede {
-    font-size: clamp(17px, 1.5vw, 19px);
+    margin-top: 6px;
+    font-size: clamp(16px, 1.3vw, 17.5px);
+    line-height: 1.6;
     color: var(--muted);
-    max-width: 34em;
+    max-width: 30em;
   }
   .ctas {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-top: 8px;
-  }
-  .hr {
-    display: grid;
-    gap: 10px;
-    font-size: 13px;
-  }
-  .hr-screen {
-    padding: 14px;
-  }
-  /* The hero names all three workers; the call line wraps instead of cutting the last one off. */
-  .hr-screen :global(.sl-tx-sig .a) {
-    white-space: normal;
-  }
-  .side {
-    font-size: 12px;
-    color: var(--muted);
-  }
-  .side::before {
-    content: "";
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    margin-right: 8px;
-    border-radius: 50%;
-    vertical-align: 1px;
-  }
-  .side.human::before {
-    background: var(--human);
-  }
-  .side.silent {
-    margin-top: 6px;
-  }
-  .side.silent::before {
-    background: var(--silent);
   }
 
-  /* Bento: about a third text, the rest a slice of the repository at work. */
+  /* Bento: a third or less text, the rest a slice of the repository at work. */
   .blocks {
     display: grid;
   }
   .bento {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    grid-auto-rows: minmax(150px, auto);
+    grid-auto-flow: row dense;
     gap: 1px;
     background: var(--line);
     border: 1px solid var(--line);
@@ -239,9 +254,8 @@ const routeHref = (route: string) => (route.startsWith("https://") ? route : hre
     grid-column: span 4;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
-    gap: 18px;
+    gap: 16px;
     min-width: 0;
-    min-height: 330px;
     padding: 22px 22px 0;
     background: var(--bg);
     color: inherit;
@@ -252,23 +266,29 @@ const routeHref = (route: string) => (route.startsWith("https://") ? route : hre
   .card:hover {
     background: #0c0d0e;
   }
+  /* omp-config spans the row: what it is on the left, the pipeline on the right. */
   .card[data-repo="omp-config"] {
-    grid-column: span 6;
-    grid-row: span 2;
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 19fr);
+    grid-template-rows: auto;
+    gap: 28px;
+    padding: 26px 26px 22px;
   }
-  .card[data-repo="omp-ask-more"],
-  .card[data-repo="omp-todo-more"] {
-    grid-column: span 6;
+  .card[data-repo="omp-playbooks"],
+  .card[data-repo="omp-dispatch"],
+  .card[data-repo="omp-remote-build"] {
+    grid-column: span 8;
   }
-  /* The terminal view needs the width; the thinking card is narrower so both slices end near the same height. */
-  .card[data-repo="omp-unified-exec"] {
-    grid-column: span 7;
-  }
-  .card[data-repo="omp-thinking-translator"] {
-    grid-column: span 5;
+  .card[data-repo="omp-codex-image-gen"] {
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    grid-template-rows: auto;
+    gap: 28px;
+    padding-bottom: 22px;
   }
   .ct {
     display: grid;
+    align-content: start;
     gap: 8px;
   }
   .meta {
@@ -290,60 +310,129 @@ const routeHref = (route: string) => (route.startsWith("https://") ? route : hre
     color: var(--muted);
     font-size: 14.5px;
     line-height: 1.55;
-    max-width: 36em;
+    max-width: 30em;
   }
-  /* The last slice stretches to the bottom of the card, so a bordered box in a short card does not end mid-row. */
   .ca {
     display: grid;
-    grid-auto-rows: auto;
-    align-content: stretch;
+    align-content: start;
     gap: 10px;
+    min-width: 0;
     min-height: 0;
-    max-height: 300px;
+    height: 330px;
     overflow: hidden;
-    mask-image: linear-gradient(to bottom, #000 78%, transparent);
+    mask-image: linear-gradient(to bottom, #000 86%, transparent);
     pointer-events: none;
   }
-  .ca > :global(:last-child) {
-    align-self: stretch;
-  }
-  .ca :global(.sl-art-code) {
-    height: 100%;
-  }
-  /* Drawn whole at every width: the pipeline shows all six seams, and the peers and image cards end on the result they are about. */
+  /* Drawn whole: the pipeline and the image card end on what they are about. */
   .card[data-repo="omp-config"] .ca,
-  .card[data-repo="omp-peers"] .ca,
   .card[data-repo="omp-codex-image-gen"] .ca {
-    max-height: none;
+    height: auto;
     mask-image: none;
+  }
+  .bridge {
+    margin-top: 28px;
+    font-size: clamp(19px, 1.9vw, 24px);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: var(--muted);
+    max-width: 52em;
+  }
+  .bridge b {
+    font-weight: 500;
+    color: var(--text);
+  }
+  .hosts {
+    margin-top: clamp(32px, 4vw, 48px);
   }
   .body {
     margin-top: clamp(40px, 5vw, 64px);
   }
+  /* Each principle figure keeps its drawn size, centred in the cell's art region; stretched, its labels grow past body text. */
+  .figs :global(svg.fig) {
+    max-width: 250px;
+    margin-inline: auto;
+  }
   .last {
     padding-bottom: clamp(72px, 10vw, 128px);
   }
+  /* Where to go next: question in grey, destination as the link, divided by hairlines. */
+  .next {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid var(--line);
+  }
+  .next li {
+    border-bottom: 1px solid var(--line);
+  }
+  .next li:not(:nth-child(3n + 1)) {
+    border-left: 1px solid var(--line);
+  }
+  .next a {
+    display: grid;
+    gap: 6px;
+    padding: 22px 24px;
+    color: inherit;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .next a:hover {
+    background: var(--bg-hover);
+  }
+  .next .q {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .next .a {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text);
+  }
   @media (max-width: 1080px) {
-    .card,
-    .card[data-repo] {
+    .card {
       grid-column: span 6;
-      grid-row: auto;
+    }
+    .card[data-repo="omp-playbooks"],
+    .card[data-repo="omp-dispatch"],
+    .card[data-repo="omp-remote-build"] {
+      grid-column: 1 / -1;
     }
   }
   @media (max-width: 900px) {
     .hero {
       grid-template-columns: minmax(0, 1fr);
     }
+    .card[data-repo="omp-config"],
+    .card[data-repo="omp-codex-image-gen"] {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 16px;
+    }
+    .next {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .next li:not(:nth-child(3n + 1)) {
+      border-left: 0;
+    }
+    .next li:nth-child(2n) {
+      border-left: 1px solid var(--line);
+    }
   }
   @media (max-width: 680px) {
     .card,
     .card[data-repo] {
       grid-column: 1 / -1;
-      min-height: 0;
       padding-bottom: 4px;
     }
     .ca {
-      max-height: 320px;
+      height: 300px;
+    }
+    .next {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .next li:nth-child(2n) {
+      border-left: 0;
     }
   }
 </style>

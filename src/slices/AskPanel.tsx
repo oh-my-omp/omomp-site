@@ -54,19 +54,17 @@ export default function AskPanel(props: { lang: Lang; data: AskData; compact?: b
             <b>{l().what}</b>
             <p>{props.data.what}</p>
           </div>
-          <Show when={!props.compact}>
-            <div>
-              <b>{l().how}</b>
-              <p>{props.data.how}</p>
-            </div>
-          </Show>
+          <div>
+            <b>{l().how}</b>
+            <p>{props.data.how}</p>
+          </div>
         </div>
         <ul class="sl-ask-opts">
           <For each={props.data.options}>
             {(o, i) => (
               <li classList={{ cur: i() === props.data.cursor, picked: i() === props.data.answered }}>
                 <span class="sl-ask-label">{o.label}</span>
-                <Show when={o.description && !props.compact}>
+                <Show when={o.description}>
                   <span class="sl-ask-detail">{o.description}</span>
                 </Show>
                 <Show when={o.recommended}>
@@ -95,7 +93,7 @@ export default function AskPanel(props: { lang: Lang; data: AskData; compact?: b
                   {o().holdsWhen}
                 </p>
               </Show>
-              <Show when={o().cost && !props.compact}>
+              <Show when={o().cost}>
                 <p>
                   <span>{l().cost}</span>
                   {o().cost}
