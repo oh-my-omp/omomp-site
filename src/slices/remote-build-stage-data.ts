@@ -11,12 +11,10 @@ import type { Art } from "./Art";
  * language; `.copy` is authored site text (zone titles, captions) free to differ.
  */
 
-/** One file-tree line under a worktree root. */
-export interface TreeEntry {
-  readonly text: string;
-  /** Indent level below the root line. */
-  readonly depth: number;
-  readonly kind: "leaf" | "cfg";
+/** One `git status --short` line in a checkout: the edits an agent has made there. */
+export interface Change {
+  readonly mark: "M" | "A";
+  readonly path: string;
 }
 
 /** A checkout on this machine. `env`/`container` exist only for worktrees. */
@@ -28,7 +26,7 @@ export interface EnvRoot {
   readonly env?: string;
   /** Container/Mutagen name `rb-<id>` derived from the env id. */
   readonly container?: string;
-  readonly tree?: readonly TreeEntry[];
+  readonly changes: readonly Change[];
 }
 
 export interface ScreenLine {
@@ -37,13 +35,24 @@ export interface ScreenLine {
   readonly by?: "agent";
 }
 
+/** One Mutagen session as the stream column shows it: its name, endpoints and current status. */
+export interface SyncSession {
+  readonly name: string;
+  readonly alpha: string;
+  readonly beta: string;
+  /** Mutagen's own status text for the session. */
+  readonly status: string;
+  /** Files staged to the replica in this flush, from the worktree's changes. */
+  readonly staged: readonly Change[];
+}
+
 export const remoteBuildScene: {
   id: string;
   container: string;
   roots: readonly EnvRoot[];
   envNote: string;
-  syncCreate: readonly string[];
-  endpoints: { alpha: string; beta: string };
+  sessions: readonly SyncSession[];
+  ignored: readonly string[];
   syncFlush: string;
   report: readonly string[];
   execArgs: string;
@@ -57,18 +66,17 @@ export const remoteBuildScene: {
     {
       path: "~/work/shop-api/",
       role: { en: "main checkout", zh: "主检出" },
+      changes: [],
     },
     {
       path: "~/work/worktrees/rate-limit/",
       role: { en: "agent · rate-limit", zh: "agent · rate-limit" },
       env: "rate-limit-a3f9c1b7e2",
       container: "rb-rate-limit-a3f9c1b7e2",
-      tree: [
-        { text: ".omp/remote-build.json", depth: 0, kind: "cfg" },
-        { text: '"dockerfile": ".devcontainer/Dockerfile"', depth: 1, kind: "leaf" },
-        { text: '"workdir": "/workspace"', depth: 1, kind: "leaf" },
-        { text: '"shell": "bash"', depth: 1, kind: "leaf" },
-        { text: '"ignore": [".env*"]', depth: 1, kind: "leaf" },
+      changes: [
+        { mark: "A", path: "src/middleware/rate-limit.ts" },
+        { mark: "M", path: "src/routes/orders.ts" },
+        { mark: "M", path: "src/routes/search.ts" },
       ],
     },
     {
@@ -76,20 +84,33 @@ export const remoteBuildScene: {
       role: { en: "agent · coverage", zh: "agent · coverage" },
       env: "coverage-7e04d2f6c1",
       container: "rb-coverage-7e04d2f6c1",
-      tree: [{ text: ".omp/remote-build.json", depth: 0, kind: "cfg" }],
+      changes: [{ mark: "A", path: "test/orders.spec.ts" }],
     },
   ],
   /** Plugin message when a worktree command runs in the main checkout (verbatim, English-only). */
   envNote: "remote-build environments exist only in git worktrees; ~/work/shop-api is the main checkout",
-  syncCreate: [
-    "mutagen sync create ~/work/worktrees/rate-limit builder.internal:/srv/rb/rate-limit-a3f9c1b7e2 \\",
-    '  --name=rb-rate-limit-a3f9c1b7e2 --mode=one-way-replica --ignore-vcs --ignore=".env*" \\',
-    "  --label=remote-build --label=rb-env=rate-limit-a3f9c1b7e2",
+  sessions: [
+    {
+      name: "rb-rate-limit-a3f9c1b7e2",
+      alpha: "~/work/worktrees/rate-limit",
+      beta: "builder.internal:/srv/rb/rate-limit-a3f9c1b7e2",
+      status: "Staging files on beta",
+      staged: [
+        { mark: "A", path: "src/middleware/rate-limit.ts" },
+        { mark: "M", path: "src/routes/orders.ts" },
+        { mark: "M", path: "src/routes/search.ts" },
+      ],
+    },
+    {
+      name: "rb-coverage-7e04d2f6c1",
+      alpha: "~/work/worktrees/coverage",
+      beta: "builder.internal:/srv/rb/coverage-7e04d2f6c1",
+      status: "Watching for changes",
+      staged: [],
+    },
   ],
-  endpoints: {
-    alpha: "~/work/worktrees/rate-limit",
-    beta: "builder.internal:/srv/rb/rate-limit-a3f9c1b7e2",
-  },
+  /** What `--ignore-vcs --ignore=".env*"` keeps on this machine. */
+  ignored: [".git", ".env*"],
   syncFlush: "mutagen sync flush rb-rate-limit-a3f9c1b7e2",
   /** remote_env_init report lines (key: value, English-only). */
   report: [
@@ -98,7 +119,7 @@ export const remoteBuildScene: {
     "image_source: built from worktree Dockerfile .devcontainer/Dockerfile",
   ],
   /** container_exec call, `input` is C-escape decoded. */
-  execArgs: '"pnpm test\\n"',
+  execArgs: '"pnpm build && pnpm test\\n"',
   /** Tool result text head, then `---` and the PTY output. */
   resultHead: [
     "[running] session_id: 3",
@@ -106,15 +127,14 @@ export const remoteBuildScene: {
     "note: km always exits 0; this is only the local transport's exit code. Read command exit codes from the container shell output, e.g. echo $? immediately after the command.",
   ],
   screen: [
-    { text: "/workspace # pnpm test", by: "agent" },
-    { text: "" },
+    { text: "/workspace # pnpm build && pnpm test", by: "agent" },
+    { text: "> tsc -p tsconfig.json" },
     { text: " ✓ src/middleware/rate-limit.test.ts (6 tests) 41ms" },
     { text: " ✓ src/routes/orders.test.ts (4 tests) 88ms" },
     { text: " ✓ src/routes/search.test.ts (5 tests) 63ms" },
-    { text: " ✓ src/routes/webhooks.test.ts (3 tests) 29ms" },
     { text: "" },
-    { text: " Test Files  4 passed (4)" },
-    { text: "      Tests  18 passed (18)" },
+    { text: " Test Files  3 passed (3)" },
+    { text: "      Tests  15 passed (15)" },
     { text: "/workspace # echo $?", by: "agent" },
     { text: "0" },
     { text: "/workspace # ", by: "agent" },
@@ -127,10 +147,11 @@ export interface RemoteBuildStageData {
     readonly zones: readonly [string, string, string];
     readonly captions: readonly [string, string, string];
     readonly flushNote: string;
+    readonly clean: string;
+    readonly ignored: string;
   };
   /** Human-facing plugin strings, verbatim in each language. */
   readonly ui: {
-    readonly tools: readonly { readonly name: string; readonly label: string }[];
     readonly ptyTitle: string;
     readonly notify: string;
   };
@@ -141,20 +162,15 @@ export const remoteBuildStage: Record<Lang, RemoteBuildStageData> = {
     copy: {
       zones: ["This machine", "One-way sync", "Remote build host"],
       captions: [
-        "Three checkouts of shop-api; each worktree gets its own remote-build environment, one per parallel agent.",
-        "One Mutagen session per environment, one-way-replica: edits flow out to the replica, never back.",
-        "The env's Komodo container on the build host. The agent's container tools run commands inside it.",
+        "Each worktree is its own remote-build environment, so parallel agents edit side by side.",
+        "A Mutagen session per environment in one-way-replica mode: edits flow out, never back.",
+        "The environment's Komodo container on the build host; the agent types into its shell.",
       ],
       flushNote: "flushed automatically after each write-type tool call",
+      clean: "no remote-build environment",
+      ignored: "stays on this machine",
     },
     ui: {
-      tools: [
-        { name: "remote_env_init", label: "Remote env init" },
-        { name: "container_exec", label: "Container exec" },
-        { name: "container_write_stdin", label: "Container stdin" },
-        { name: "container_list_sessions", label: "Container sessions" },
-        { name: "container_kill_session", label: "Kill container session" },
-      ],
       ptyTitle: "Container rb-rate-limit-a3f9c1b7e2",
       notify: "remote-build: ready rb-rate-limit-a3f9c1b7e2 <- ~/work/worktrees/rate-limit",
     },
@@ -163,20 +179,15 @@ export const remoteBuildStage: Record<Lang, RemoteBuildStageData> = {
     copy: {
       zones: ["本机", "单向同步", "远程构建主机"],
       captions: [
-        "同一仓库 shop-api 的三个检出；每个 worktree 有各自的 remote-build 环境，并行 agent 各占一个。",
-        "每个环境一条 Mutagen 会话，one-way-replica：本机改动只往副本里推，不回传。",
-        "构建主机上以环境命名的 Komodo 容器；agent 用容器工具在里面跑命令。",
+        "每个 worktree 是一个独立的 remote-build 环境，并行的 agent 各改各的。",
+        "每个环境一条 one-way-replica 模式的 Mutagen 会话：改动只往外推，不回传。",
+        "构建主机上该环境的 Komodo 容器；agent 用容器工具在它的 shell 里敲命令。",
       ],
       flushNote: "每次写入类工具调用后自动执行",
+      clean: "没有 remote-build 环境",
+      ignored: "留在本机",
     },
     ui: {
-      tools: [
-        { name: "remote_env_init", label: "远程环境初始化" },
-        { name: "container_exec", label: "容器执行" },
-        { name: "container_write_stdin", label: "容器标准输入" },
-        { name: "container_list_sessions", label: "容器会话" },
-        { name: "container_kill_session", label: "终止容器会话" },
-      ],
       ptyTitle: "容器 rb-rate-limit-a3f9c1b7e2",
       notify: "remote-build：已就绪 rb-rate-limit-a3f9c1b7e2 <- ~/work/worktrees/rate-limit",
     },

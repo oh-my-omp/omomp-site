@@ -6,9 +6,6 @@
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   background: var(--bg-panel);
-  box-shadow:
-    0 0 0 1px rgb(0 0 0 / 0.4),
-    0 24px 60px -24px rgb(0 0 0 / 0.8);
   overflow: hidden;
   font-size: 13px;
   text-align: left;
@@ -102,22 +99,36 @@
 .st-rb-env code {
   color: var(--soft);
 }
-.st-rb-tree {
+.st-rb-live {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+/* `git status --short` lines: what the agent changed in this worktree. */
+.st-rb-changes {
   list-style: none;
-  margin: 2px 0 0;
+  margin: 3px 0 0;
   padding: 0;
   font-family: var(--mono);
   font-size: 0.8em;
   line-height: 1.7;
-  color: var(--dim);
+  color: var(--soft);
 }
-.st-rb-tree li {
+.st-rb-changes li {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.st-rb-tree li.cfg {
-  color: var(--muted);
+.st-rb-changes b {
+  flex: none;
+  font-weight: 600;
+}
+.st-rb-m-M {
+  color: var(--warn);
+}
+.st-rb-m-A {
+  color: var(--silent);
 }
 .st-rb-note {
   border-top: 1px solid var(--line);
@@ -131,84 +142,112 @@
   font-family: var(--mono);
   font-size: 0.82em;
   color: var(--soft);
+  overflow-wrap: anywhere;
 }
 
-/* Zone 2: Mutagen session */
-.st-rb-eps {
+/* Zone 2: one Mutagen session per environment, the staged files streaming to beta */
+.st-rb-sess {
   display: grid;
-  gap: 4px;
-  padding: 8px 12px;
+  gap: 6px;
+  padding: 10px 12px;
+}
+.st-rb-sess + .st-rb-sess {
   border-top: 1px solid var(--line);
-  font-family: var(--mono);
+}
+.st-rb-sess-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  min-width: 0;
   font-size: 0.82em;
 }
-.st-rb-ep {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  min-width: 0;
+.st-rb-sess-head code {
+  font-family: var(--mono);
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.st-rb-mode {
+  margin-left: auto;
+  padding: 0 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 0.92em;
+  color: var(--muted);
+}
+.st-rb-eps {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 2px 10px;
+  font-family: var(--mono);
+  font-size: 0.8em;
 }
 .st-rb-ep-k {
-  width: 3.4em;
-  flex: none;
   color: var(--dim);
 }
-.st-rb-ep code {
+.st-rb-eps code {
   min-width: 0;
   color: var(--soft);
   overflow-wrap: anywhere;
 }
-.st-rb-flow {
-  padding-left: calc(3.4em + 8px);
+.st-rb-stream {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 10px;
+  border-left: 1px solid color-mix(in srgb, var(--accent) 50%, var(--line));
+  display: grid;
+  gap: 2px;
+  font-family: var(--mono);
+  font-size: 0.8em;
+  color: var(--soft);
+}
+.st-rb-stream li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.st-rb-dot {
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.st-rb-status {
+  font-size: 0.8em;
   color: var(--dim);
-  font-size: 0.94em;
 }
-.st-rb-flow-arrow {
-  color: var(--muted);
-}
-.st-rb-flush {
+.st-rb-flush,
+.st-rb-ign {
   display: grid;
   gap: 3px;
   padding: 8px 12px 10px;
   border-top: 1px solid var(--line);
   font-size: 0.82em;
 }
-.st-rb-flush code {
+.st-rb-ign {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+}
+.st-rb-flush code,
+.st-rb-ign code {
   font-family: var(--mono);
   color: var(--soft);
+  overflow-wrap: anywhere;
 }
-.st-rb-flush span {
+.st-rb-flush span,
+.st-rb-ign span {
   color: var(--dim);
 }
 
-/* Zone 3: remote container and tools */
-.st-rb-tools {
-  list-style: none;
-  margin: 0;
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--line);
-  display: grid;
-  gap: 4px;
-}
-.st-rb-tools li {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  min-width: 0;
-  font-size: 0.82em;
-}
-.st-rb-tools code {
-  color: var(--soft);
-  white-space: nowrap;
-}
-.st-rb-tools span {
-  margin-left: auto;
-  color: var(--dim);
-  white-space: nowrap;
-}
-.st-rb-report {
-  border-bottom: 1px solid var(--line);
-}
+/* Zone 3: the container shell the agent types into */
 .st-rb-call {
   padding: 8px 12px 2px;
 }
@@ -216,7 +255,8 @@
   padding: 4px 12px 10px;
   font-size: 0.8em;
   color: var(--muted);
-  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 .st-rb-result .by-agent {
   color: var(--agent);
