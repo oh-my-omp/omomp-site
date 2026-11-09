@@ -102,12 +102,12 @@
   font-size: 11px;
   color: var(--dim);
 }
+/* A title too wide for a narrow card wraps rather than being cut; a long path breaks only when nothing else fits. */
 .st-pb-title {
+  min-width: 0;
   color: var(--text);
   font-weight: 540;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
 }
 .st-pb-dots {
   margin-left: auto;
