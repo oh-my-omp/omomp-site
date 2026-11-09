@@ -626,7 +626,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
         body: promptReplace,
         gloss: {
           label: "译文",
-          text: "OMP 的 system prompt 保持原文；本会话按以下编辑阅读：段落《No TODO tracking, no progress updates.》不适用。",
+          text: "OMP 的 system prompt 保留原文。本会话里读它时，按列出的先后套用下面这些修改：原文中“No TODO tracking, no progress updates.”这一段在本会话里不适用。",
         },
       },
     },
@@ -646,7 +646,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
         body: appendSystemModel,
         gloss: {
           label: "译文",
-          text: "强制决策支持。用户明确指示只覆盖它点名的规则和范围。重大决定时同时咨询 discuss:steady 与 discuss:divergent；它们的意见供参考，决定仍由你来做。",
+          text: "# 强制决策支持：本节是默认规则，用户的明确指令只覆盖它点名的规则和范围。遇到重大决定，拿实际的方案、相关代码和这个决定，同时咨询 `discuss:steady` 和 `discuss:divergent`。它们的意见为决定提供依据，决定权不在它们。",
         },
       },
     },
@@ -885,7 +885,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
         body: isolationNudge,
         gloss: {
           label: "译文",
-          text: "没有派发——这是提醒，不是规定。这次调用会让几个能写文件的代理不加隔离地共用这个工作目录，可能互相覆盖改动。给写文件的项加上 isolated: true 重新派发；只做调研的项设 isolated: false。",
+          text: "没有派发——这是提醒，不是规定。这次调用会让几个能写文件的代理不加隔离地共用这个工作目录：`OrdersRoute`、`SearchRoute`、`WebhooksRoute`。共用同一个检出的代理可能互相覆盖对方的改动。给写文件的代理加上 `isolated: true` 重新派发；只做调研的项设 `isolated: false`，保持共用。每段提示词只提醒一次：原样重新派发同样的提示词，就照写的执行。",
         },
       },
     },
