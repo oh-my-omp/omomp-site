@@ -46,7 +46,7 @@ export const seamPage = {
 
 export const replayPage = {
   kicker: { en: "Replay", zh: "回放" },
-  title: { en: "One task through all six seams", zh: "一个任务走完六道接缝" },
+  title: { en: "One task through all six seams", zh: "六道接缝走一遍" },
   lede: {
     en: "A simulated session: rate limiting for a small API, then three routes moved onto it. The left side is what you would see. The right side is what reached the model without appearing on your screen, worded the way each extension actually sends it.",
     zh: "一段模拟会话：给一个小型 API 加限流，再把三个路由改用它。左边是你会看到的界面；右边是发给模型、但不出现在你屏幕上的消息，措辞与各扩展实际发送的原文一致。",
