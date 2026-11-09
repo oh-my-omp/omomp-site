@@ -6,6 +6,7 @@ const text = z.object({ en: z.string().min(1), zh: z.string().min(1) }).strict()
 const layer = z.enum(["human", "agent", "silent"]);
 const seamId = z.enum(["intent", "prompt", "memory", "delegation", "execution", "delivery"]);
 const party = z.object({ name: text, role: text }).strict();
+const section = z.object({ title: text, lede: text }).strict();
 
 /** A component: a plugin repo, an omp-config extension, or an agent role. */
 const components = defineCollection({
@@ -33,8 +34,9 @@ const seams = defineCollection({
       name: text,
       claim: text,
       drift: text,
+      /** Per layer: the section heading and the mechanism lede beside it. */
       sections: z
-        .object({ human: text, agent: text, silent: text })
+        .object({ human: section, agent: section, silent: section })
         .strict(),
     })
     .strict(),

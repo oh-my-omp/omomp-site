@@ -98,8 +98,10 @@ export const lifelineLayerNotes = {
 } satisfies Record<string, Text>
 
 export const seamPage = {
-  kicker: { en: "Seam", zh: "接缝" },
   seams: { en: "All seams", zh: "全部接缝" },
+  components: { en: "Components in this layer", zh: "这一层的组件" },
+  screen: { en: "On your screen", zh: "你看到的界面" },
+  model: { en: "Sent to the model", zh: "发给模型的消息" },
   lifeline: { en: "Lifeline", zh: "生命线" },
   demoKicker: { en: "Demo", zh: "演示" },
   demoLede: {

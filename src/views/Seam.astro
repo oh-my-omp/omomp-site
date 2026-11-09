@@ -7,10 +7,12 @@ import Grid from "../components/Grid.astro";
 import Cell from "../components/Cell.astro";
 import Pager from "../components/Pager.astro";
 import ReplayPlayer from "../islands/ReplayPlayer";
+import SeamStage from "../components/SeamStage.astro";
 import ArtView from "../slices/Art";
 import { seamPage as copy, replayPage } from "../copy/pages";
 import { componentArt, type ComponentId } from "../data/component-art";
 import { playerLabels, scenario } from "../data/scenario";
+import { parseSeamId, seamStage } from "../data/seam-stages";
 import { href, t, type Lang } from "../i18n";
 import { ui } from "../ui";
 
@@ -19,13 +21,14 @@ interface Props {
   seam: CollectionEntry<"seams">;
 }
 const { lang, seam } = Astro.props;
+const seamId = parseSeamId(seam.id);
 const seams = (await getCollection("seams")).sort((a, b) => a.data.order - b.data.order);
 const index = seams.findIndex((s) => s.id === seam.id);
 const prev = seams[index - 1];
 const next = seams[index + 1];
 const components = (await getCollection("components")).filter((c) => c.data.seam === seam.id);
 const layers = ["human", "agent", "silent"] as const;
-const pad = (n: number) => String(n).padStart(2, "0");
+const sides = { screen: t(copy.screen, lang), model: t(copy.model, lang) };
 const isComponent = (id: string): id is ComponentId => id in componentArt;
 const artOf = (id: string) => {
   if (!isComponent(id)) throw new Error(`component \`${id}\` has no art in component-art.ts`);
@@ -35,11 +38,11 @@ const all = scenario[lang];
 const first = all.findIndex((s) => s.seam === seam.id);
 const steps = all.filter((s) => s.seam === seam.id);
 if (first < 0) throw new Error(`seam \`${seam.id}\` has no step in the demo scenario`);
-const colsFor = (n: number) => (n === 1 ? 1 : n === 2 || n === 4 ? 2 : 3);
+const colsFor = (n: number) => (n === 2 || n === 4 ? 2 : 3);
 ---
 
 <Base lang={lang} title={seam.data.name[lang]} description={seam.data.claim[lang]}>
-  <PageHead kicker={`${t(copy.kicker, lang)} ${pad(seam.data.order)} · ${seam.data.name[lang]}`} title={seam.data.claim[lang]} lede={seam.data.drift[lang]}>
+  <PageHead kicker={seam.data.name[lang]} title={seam.data.claim[lang]} lede={seam.data.drift[lang]}>
     <nav class="seams" aria-label={t(copy.seams, lang)}>
       {
         seams.map((s) => (
@@ -48,7 +51,6 @@ const colsFor = (n: number) => (n === 1 ? 1 : n === 2 || n === 4 ? 2 : 3);
             class:list={{ on: s.id === seam.id, past: s.data.order < seam.data.order }}
             aria-current={s.id === seam.id ? "page" : undefined}
           >
-            <span class="n">{pad(s.data.order)}</span>
             {s.data.short[lang]}
           </a>
         ))
@@ -65,26 +67,46 @@ const colsFor = (n: number) => (n === 1 ? 1 : n === 2 || n === 4 ? 2 : 3);
       <a class="more" href={href("/replay/", lang)}>{t(copy.demoAll, lang)} →</a>
     </SplitHead>
     <div class="wrap demo">
-      <ReplayPlayer client:visible lang={lang} steps={steps} labels={playerLabels[lang]} firstNumber={first + 1} total={all.length} />
+      <ReplayPlayer client:load lang={lang} steps={steps} labels={playerLabels[lang]} firstNumber={first + 1} total={all.length} />
     </div>
   </section>
 
   {
     layers.map((l) => {
       const cells = components.filter((c) => c.data.layer === l);
-      const cols = colsFor(cells.length);
+      const only = cells.length === 1 ? cells[0] : undefined;
+      const section = seam.data.sections[l];
       return (
         <section class="section">
-          <SplitHead kicker={t(ui.layers[l], lang)} title={seam.data.sections[l][lang]} />
-          <div class="wrap cells">
-            <Grid cols={cols} count={cells.length}>
+          <SplitHead kicker={t(ui.layers[l], lang)} title={section.title[lang]} lede={section.lede[lang]}>
+            <nav class="caps" aria-label={t(copy.components, lang)}>
               {cells.map((c) => (
-                <Cell title={c.data.name} text={c.data.line[lang]} href={c.data.repo} mono wide={cols === 1}>
-                  <ArtView lang={lang} art={artOf(c.id)} />
-                </Cell>
+                <a class={`layer-${l}`} href={`#${c.id}`}>
+                  <span class="layer-dot" />
+                  {c.data.name}
+                </a>
               ))}
-            </Grid>
+            </nav>
+          </SplitHead>
+          <div class="wrap layer-stage">
+            <SeamStage
+              lang={lang}
+              stage={seamStage(seamId, l, lang)}
+              sides={sides}
+              only={only && { id: only.id, title: only.data.name, text: only.data.line[lang] }}
+            />
           </div>
+          {!only && (
+            <div class="wrap cells">
+              <Grid cols={colsFor(cells.length)} count={cells.length}>
+                {cells.map((c) => (
+                  <Cell id={c.id} title={c.data.name} text={c.data.line[lang]} href={c.data.repo} mono>
+                    <ArtView lang={lang} art={artOf(c.id)} />
+                  </Cell>
+                ))}
+              </Grid>
+            </div>
+          )}
         </section>
       );
     })
@@ -92,10 +114,10 @@ const colsFor = (n: number) => (n === 1 ? 1 : n === 2 || n === 4 ? 2 : 3);
 
   <Pager
     prev={prev
-      ? { href: href(`/lifeline/${prev.id}/`, lang), label: `${t(ui.previous, lang)} · ${pad(prev.data.order)}`, title: prev.data.name[lang] }
+      ? { href: href(`/lifeline/${prev.id}/`, lang), label: t(ui.previous, lang), title: prev.data.name[lang] }
       : { href: href("/lifeline/", lang), label: t(ui.previous, lang), title: t(copy.lifeline, lang) }}
     next={next
-      ? { href: href(`/lifeline/${next.id}/`, lang), label: `${t(ui.next, lang)} · ${pad(next.data.order)}`, title: next.data.name[lang] }
+      ? { href: href(`/lifeline/${next.id}/`, lang), label: t(ui.next, lang), title: next.data.name[lang] }
       : { href: href("/replay/", lang), label: t(ui.next, lang), title: t(replayPage.kicker, lang) }}
   />
 </Base>
@@ -135,13 +157,36 @@ const colsFor = (n: number) => (n === 1 ? 1 : n === 2 || n === 4 ? 2 : 3);
     background: var(--bg-raised);
     box-shadow: inset 0 -2px 0 var(--accent);
   }
-  .n {
-    font-family: var(--mono);
-    font-size: 12px;
-  }
   .demo,
-  .cells {
+  .layer-stage {
     margin-top: clamp(40px, 5vw, 64px);
+  }
+  .cells {
+    margin-top: clamp(24px, 3vw, 40px);
+  }
+  .caps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .caps a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 11px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--soft);
+    text-decoration: none;
+    transition:
+      color 0.15s,
+      border-color 0.15s;
+  }
+  .caps a:hover {
+    color: var(--text);
+    border-color: var(--line-strong, rgb(255 255 255 / 0.18));
   }
   @media (max-width: 640px) {
     .seams a {

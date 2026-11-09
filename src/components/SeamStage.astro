@@ -1,0 +1,174 @@
+---
+import Stage from "./Stage.astro";
+import ContextBar from "../slices/ContextBar";
+import HookMessage from "../slices/HookMessage";
+import PanelView from "../slices/Panel";
+import Window from "../slices/Window";
+import type { SeamStage } from "../data/seam-stages";
+import type { Lang } from "../i18n";
+
+interface Props {
+  lang: Lang;
+  stage: SeamStage;
+  /** Pane labels: what the person sees, and what reached the model. */
+  sides: { screen: string; model: string };
+  /** Caption for a layer with a single component: its name and one sentence; the stage then carries the component's anchor id. */
+  only?: { id: string; title: string; text: string } | undefined;
+}
+const { lang, stage, sides, only } = Astro.props;
+---
+
+<div class="seam-stage" id={only?.id}>
+  <Stage {...(only ? { title: only.title, text: only.text } : {})}>
+    {
+      (() => {
+        switch (stage.kind) {
+          case "screen":
+            return (
+              <Window tabs={stage.frame.tabs} meta={stage.frame.meta} class="ss-win">
+                <div class="ss-panels">
+                  {stage.panels.map((p) => (
+                    <PanelView lang={lang} panel={p} />
+                  ))}
+                </div>
+              </Window>
+            );
+          case "exchange":
+            return (
+              <div class="ss-pair">
+                <section>
+                  <span class="ss-side human">{sides.screen}</span>
+                  <Window tabs={stage.frame.tabs} meta={stage.frame.meta} class="ss-win">
+                    <div class="ss-panels">
+                      {stage.panels.map((p) => (
+                        <PanelView lang={lang} panel={p} />
+                      ))}
+                    </div>
+                  </Window>
+                </section>
+                <section>
+                  <span class="ss-side silent">{sides.model}</span>
+                  <div class="ss-hooks">
+                    {stage.hooks.map((h) => (
+                      <HookMessage hook={h} />
+                    ))}
+                  </div>
+                </section>
+              </div>
+            );
+          case "files":
+            return (
+              <div class:list={["ss-files", { one: stage.files.length === 1 }]}>
+                {stage.files.map((f) => (
+                  <div class="ss-file">
+                    <div class="ss-file-title">{f.title}</div>
+                    <pre>{f.lines.join("\n")}</pre>
+                  </div>
+                ))}
+              </div>
+            );
+          case "context":
+            return (
+              <section class="ss-stack">
+                <span class="ss-side silent">{sides.model}</span>
+                <ContextBar rows={stage.rows} />
+                <div class="ss-hooks">
+                  {stage.hooks.map((h) => (
+                    <HookMessage hook={h} />
+                  ))}
+                </div>
+              </section>
+            );
+        }
+      })()
+    }
+  </Stage>
+</div>
+
+<style>
+  .seam-stage {
+    scroll-margin-top: 96px;
+  }
+  .ss-panels {
+    display: grid;
+    gap: 16px;
+    padding: 16px;
+  }
+  .ss-pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+  }
+  .ss-stack {
+    display: grid;
+    gap: 16px;
+    min-width: 0;
+  }
+  .ss-pair section {
+    display: grid;
+    gap: 12px;
+    min-width: 0;
+  }
+  .ss-hooks {
+    display: grid;
+    gap: 14px;
+  }
+  .ss-side {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--dim);
+  }
+  .ss-side.human::before,
+  .ss-side.silent::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--human);
+  }
+  .ss-side.silent::before {
+    background: var(--silent);
+  }
+  .ss-files {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+  .ss-files.one {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ss-file {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--bg);
+    overflow: hidden;
+    min-width: 0;
+  }
+  .ss-file-title {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--dim);
+  }
+  .ss-file pre {
+    margin: 0;
+    padding: 14px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--soft);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  @media (max-width: 860px) {
+    .ss-pair,
+    .ss-files {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

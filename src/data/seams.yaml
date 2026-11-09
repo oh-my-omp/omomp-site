@@ -5,21 +5,33 @@ intent:
     en: Intent enters the session
     zh: 意图进入会话
   claim:
-    en: Decisions reach you as a page of their own, written so someone new to the project could answer
-    zh: 整页提问，新人能答
+    en: Questions for you open as a page of their own
+    zh: 提问单独成页
   drift:
     en: Left to itself, an agent either guesses or buries the question in a single line you skim past.
     zh: 没有这道接缝时，代理要么自己乱猜，要么把问题夹在一行字里让你漏看。
   sections:
     human:
-      en: Full-page questions with a tradeoff per option
-      zh: 列明背景与取舍
+      title:
+        en: Decisions open as a full page
+        zh: 需要决定时整页提问
+      lede:
+        en: omp-ask-more opens the question as its own page, with where things stand, what is decided and a tradeoff per option. input-polish rewrites your own draft first.
+        zh: omp-ask-more 把提问单独开成一页，写明现状、要决定什么和每个选项的取舍。input-polish 可以先改写你自己的草稿。
     agent:
-      en: Questions state where things stand and a cost per option
-      zh: 提问写清现状与代价
+      title:
+        en: Every question carries its context
+        zh: 提问自带背景
+      lede:
+        en: The ask tool takes the situation, the decision and its consequences as separate fields; every option needs a tradeoff, and code lines can go along as evidence.
+        zh: ask 工具把现状、要决定的事和决定后的影响分成单独的字段，每个选项都要写明取舍，还能附上代码行作为依据。
     silent:
-      en: A judge outside the session rejects unexplained names
-      zh: 提问先过判定
+      title:
+        en: Unclear questions go back to the agent
+        zh: 含糊的提问会被退回
+      lede:
+        en: Before a question reaches you, a judge that cannot see the session reads it, and any name or abbreviation it never explains sends the question back.
+        zh: 问题送到你面前之前，先由一个看不到会话的判定模型通读，有没解释过的名称或缩写就退回重写。
 
 prompt:
   order: 2
@@ -28,21 +40,33 @@ prompt:
     en: Prompts load and stay put
     zh: 提示词加载与防漂移
   claim:
-    en: Each instruction appears once, and later changes arrive as appended messages
-    zh: 只加载一次，改动随后追加
+    en: Instructions load once, and later changes are appended
+    zh: 提示词只加载一次
   drift:
     en: When the base template, tool descriptions and rules repeat or contradict each other, the model stops following any of them.
     zh: 当基础模板、工具说明和规则反复叮嘱同一件事甚至互相矛盾时，模型干脆谁都不听。
   sections:
     human:
-      en: You choose how much governance a session carries
-      zh: 启动时选治理强度
+      title:
+        en: You pick the mode at launch
+        zh: 启动时选择模式
+      lede:
+        en: omp loads every check for multi-step work. omp-light starts the same agent with the dispatch, handoff, advisor and reminder extensions off, without touching the files on disk.
+        zh: omp 加载全部检查，适合多步任务。omp-light 启动同一个代理，但关掉派发、交付、顾问和提醒类扩展，不改磁盘上的文件。
     agent:
-      en: Tool manuals arrive a topic at a time
-      zh: 工具说明按需送达
+      title:
+        en: Tool manuals are read one topic at a time
+        zh: 工具说明按专题读取
+      lede:
+        en: Each host tool description ends in a list of topics. Before a call that needs one, the agent reads it, such as tool://task/isolation before an isolated dispatch.
+        zh: 每个宿主工具的说明末尾附一份专题目录。需要时代理在调用前读对应专题，例如隔离派发之前先读 tool://task/isolation。
     silent:
-      en: Corrections are appended, never spliced into the prefix
-      zh: 只追加，不改前缀
+      title:
+        en: Changes are appended after the prefix
+        zh: 修改追加在前缀之后
+      lede:
+        en: The rendered system prompt stays as it is. Rules, corrections and mode-specific fragments arrive as appended messages, so the provider keeps serving the prefix from cache.
+        zh: 渲染好的系统提示词保持原样，规则、纠正和针对某种模式的片段都作为追加消息送达，前缀因此一直命中缓存。
 
 memory:
   order: 3
@@ -51,21 +75,33 @@ memory:
     en: Long tasks keep their plan
     zh: 长任务规划与记忆
   claim:
-    en: The plan lives in a list you can both see, and it outlasts the context window
-    zh: 计划存清单，压缩后不丢
+    en: The plan is a shared list that outlasts compaction
+    zh: 计划存进共享清单
   drift:
     en: Without a shared list, the agent drops constraints settled an hour ago or stops with tasks still open.
     zh: 没有共同维护的清单，代理做到一半就会忘掉一小时前定下的约束，或者留着未完事项直接停下。
   sections:
     human:
-      en: The plan is a panel you and the agent both edit
-      zh: 待办面板就是计划
+      title:
+        en: The plan is a panel you can edit
+        zh: 计划是可编辑的面板
+      lede:
+        en: omp-todo-more draws the plan in Tern with the goal, phases, an estimate per item and the commit of each finished item. Editing the panel edits the plan.
+        zh: omp-todo-more 在 Tern 里画出计划：目标、阶段、每项估时和完成项对应的提交。在面板里改，改的就是代理执行的计划。
     agent:
-      en: The agent keeps a plan that survives compaction
-      zh: 计划跨上下文保留
+      title:
+        en: The plan survives compaction
+        zh: 计划在压缩后保留
+      lede:
+        en: The todo tool keeps the plan outside the context window and commits as each item closes. ctx looks back at earlier contexts; fork_task copies the conversation into a child.
+        zh: todo 工具把计划存在上下文之外，完成一项就提交一次。ctx 回看先前的上下文，fork_task 把整段对话复制给子代理。
     silent:
-      en: An unfinished turn gets a reminder listing what is open
-      zh: 未完成会收到提醒
+      title:
+        en: Stopping with open items brings a reminder
+        zh: 留着未完成项会被提醒
+      lede:
+        en: A turn that ends with items still open gets a reminder listing them with the goal. model-compaction sets, per model and project, when compaction starts.
+        zh: 回合结束时还有未完成项，omp-todo-more 会追加提醒，列出这些条目和目标。model-compaction 按模型和项目设定何时开始压缩。
 
 delegation:
   order: 4
@@ -74,21 +110,33 @@ delegation:
     en: Work goes to subagents and advisors
     zh: 子代理派发与顾问
   claim:
-    en: Each worker gets its own checkout and one topic; advisors read your own words
-    zh: 执行者隔离，顾问读原话
+    en: Each writer gets its own checkout and one topic
+    zh: 子代理隔离派发
   drift:
     en: Without dispatch checks, the main agent passes its own misreading to subagents and lets multiple writers edit one checkout.
     zh: 没有派发检查时，主代理会把自己的误读传给每个子代理，还会让多个子代理同时改同一个工作区。
   sections:
     human:
-      en: You decide whether the machine measures subagent spend
-      zh: 本机统计由你决定
+      title:
+        en: You decide whether usage is measured
+        zh: 本机用量统计由你开启
+      lede:
+        en: /subagent-usage calibrates from this machine's own session history without calling a model, so a dispatch can weigh its cost against the quota left.
+        zh: /subagent-usage 只用本机的会话历史校准，不调用模型，派发时就能把成本和剩余额度放在一起考虑。
     agent:
-      en: Work is dispatched to stateless cost tiers
-      zh: 子代理按成本分级
+      title:
+        en: Work goes to stateless tiers and advisors
+        zh: 按成本分档派发
+      lede:
+        en: Workers are stateless task:* tiers that take a brief and return a report. Read-only discussion partners and a tool-free mentor give second opinions.
+        zh: 执行者是按成本分档的无状态 task:*，接一份派工单、交一份报告。只读的讨论伙伴和无工具的导师提供第二意见。
     silent:
-      en: Every dispatch is checked before it leaves
-      zh: 派发前查主题与隔离
+      title:
+        en: Every dispatch is checked before it runs
+        zh: 派发前先过检查
+      lede:
+        en: Writers sharing a checkout without stated isolation, or a brief mixing topics, are sent back. Advisors receive your own messages from the root session.
+        zh: 多个写手共用工作区却没写明是否隔离，或派工单混了几个主题，派发都会被退回。顾问拿到的是根会话里你本人的消息。
 
 execution:
   order: 5
@@ -97,21 +145,33 @@ execution:
     en: Commands run under watch
     zh: 命令执行与过程监督
   claim:
-    en: Long commands run in terminals you can watch, and risky shell habits are stopped before they run
-    zh: 长命令看得见，危险命令先拦下
+    en: Long commands run where you can watch them
+    zh: 命令执行全程可见
   drift:
     en: Left unchecked, a long command blocks the turn, a shell one-liner deletes the wrong directory, and old shell habits return unnoticed.
     zh: 没有过程监督时，长命令会卡死整个回合，一行 shell 就能删错目录，代理退回老习惯也没人察觉。
   sections:
     human:
-      en: What runs on your machine stays on screen
-      zh: 终端画面看得见
+      title:
+        en: Long-running terminals stay on screen
+        zh: 长驻终端留在屏幕上
+      lede:
+        en: omp-unified-exec lists the agent's long-running terminals in Tern; open one to watch it or type into the same process. /watchdog turns periodic reviews on and off.
+        zh: omp-unified-exec 在 Tern 里列出代理的长驻终端，打开就能旁观或向同一个进程输入。/watchdog 开关定期复查。
     agent:
-      en: Dedicated tools replace the riskiest shell one-liners
-      zh: 常用任务用专用工具
+      title:
+        en: Long commands and deletion have their own tools
+        zh: 长命令和删除另有工具
+      lede:
+        en: exec_command keeps servers and REPLs in PTY sessions that outlive the turn. delete takes literal paths and uses the trash. wt moves the session into its own worktree.
+        zh: exec_command 把服务器和 REPL 放进跨回合存活的 PTY 会话；delete 只接受字面路径并移进回收站；wt 把会话搬进独立的工作树。
     silent:
-      en: Shell and eval calls are checked before and after they run
-      zh: 调用前后都过检查
+      title:
+        en: Shell and eval calls are checked first
+        zh: 执行前检查每次调用
+      lede:
+        en: Deletions and unnamed commands are refused, and interactive commands in the one-shot shell are sent to exec_command. A watched session is reviewed at intervals.
+        zh: 删除操作和没写明名字的命令被拒绝，一次性 shell 里的交互命令被指向 exec_command，受监视的会话定期复查。
 
 delivery:
   order: 6
@@ -120,18 +180,30 @@ delivery:
     en: Results get checked and shared
     zh: 交付验收与跨会话协作
   claim:
-    en: A task counts as done once it has been checked, and other sessions can look up how it went
-    zh: 验收通过，会话可查
+    en: Work counts as done once it has been checked
+    zh: 交付先经检查
   drift:
     en: Without completion checks, a subagent claims success without running tests, or the main agent writes "next, run the tests" and stops.
     zh: 没有交付检查时，子代理什么都没跑就报成功，主代理写下一句“接下来跑测试”就停工了。
   sections:
     human:
-      en: Interface text is in your language
-      zh: 界面用你的语言
+      title:
+        en: Thinking and interface text in your language
+        zh: 思考与界面用你的语言
+      lede:
+        en: omp-thinking-translator puts a translation under each thinking line and keeps it out of the transcript. omomp-lang sets one language for everything you read.
+        zh: omp-thinking-translator 给每行思考附上译文，译文不写进会话记录。omomp-lang 统一设定面向人的文字语言。
     agent:
-      en: Past sessions are searchable, and peers answer side questions
-      zh: 跨会话可问可查
+      title:
+        en: Past sessions can be read and queried
+        zh: 查询过往会话
+      lede:
+        en: omp-sessions reads any session through session:// and queries all of them with DuckDB SQL. omp-peers asks live sessions in other omp processes side questions.
+        zh: omp-sessions 经 session:// 读取任一会话，并用 DuckDB SQL 查询全部会话。omp-peers 向其他 omp 进程里的在线会话旁路提问。
     silent:
-      en: Claims of done are checked at handoff and turn end
-      zh: 交付与收尾都要检查
+      title:
+        en: Completion is checked at handoff and turn end
+        zh: 收尾时检查是否完成
+      lede:
+        en: Unverified subagent work is returned at handoff, a main agent that announces the next step and stops is sent back, and a reply in the wrong language is corrected.
+        zh: 没验证过的子代理交付会被退回，主代理只宣布下一步就停下会被送回，用错语言的回复会被纠正。

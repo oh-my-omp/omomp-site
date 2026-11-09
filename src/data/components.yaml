@@ -5,8 +5,8 @@ ask-more-panel:
   layer: human
   seam: intent
   line:
-    en: When the agent needs a decision, the question opens as a full-screen page with the context, the stakes and a tradeoff per option, in the terminal or as a Tern sheet.
-    zh: 代理需要做决定时，问题开成一整屏页面，写明背景、利害和每个选项的取舍，显示在终端里或 Tern 浮层中。
+    en: "A decision opens as a full page: context, consequences and a tradeoff per option."
+    zh: 需要你决定时，问题整页打开，写明背景、后果和每个选项的取舍。
   defaults:
     mechanism:
       en: The structured question, the full-screen page, the readability check and the routing rule.
@@ -22,8 +22,8 @@ input-polish:
   layer: human
   seam: intent
   line:
-    en: Press the shortcut on a draft and a helper model rewrites it into an overlay you accept or discard before the agent ever sees it.
-    zh: 草稿写好时按下快捷键，辅助模型改写出的一版放进浮层，你决定采用还是丢弃，然后才轮到代理看到。
+    en: A shortcut has a helper model rewrite your draft; you accept or discard it first.
+    zh: 按快捷键让辅助模型改写草稿，采用还是丢弃由你决定。
   defaults:
     mechanism:
       en: Shortcut, helper rewrite, accept-or-discard overlay.
@@ -39,8 +39,8 @@ ask-tool:
   layer: agent
   seam: intent
   line:
-    en: Every question the agent asks must carry where things stand, what is being decided and the cost of each option, and it can attach code lines, diagrams and short demos, so no vague question reaches you.
-    zh: 代理每次提问都要写清现状、要决定什么和每个选项的代价，还能附上代码行、示意图和短演示，含糊的问题到不了你手上。
+    en: Each question states where things stand, what is decided and a tradeoff per option.
+    zh: 每次提问都写明现状、要决定的事和每个选项的取舍。
 
 ask-readability:
   name: omp-ask-more · readability
@@ -48,8 +48,8 @@ ask-readability:
   layer: silent
   seam: intent
   line:
-    en: Before a question opens, a judge with no view of the session reads every sentence and rejects the ask when a name, number or abbreviation is never explained.
-    zh: 问题打开前，一个看不到会话的判定模型逐句审读；凡有名称、编号或缩写没解释过，整次提问就被退回。
+    en: Before a question opens, a judge sends it back if a name or abbreviation is unexplained.
+    zh: 问题打开前先经判定，有没解释的名称或缩写就退回重写。
 
 omp-modes:
   name: omp · omp-light
@@ -57,8 +57,8 @@ omp-modes:
   layer: human
   seam: prompt
   line:
-    en: "At launch you pick between two entry points: full mode loads every check, light mode starts the same agent without the governance hooks, so a short question does not pay for a long task's machinery."
-    zh: 启动时在两个入口里选：完整模式加载全部检查，轻量模式启动同一个代理但不带治理钩子，简短问题不必承担长任务的开销。
+    en: Launch omp to load every check, or omp-light to start without the governance hooks.
+    zh: 用 omp 启动会加载全部检查，用 omp-light 启动则不带治理钩子。
   defaults:
     mechanism:
       en: A per-launch config overlay; files on disk stay untouched.
@@ -74,8 +74,8 @@ tool-topics:
   layer: agent
   seam: prompt
   line:
-    en: Host tool descriptions ship as the common case plus a list of topics, and the agent reads a topic only before the call that needs it, so prompts stop carrying every tool's full manual.
-    zh: 宿主工具说明只随附常用写法和一份专题目录，代理在需要的那次调用前才读对应专题，提示词里不再背着每个工具的完整手册。
+    en: Tool descriptions list topics, and the agent reads one right before the call that needs it.
+    zh: 工具说明附专题目录，代理在需要的那次调用前才读对应专题。
   defaults:
     mechanism:
       en: The topic scheme, description replacement and on-demand delivery.
@@ -91,8 +91,8 @@ system-template:
   layer: silent
   seam: prompt
   line:
-    en: The base prompt is rendered from a rewritten template that drops tool prose documented elsewhere and adjusts itself for subagents, so each instruction is said once.
-    zh: 基础提示词由重写过的模板渲染，去掉别处已有的工具说明并按子代理身份调整，每条指令只说一遍。
+    en: The base prompt is rendered from a template that states each instruction once.
+    zh: 基础提示词由重写过的模板渲染，每条指令只出现一次。
 
 system-prompt-replace:
   name: system-prompt-replace
@@ -100,8 +100,8 @@ system-prompt-replace:
   layer: silent
   seam: prompt
   line:
-    en: When a passage in the rendered prompt contradicts your setup, a declared rule matches it and appends a message quoting the original and stating how it should read, corrected without editing the prompt.
-    zh: 渲染后的提示词里有与你配置矛盾的句子时，声明的规则匹配到它，追加一条消息引用原句并写明应当怎么读，提示词本身不动。
+    en: A rule matching a conflicting passage appends a message saying how it should read.
+    zh: 匹配到与配置冲突的原句时，追加一条消息写明它应当怎么读。
   defaults:
     mechanism:
       en: Conditional matching by session, model or mode, declared as an added message.
@@ -117,8 +117,8 @@ append-system-model:
   layer: silent
   seam: prompt
   line:
-    en: When a session, model or mode matches a fragment's conditions, that fragment is appended as a message, so instructions meant for one model or mode stay out of every other prompt.
-    zh: 会话、模型或模式满足片段的条件时，该片段作为一条消息追加进提示词，只针对某个模型或模式的指令不会进入其他会话。
+    en: A fragment meant for one model or mode is appended only when the session matches.
+    zh: 针对某个模型或模式的片段，只在会话匹配时追加。
   defaults:
     mechanism:
       en: Fragments with conditions, added as one message.
@@ -134,8 +134,8 @@ repo-rules:
   layer: silent
   seam: prompt
   line:
-    en: Project instructions and rule files arrive as added messages named by their path inside the repository, and path-scoped rules wait until a matching file is touched, so moving worktrees never changes the prompt.
-    zh: 项目说明和规则文件以仓库内路径命名、作为追加消息送达，按路径生效的规则等碰到匹配文件才来，换工作树不会改动提示词。
+    en: Project rules arrive as appended messages; path rules wait for a matching file.
+    zh: 项目规则以追加消息送达，按路径的规则等碰到匹配文件才来。
 
 todo-panel:
   name: omp-todo-more
@@ -143,8 +143,8 @@ todo-panel:
   layer: human
   seam: memory
   line:
-    en: While the agent works a plan, a Tern panel shows the goal, phases and time spent per item, and editing the panel edits the plan the agent is following.
-    zh: 代理执行计划时，Tern 面板显示目标、阶段和每项用时；在面板里改，改的就是代理正在执行的那份计划。
+    en: A Tern panel shows the goal, phases and estimates; editing it edits the agent's plan.
+    zh: Tern 面板显示目标、阶段和估时，在面板里改就是改代理的计划。
   defaults:
     mechanism:
       en: The plan document, time budgets, reminders and commit-on-done.
@@ -160,8 +160,8 @@ todo-tool:
   layer: agent
   seam: memory
   line:
-    en: On a long task the agent keeps a plan with a goal, phases and an estimate per item, can commit work as an item closes, and recalls what earlier contexts did through a read-only view.
-    zh: 长任务里代理维护一份有目标、分阶段、逐项估时的计划，完成一项可以连带提交改动，还能用只读视图回看先前上下文做过什么。
+    en: The agent keeps a goal, phases and estimated items, and commits as each item closes.
+    zh: 代理维护目标、阶段和带估时的条目，完成一项提交一次。
 
 fork-task:
   name: fork_task
@@ -169,8 +169,8 @@ fork-task:
   layer: agent
   seam: memory
   line:
-    en: When the agent forks a same-model child, the caller's latest request is copied over, so the child starts from the whole conversation and reuses the cached prefix.
-    zh: 代理分出同模型的子代理时，调用方最近一次请求被完整复制过去，子代理从整段对话起步并复用已缓存的前缀。
+    en: A forked child starts from the whole conversation and reuses the cached prefix.
+    zh: 分出的子代理从整段对话起步，复用已缓存的前缀。
 
 todo-reminders:
   name: omp-todo-more · reminders
@@ -178,8 +178,8 @@ todo-reminders:
   layer: silent
   seam: memory
   line:
-    en: When a turn ends with items still open, or a long stretch of work never touches the list, a reminder fires and unfinished work cannot close quietly.
-    zh: 回合结束时还留着未完成项，或长时间干活却不碰待办列表，都会触发提醒，没做完的事没法悄悄过去。
+    en: A turn that ends with items still open gets a reminder listing them.
+    zh: 回合结束时还有未完成项，就会收到列出这些条目的提醒。
 
 model-compaction:
   name: model-compaction
@@ -187,8 +187,8 @@ model-compaction:
   layer: silent
   seam: memory
   line:
-    en: You set, per model and per project, when compaction starts for the running session, so settled constraints survive longer before lossy compaction drops them.
-    zh: 按模型、按项目设定当前会话何时开始压缩上下文，定下的约束能留得更久，不被有损压缩过早丢掉。
+    en: You set, per model and project, when the running session starts compacting.
+    zh: 按模型和项目设定当前会话何时开始压缩上下文。
   defaults:
     mechanism:
       en: Rule discovery and a session-only setting.
@@ -204,8 +204,8 @@ subagent-usage-cmd:
   layer: human
   seam: delegation
   line:
-    en: Running it calibrates from this machine's own session history with no model calls, so the agent can weigh dispatch cost against what your quota has left.
-    zh: 运行它只用本机自己的会话历史校准、不调用任何模型，代理因此能把派发成本和剩余额度放在一起权衡。
+    en: It calibrates from this machine's session history without calling a model.
+    zh: 只用本机的会话历史校准，不调用任何模型。
 
 worker-tiers:
   name: task:*
@@ -213,8 +213,8 @@ worker-tiers:
   layer: agent
   seam: delegation
   line:
-    en: Dispatched work goes to a stateless tier ranked by cost and trust that takes a brief and returns a structured report, so the cheapest worker that can be trusted gets it.
-    zh: 任务派给按成本和可信度排序的无状态执行档位，它接一份派工单、交一份结构化报告，信得过的最低成本执行者拿到任务。
+    en: Work goes to stateless tiers ranked by cost and trust, with a brief and a report.
+    zh: 任务派给按成本和可信度分档的无状态执行者，接单后交报告。
   defaults:
     mechanism:
       en: Stateless tiers, structured handoff, role limits.
@@ -230,8 +230,8 @@ advisors:
   layer: agent
   seam: delegation
   line:
-    en: The read-only discuss:steady and discuss:divergent partners and a tool-free mentor give the main agent a second opinion that its own wording does not shape.
-    zh: 主代理可咨询只读的 discuss:steady、discuss:divergent 两位讨论伙伴和无工具的导师，得到不受自身措辞左右的第二意见。
+    en: Read-only discussion partners and a tool-free mentor give second opinions.
+    zh: 只读的讨论伙伴和无工具的导师提供第二意见。
 
 subagent-usage-tool:
   name: subagent_usage
@@ -239,8 +239,8 @@ subagent-usage-tool:
   layer: agent
   seam: delegation
   line:
-    en: It estimates, per agent, how many more dispatches fit before that model's quota runs out, so the dispatch decision sees the budget.
-    zh: 它估算每个代理在其模型额度用完前还能派几次，派发决策因此看得见预算。
+    en: It estimates how many more dispatches each model's quota still covers.
+    zh: 估算每个模型的剩余额度还够派发几次。
 
 user-prompt-inject:
   name: user-prompt-inject
@@ -248,8 +248,8 @@ user-prompt-inject:
   layer: silent
   seam: delegation
   line:
-    en: Every time an advisor wakes it receives your own messages and answers from the root session, so it judges what you said rather than the main agent's paraphrase.
-    zh: 顾问每次被唤醒都会收到根会话里你本人的消息和作答，它对照的是你的原话，不是主代理的转述。
+    en: On every call, advisors receive your own messages from the root session.
+    zh: 顾问每次调用模型都会收到根会话里你本人的消息。
   defaults:
     mechanism:
       en: Collecting the user's words from the root session and rendering them for chosen agents.
@@ -265,8 +265,8 @@ isolation-nudge:
   layer: silent
   seam: delegation
   line:
-    en: A dispatch that would share a checkout between writers is sent back until isolation is stated explicitly, so two writers never end up in one checkout by accident.
-    zh: 多个改文件的子代理要共用一个工作区时，派发被退回，直到明确写出是否隔离，两个写作者不会误挤进同一处。
+    en: Writers sharing one checkout without stated isolation get their dispatch sent back.
+    zh: 多个写手共用工作区又没写明是否隔离时，派发被退回。
 
 task-split-check:
   name: task-split-check
@@ -274,8 +274,8 @@ task-split-check:
   layer: silent
   seam: delegation
   line:
-    en: On every dispatch a judge reads the brief and sends it back if it bundles unrelated topics or caps the report length, keeping one worker to one topic and the report as long as the evidence needs.
-    zh: 每次派发都有判定者读派工单，混入无关主题或限制汇报长度的退回，一个执行者只做一个主题，汇报长短由证据决定。
+    en: A brief that bundles unrelated topics or caps the report length is sent back.
+    zh: 派工单混了多个主题或限制汇报长度时会被退回。
   defaults:
     mechanism:
       en: Two judged checks on every dispatch.
@@ -291,8 +291,8 @@ terminals-hud:
   layer: human
   seam: execution
   line:
-    en: Every long-lived session gets a Tern pane showing its live screen, and your keystrokes go to the same process the agent drives, so you can watch or step in.
-    zh: 每个长驻会话在 Tern 里都有一个显示实时画面的面板，你敲的键送进代理驱动的同一个进程，可以旁观也可以直接上手。
+    en: Each long-running terminal has a Tern pane you can watch or type into.
+    zh: 每个长驻终端在 Tern 里都有面板，可以旁观，也可以输入。
 
 watchdog-cmd:
   name: /watchdog
@@ -300,8 +300,8 @@ watchdog-cmd:
   layer: human
   seam: execution
   line:
-    en: The command lists, toggles and drafts the watchdog specs on this machine, so you decide which sessions get a periodic second look.
-    zh: 这个命令列出、开关、起草本机的看门狗配置，由你决定哪些会话定期被复查。
+    en: It lists, toggles and drafts the watchdog specs on this machine.
+    zh: 列出、开关和起草本机的看门狗配置。
 
 exec-tools:
   name: exec_command · write_stdin · monitor
@@ -309,8 +309,8 @@ exec-tools:
   layer: agent
   seam: execution
   line:
-    en: Servers, REPLs and TUIs run in PTY sessions that outlive the turn, where the agent sends input, reads the screen and waits for a match, so they never block the turn.
-    zh: 服务器、REPL 和 TUI 运行在跨回合存活的 PTY 会话里，代理可以输入、读屏、等待匹配的输出，回合不会被卡住。
+    en: Servers and REPLs run in PTY sessions that outlive the turn.
+    zh: 服务器和 REPL 运行在跨回合存活的 PTY 会话里。
 
 delete-tool:
   name: delete
@@ -318,8 +318,8 @@ delete-tool:
   layer: agent
   seam: execution
   line:
-    en: A deletion takes literal paths only, checks them all first and moves them to the trash unless you asked for permanent removal, so what it removes is named exactly and can be undone.
-    zh: 删除只接受字面路径，先全部校验，默认移进回收站、只有你明确要求才永久删除，删什么写得清楚，也能撤回。
+    en: It takes literal paths and moves them to the trash unless you ask otherwise.
+    zh: 只接受字面路径，默认移进回收站。
 
 wt:
   name: wt · harness_restart
@@ -327,8 +327,8 @@ wt:
   layer: agent
   seam: execution
   line:
-    en: When the agent needs its own worktree or a harness restart, the request queues until the turn is idle, then runs the host's own command and reports back, and the session is never lost.
-    zh: 代理要搬进自己的工作树或重启宿主时，请求先排队，等回合空闲再执行宿主自带的命令并回报结果，会话不丢。
+    en: Worktree moves and harness restarts wait until the turn is idle.
+    zh: 换工作树和重启宿主都等回合空闲时执行。
 
 delete-guard:
   name: delete-guard
@@ -336,8 +336,8 @@ delete-guard:
   layer: silent
   seam: execution
   line:
-    en: Every shell and eval call is read before it runs, and deletions or commands whose names are not written out are refused, so no file disappears before anyone sees it.
-    zh: 每次 shell 和 eval 调用执行前先被读一遍，删除操作和名字没写明的命令会被拒绝，文件不会在没人看见时消失。
+    en: Deletions and commands whose names are not written out are refused before they run.
+    zh: 删除操作和名字没写明的命令在执行前被拒绝。
 
 tool-policy-nag:
   name: tool-policy-nag
@@ -345,8 +345,8 @@ tool-policy-nag:
   layer: silent
   seam: execution
   line:
-    en: Interactive and long-running commands sent to the one-shot shell are refused, and other misuse runs with a reminder attached, so a slide back into shell habits is noticed at the step it happens.
-    zh: 走一次性 shell 的交互式和长驻命令被拒绝，其他误用照常执行、结果末尾附提醒，代理退回 shell 老习惯当场就被发现。
+    en: Interactive commands in the one-shot shell are refused; other misuse gets a reminder.
+    zh: 一次性 shell 里的交互命令被拒绝，其他误用附上提醒。
   defaults:
     mechanism:
       en: A blocking lane before the call, and reminder lanes after it.
@@ -362,8 +362,8 @@ watchdog-agent:
   layer: silent
   seam: execution
   line:
-    en: In a watched session it counts each tool call and each non-empty reply as one action, runs a review after a set number of them, and injects the note back, optionally narrowed to one session target or model.
-    zh: 在受监视的会话里，每次工具调用和每条非空回复各算一步，累计到设定步数就做一次审查，再把结论注入会话；可以只监视某类会话目标或某个模型。
+    en: A watched session is reviewed every set number of actions, and the note goes back in.
+    zh: 受监视的会话每隔设定步数复查一次，结论注入会话。
   defaults:
     mechanism:
       en: Spec discovery, action counting, review and injection.
@@ -379,8 +379,8 @@ thinking-translator:
   layer: human
   seam: delivery
   line:
-    en: As each thinking line completes it is translated on screen, and the translation never enters the transcript, so you follow the model's reasoning in your own language.
-    zh: 每行思考写完就在屏幕上翻译，译文从不进入会话记录，你能用自己的语言跟上模型的推理。
+    en: Thinking lines are translated on screen and kept out of the transcript.
+    zh: 每行思考在屏幕上附译文，译文不写进会话记录。
   defaults:
     mechanism:
       en: Per-line translation and rendering, with model fallback.
@@ -396,8 +396,8 @@ omomp-lang:
   layer: human
   seam: delivery
   line:
-    en: One setting decides the language of everything a person reads; prompts, tool descriptions, tool results and logs are left untranslated, so every plugin speaks the same interface language.
-    zh: 一个设置决定所有面向人的文字语言；提示词、工具说明、结果和日志保持原文，所有插件的界面因此使用同一种语言。
+    en: One setting decides the language of every text a person reads.
+    zh: 一个设置决定所有面向人的文字用哪种语言。
 
 sessions:
   name: omp-sessions
@@ -405,8 +405,8 @@ sessions:
   layer: agent
   seam: delivery
   line:
-    en: Every session on the machine is readable through a URL scheme and queryable in SQL, turning past work into evidence the agent can cite.
-    zh: 本机每个会话都能通过 URL 协议读取、用 SQL 查询，过去的工作成了代理可以引用的证据。
+    en: Every session on the machine can be read as session:// and queried in SQL.
+    zh: 本机每个会话都能用 session:// 读取，用 SQL 查询。
 
 peers:
   name: omp-peers
@@ -414,8 +414,8 @@ peers:
   layer: agent
   seam: delivery
   line:
-    en: It lists the live sessions on this machine, asks one a side question whose answer never enters its transcript, or posts a message into it, so sessions in separate omp processes can work together.
-    zh: 它列出本机在线的会话，可以向其中一个旁路提问（回答不写进对方记录），也可以直接发消息进去，让分属不同 omp 进程的会话互相协作。
+    en: It finds live sessions in other omp processes, asks side questions and sends messages.
+    zh: 发现其他 omp 进程里的在线会话，可以旁路提问或发消息。
 
 task-completion-judge:
   name: task-completion-judge
@@ -423,8 +423,8 @@ task-completion-judge:
   layer: silent
   seam: delivery
   line:
-    en: On every handoff it reads the assignment, the recent tool calls and the report, and sends back anything unfinished, unverified or holding open todo items, so a subagent cannot declare success it has not shown.
-    zh: 每次交付时它对照派工单、最近的工具调用和报告，把没做完、没验证或留着待办的退回，子代理没法宣称未加证明的成功。
+    en: A handoff that is unfinished or unverified goes back to the subagent.
+    zh: 没做完或没验证的交付会退回给子代理。
   defaults:
     mechanism:
       en: A judged verdict on every handoff, plus a todo check.
@@ -440,8 +440,8 @@ turn-judge:
   layer: silent
   seam: delivery
   line:
-    en: After a turn ends a judge answers yes-or-no questions about the reply, and a matching rule sends the agent back to work, so promising to run the tests next is not a place to stop.
-    zh: 回合结束后判定者就这次回复回答几个是非题，命中规则就让代理回去接着干，“接下来跑测试”不再是停下的地方。
+    en: A turn that announces the next step and stops is sent back to work.
+    zh: 只宣布下一步就停下的回合，会被送回去接着做。
   defaults:
     mechanism:
       en: Session filters, yes-or-no questions, and a prompt to send when a rule holds.
@@ -457,8 +457,8 @@ lang-nag:
   layer: silent
   seam: delivery
   line:
-    en: It checks the last reply's language, and when it is wrong puts a correction in front of your next message, so replies stay in the language you work in.
-    zh: 它检查上一条回复的语言，不对就在你下一条消息前加纠正，回复始终用你工作时用的语言。
+    en: A reply in the wrong language gets a correction before your next message.
+    zh: 回复用错语言时，在你下一条消息前加上纠正。
   defaults:
     mechanism:
       en: A language judgment and a correction on the next turn.
