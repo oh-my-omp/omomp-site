@@ -1,8 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import RepairArt, { type RailStop } from "./RepairArt.astro";
-import { home } from "../copy/home";
-import { repairArt, repairLines, type RepairCard } from "../copy/preview";
+import { repairArt, repairLines, repairListLines, type RepairCard, type RepairListed } from "../copy/preview";
 import { repos, repoUrl } from "../data/repos";
 import { emphasis, href, t, type Lang } from "../i18n";
 
@@ -12,26 +11,24 @@ interface Props {
 const { lang } = Astro.props;
 
 /**
- * Row by row: the runtime with the two plugins a person meets first, the other plugins and the first product, then
- * the other two products and the tool. omp-remote-build takes two columns, so the last row is full.
+ * Two rows of four: the runtime (two columns) with the two plugins a person meets first, then sessions and the three
+ * products. The other plugins follow as one hairline list, as linear.app lists its smaller features.
  */
 const order: readonly RepairCard[] = [
   "omp-config",
   "omp-ask-more",
   "omp-todo-more",
-  "omp-unified-exec",
   "omp-sessions",
-  "omp-peers",
   "omp-playbooks",
   "omp-dispatch",
   "omp-remote-build",
-  "omp-codex-image-gen",
 ];
-const cards = order.map((name) => {
+const listed: readonly RepairListed[] = ["omp-unified-exec", "omp-peers", "omp-codex-image-gen"];
+const target = (name: string) => {
   const repo = repos.find((r) => r.name === name);
-  if (!repo) throw new Error(`card \`${name}\` has no entry in src/data/repos.ts`);
-  return { name, kind: repo.kind, target: repo.page ? href(repo.page, lang) : repoUrl(name) };
-});
+  if (!repo) throw new Error(`\`${name}\` has no entry in src/data/repos.ts`);
+  return repo.page ? href(repo.page, lang) : repoUrl(name);
+};
 
 const seams = (await getCollection("seams")).sort((a, b) => a.data.order - b.data.order);
 /** The three things omp-config does to a call, each at one seam where it happens; later seams stand their tag higher. */
@@ -45,18 +42,30 @@ const rail: readonly RailStop[] = seams.map((s) => ({ label: s.data.short[lang],
 
 <div class="bento">
   {
-    cards.map((c) => (
-      <a class="card" data-repo={c.name} href={c.target}>
+    order.map((name) => (
+      <a class="card" data-repo={name} href={target(name)}>
         <div class="ct">
-          <span class="kind">{t(home.blocks.kinds[c.kind], lang)}</span>
-          <code class="name">{c.name}</code>
-          <p set:html={emphasis(t(repairLines[c.name], lang))} />
+          <code class="name">{name}</code>
+          <p set:html={emphasis(t(repairLines[name], lang))} />
         </div>
-        <RepairArt name={c.name} lang={lang} rail={rail} />
+        <RepairArt name={name} lang={lang} rail={rail} />
       </a>
     ))
   }
 </div>
+<ul class="listed">
+  {
+    listed.map((name) => (
+      <li>
+        <a href={target(name)}>
+          <code>{name}</code>
+          <span>{t(repairListLines[name], lang)}</span>
+          <i aria-hidden="true">+</i>
+        </a>
+      </li>
+    ))
+  }
+</ul>
 
 <style>
   /* Cards as on supabase.com: a name, one line, and under them one drawing that runs off the card's edge. */
@@ -82,8 +91,7 @@ const rail: readonly RailStop[] = seams.map((s) => ({ label: s.data.short[lang],
   .card:hover {
     border-color: var(--line-strong);
   }
-  .card[data-repo="omp-config"],
-  .card[data-repo="omp-remote-build"] {
+  .card[data-repo="omp-config"] {
     grid-column: span 2;
   }
   .ct {
@@ -92,13 +100,7 @@ const rail: readonly RailStop[] = seams.map((s) => ({ label: s.data.short[lang],
     display: grid;
     padding: 24px 24px 0;
   }
-  .kind {
-    font-size: 12px;
-    line-height: 16px;
-    color: var(--muted);
-  }
   .name {
-    margin-top: 6px;
     padding: 0;
     border: 0;
     background: none;
@@ -107,22 +109,60 @@ const rail: readonly RailStop[] = seams.map((s) => ({ label: s.data.short[lang],
     color: var(--text);
     white-space: nowrap;
   }
+  /* The line wraps where the measure ends, never at a fixed point. */
   .ct p {
     margin-top: 10px;
     font-size: 14.5px;
     line-height: 1.55;
     color: var(--muted);
-    max-width: 25em;
-    text-wrap: balance;
+    max-width: 30ch;
+    text-wrap: pretty;
+  }
+  .ct p:lang(zh) {
+    max-width: 19em;
   }
   .ct p :global(b) {
     font-weight: inherit;
     color: var(--text);
   }
-  /* Chinese breaks only at punctuation and spaces, so no clause is cut in the middle of a word. */
-  .ct p:lang(zh) {
-    word-break: keep-all;
-    text-wrap: wrap;
+  /* The smaller plugins: one row each between hairlines, name, one line and a plus, as linear.app's feature list. */
+  .listed {
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--line);
+  }
+  .listed li {
+    border-bottom: 1px solid var(--line);
+  }
+  .listed a {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 24px;
+    padding: 16px 4px;
+    color: inherit;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .listed a:hover {
+    background: var(--bg-hover);
+  }
+  .listed code {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: 14px;
+    color: var(--text);
+  }
+  .listed span {
+    font-size: 14.5px;
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+  .listed i {
+    font-style: normal;
+    color: var(--muted);
   }
 
   @media (max-width: 1080px) {
@@ -135,8 +175,7 @@ const rail: readonly RailStop[] = seams.map((s) => ({ label: s.data.short[lang],
       grid-template-columns: minmax(0, 1fr);
     }
     .card,
-    .card[data-repo="omp-config"],
-    .card[data-repo="omp-remote-build"] {
+    .card[data-repo="omp-config"] {
       grid-column: auto;
       height: auto;
       padding-bottom: 16px;
@@ -144,11 +183,19 @@ const rail: readonly RailStop[] = seams.map((s) => ({ label: s.data.short[lang],
     .ct {
       padding: 16px 20px 0;
     }
-    .name {
-      margin-top: 4px;
-    }
     .ct p {
       margin-top: 6px;
+    }
+    .listed a {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 4px 16px;
+    }
+    .listed span {
+      grid-column: 1;
+    }
+    .listed i {
+      grid-row: 1;
+      grid-column: 2;
     }
   }
 </style>

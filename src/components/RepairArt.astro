@@ -64,22 +64,6 @@ const a = repairArt;
     )
   }
   {
-    name === "omp-unified-exec" && (
-      <div class="term">
-        <div class="row">
-          <em>{t(a.exec.agent, lang)}</em>
-          <code>ssh build-01</code>
-        </div>
-        <code class="out">{t(a.exec.prompt, lang)}</code>
-        <div class="row">
-          <em class="you">{t(a.exec.you, lang)}</em>
-          <code>••••••••</code>
-          <i class="caret" />
-        </div>
-      </div>
-    )
-  }
-  {
     name === "omp-sessions" && (
       <div class="sess">
         <code class="url">
@@ -99,17 +83,6 @@ const a = repairArt;
             </li>
           ))}
         </ul>
-      </div>
-    )
-  }
-  {
-    name === "omp-peers" && (
-      <div class="peers">
-        <span class="tile a">&gt;_</span>
-        <code class="pid">pid 59307</code>
-        <i class="wire" />
-        <code class="ask">peer_ask</code>
-        <span class="tile b">&gt;_</span>
       </div>
     )
   }
@@ -159,23 +132,6 @@ const a = repairArt;
           <code>$ pnpm test</code>
           <code class="ok">✓ 48 passed</code>
         </div>
-      </div>
-    )
-  }
-  {
-    name === "omp-codex-image-gen" && (
-      <div class="img">
-        <code>token-bucket.png</code>
-        <ul>
-          {[0, 1, 2, 3, 4, 5].map((i) => (
-            <li class:list={{ lit: i === 0 }}>
-              <svg width="40" height="28" viewBox="0 0 40 28" fill="none">
-                <circle cx="30" cy="7" r="4" />
-                <path d="M1 27L13 12L21 21L27 15L39 27" />
-              </svg>
-            </li>
-          ))}
-        </ul>
       </div>
     )
   }
@@ -277,20 +233,21 @@ const a = repairArt;
     white-space: nowrap;
   }
 
-  /* omp-ask-more: the options of one question, each with its tradeoff; the stack is cut by the card's foot. */
+  /* omp-ask-more: the options of one question, each with its tradeoff; the stack runs off the card's right edge and
+     ends 18px above its foot, so no option is cut through its text. */
   .opts {
     position: absolute;
     left: 24px;
-    top: 8px;
+    top: 4px;
     width: 130%;
     display: grid;
-    gap: 14px;
+    gap: 12px;
   }
   .opts li {
     display: flex;
     align-items: center;
     gap: 12px;
-    height: 72px;
+    height: 62px;
     padding: 0 18px;
     border: 1px solid var(--line);
     border-radius: 12px;
@@ -374,49 +331,6 @@ const a = repairArt;
     font-size: 12px;
   }
 
-  /* omp-unified-exec: one terminal; the agent starts ssh and you type the password into the same process. */
-  .term {
-    position: absolute;
-    left: 24px;
-    top: 6px;
-    width: 330px;
-    height: 260px;
-    display: grid;
-    align-content: start;
-    gap: 14px;
-    padding: 20px 18px;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    background: var(--bg-raised);
-  }
-  .term .row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .term .out {
-    margin-left: 56px;
-  }
-  .term em {
-    min-width: 46px;
-    padding: 3px 8px;
-    border: 1px solid var(--line-strong);
-    border-radius: 999px;
-    font-style: normal;
-    font-size: 12px;
-    line-height: 16px;
-    text-align: center;
-  }
-  .term em.you {
-    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-    color: var(--accent);
-  }
-  .term .caret {
-    width: 7px;
-    height: 15px;
-    background: var(--muted);
-  }
-
   /* omp-sessions: a session's address, and the kinds of event on its timeline. */
   .sess {
     position: absolute;
@@ -451,59 +365,6 @@ const a = repairArt;
     width: 40px;
   }
 
-  /* omp-peers: two sessions in two processes, and the question passed between them. */
-  .peers .tile {
-    position: absolute;
-    display: grid;
-    place-items: center;
-    border: 1px solid var(--line-strong);
-    border-radius: 16px;
-    background: var(--bg-raised);
-    font-family: var(--mono);
-  }
-  .peers .tile.a {
-    left: 24px;
-    top: 12px;
-    width: 68px;
-    height: 68px;
-    font-size: 17px;
-  }
-  .peers .tile.b {
-    left: 176px;
-    top: 112px;
-    width: 112px;
-    height: 112px;
-    border-radius: 22px;
-    font-size: 26px;
-  }
-  .peers .pid {
-    position: absolute;
-    left: 24px;
-    top: 92px;
-    font-size: 12px;
-  }
-  .peers .wire {
-    position: absolute;
-    left: 92px;
-    top: 46px;
-    width: 140px;
-    height: 66px;
-    border-top: 1px dashed var(--line-strong);
-    border-right: 1px dashed var(--line-strong);
-    border-top-right-radius: 18px;
-  }
-  .peers .ask {
-    position: absolute;
-    left: 112px;
-    top: 33px;
-    padding: 4px 11px;
-    border: 1px solid var(--line-strong);
-    border-radius: 999px;
-    background: var(--card);
-    font-size: 12px;
-    line-height: 16px;
-  }
-
   /* omp-playbooks: the YAML file, one block done, and the button that launches the next. */
   .sheet {
     position: absolute;
@@ -527,9 +388,10 @@ const a = repairArt;
   .sheet .next {
     background: rgb(255 255 255 / 0.045);
   }
+  /* The launch button sits right of the YAML text and, on a 1440px screen, about 36px clear of the card's edge. */
   .sheet .launch {
     position: absolute;
-    left: 220px;
+    left: 180px;
     top: 104px;
     width: 46px;
     height: 46px;
@@ -684,41 +546,6 @@ const a = repairArt;
   }
   .rb .ok {
     color: var(--silent);
-  }
-
-  /* omp-codex-image-gen: the images it has made, the latest one ringed. */
-  .img > code {
-    position: absolute;
-    left: 24px;
-    top: 8px;
-    font-size: 12px;
-  }
-  .img ul {
-    position: absolute;
-    left: 24px;
-    top: 36px;
-    display: grid;
-    grid-template-columns: repeat(3, 96px);
-    gap: 12px;
-  }
-  .img li {
-    display: grid;
-    place-items: center;
-    height: 96px;
-    border: 1px solid var(--line-strong);
-    border-radius: 12px;
-    background: var(--bg-raised);
-  }
-  .img li.lit {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 4px var(--accent-soft);
-  }
-  .img svg {
-    stroke: var(--line-strong);
-    stroke-width: 1.5;
-  }
-  .img li.lit svg {
-    stroke: var(--muted);
   }
 
   /* Under the desktop breakpoint a card is its name and its line, as on supabase.com. */

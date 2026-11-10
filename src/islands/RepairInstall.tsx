@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, Index } from "solid-js";
+import { createSignal, For, Index } from "solid-js";
 import type { Lang } from "../i18n";
 import ArtView, { type Art } from "../slices/Art";
 import "../styles/repair-install.css";
@@ -14,31 +14,26 @@ export interface InstallTab {
   /** Install then start, rendered as one block; an empty `text` is a blank line between the two. */
   readonly commands: readonly CommandLine[];
   readonly note: string;
-  /** What this way of installing gives you, one short line each, as HTML from `inlineCode`. */
-  readonly after: readonly string[];
 }
 
 export interface RepairInstallData {
   readonly lang: Lang;
-  /** One line replacing the host diagram: what omomp is and which hosts it mounts on. */
-  readonly intro: string;
-  /** Heading over each tab's `after` list. */
-  readonly afterLabel: string;
+  /** Accessible name of the tab row: the stage heading's first line. */
+  readonly label: string;
   readonly tabs: readonly InstallTab[];
 }
 
 /**
- * The ways of installing omomp as supabase.com's product tabs: one surface under the tab row, the interface you
- * work in drawn edge to edge on the left, and on the right the commands, one note and what you get — no frames
- * inside the surface.
+ * The ways of installing as supabase.com's product tabs: one framed surface under the tab row, a window bar on top,
+ * the interface you work in on the left and the commands with one note on the right. All panels share one grid cell
+ * and only the selected one is visible, so the frame keeps the height of the tallest panel and nothing below it
+ * moves when the tab changes.
  */
 export default function RepairInstall(props: { data: RepairInstallData }) {
   const [current, setCurrent] = createSignal(0);
-  const tab = createMemo(() => props.data.tabs[current()]!);
   return (
     <div class="ri">
-      <p class="ri-intro">{props.data.intro}</p>
-      <div class="ri-tabs" role="tablist" aria-label={props.data.intro}>
+      <div class="ri-tabs" role="tablist" aria-label={props.data.label}>
         <For each={props.data.tabs}>
           {(t, i) => (
             <button
@@ -54,30 +49,43 @@ export default function RepairInstall(props: { data: RepairInstallData }) {
           )}
         </For>
       </div>
-      <div class="ri-surface" role="tabpanel" aria-labelledby={`ri-tab-${tab().id}`}>
-        <div class="ri-view">
-          <For each={tab().arts}>{(art) => <ArtView lang={props.data.lang} art={art} />}</For>
+      <div class="ri-frame">
+        <div class="ri-bar" aria-hidden="true">
+          <i />
+          <i />
+          <i />
         </div>
-        <div class="ri-how">
-          <pre class="ri-cmds">
-            <Index each={tab().commands}>
-              {(line) => (
-                <span class={`ri-line i-${line().in ?? "sh"}`}>
-                  <span class="ri-ps" aria-hidden="true">
-                    {line().text === "" ? " " : line().in === "omp" ? ">" : "$"}
-                  </span>
-                  <span>{line().text + "\n"}</span>
-                </span>
-              )}
-            </Index>
-          </pre>
-          <p class="ri-note">{tab().note}</p>
-          <div class="ri-after">
-            <span class="ri-cap">{props.data.afterLabel}</span>
-            <ul>
-              <For each={tab().after}>{(item) => <li innerHTML={item} />}</For>
-            </ul>
-          </div>
+        <div class="ri-stack">
+          <For each={props.data.tabs}>
+            {(tab, i) => (
+              <div
+                class="ri-surface"
+                role="tabpanel"
+                aria-labelledby={`ri-tab-${tab.id}`}
+                aria-hidden={current() !== i()}
+                classList={{ on: current() === i() }}
+              >
+                <div class="ri-view">
+                  <For each={tab.arts}>{(art) => <ArtView lang={props.data.lang} art={art} />}</For>
+                </div>
+                <div class="ri-how">
+                  <pre class="ri-cmds">
+                    <Index each={tab.commands}>
+                      {(line) => (
+                        <span class={`ri-line i-${line().in ?? "sh"}`}>
+                          <span class="ri-ps" aria-hidden="true">
+                            {line().text === "" ? " " : line().in === "omp" ? ">" : "$"}
+                          </span>
+                          <span>{line().text + "\n"}</span>
+                        </span>
+                      )}
+                    </Index>
+                  </pre>
+                  <p class="ri-note">{tab.note}</p>
+                </div>
+              </div>
+            )}
+          </For>
         </div>
       </div>
     </div>

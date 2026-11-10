@@ -2,7 +2,7 @@
 import { preview } from "../copy/preview";
 import { href, t, wholeNames, type Lang, type Text } from "../i18n";
 
-/** A button in the first screen; `to` is a site route, or a `#fragment` on the same page. */
+/** A button in the first screen; `to` is a site route, a `#fragment` on the same page, or an `https://` URL. */
 export interface HeroAction {
   readonly label: Text;
   readonly to: string;
@@ -20,7 +20,7 @@ const {
     { label: preview.hero.secondary, to: "/lifeline/" },
   ],
 } = Astro.props;
-const target = (to: string) => (to.startsWith("#") ? to : href(to, lang));
+const target = (to: string) => (to.startsWith("#") || to.startsWith("https://") ? to : href(to, lang));
 ---
 
 <section class="hero wrap">

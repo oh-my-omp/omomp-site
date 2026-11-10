@@ -22,90 +22,124 @@ export const preview = {
     primary: { en: "See the demo", zh: "查看演示" },
     secondary: { en: "Walk the lifeline", zh: "浏览生命线" },
   },
-  /** One plain sentence after the card grid, leading into the install stage. */
+  /** One sentence after the card grid, leading into the install stage; `**…**` is set bright, the rest grey. */
   bridge: {
-    en: "Use one plugin or the whole set: every plugin runs on stock omp, omp-config adds the shared checks, and Tern draws the panels.",
-    zh: "单装一个插件，或整套接入：每个插件都能在原生 omp 上单独使用，omp-config 加上共用的检查，Tern 负责绘制面板。",
+    en: "**Use one plugin or the whole set.** Each runs on stock omp; omp-config adds the shared checks.",
+    zh: "**可以只装一个插件，也可以整套接入。**插件都能直接装在原版 omp 上，omp-config 补上共用的检查。",
   },
 } as const satisfies {
   hero: { title: readonly [Text, Text]; lede: readonly [Text, Text]; primary: Text; secondary: Text };
   bridge: Text;
 };
 
-/** The install stage under the bridge: how omomp mounts, then one tab per way of installing. */
+/** The repaired page's own buttons in the first screen. */
+export const repairHero = {
+  primary: { en: "Install", zh: "安装" },
+  secondary: { en: "GitHub", zh: "GitHub" },
+} as const;
+
+/** The install stage under the bridge: a two-tone heading, then one tab per way of installing. */
 export const installStage = {
-  /** What the dropped host diagram stated, in one line. */
-  intro: {
-    en: "omomp is omp-config, plugins and products mounted on two hosts: the Oh My Pi (omp) agent and the Tern terminal.",
-    zh: "omomp 是装在两个宿主上的 omp-config、插件和产品：Oh My Pi（omp）代理和 Tern 终端。",
-  },
+  /** Two lines; the second is set grey. */
+  title: [
+    { en: "Start with one plugin", zh: "先装一个插件，" },
+    { en: "add omp-config and Tern when you want them", zh: "需要时再接入 omp-config 和 Tern" },
+  ],
   /** Comment on `omp-light` in the second tab's commands; commands themselves are not localized. */
   lightComment: {
     en: "light mode: skips the governance extensions",
     zh: "轻量模式：跳过治理扩展",
   },
-  /** The stage's tab labels; commands, notes and the 'what you get' items come from `home.hosts.tabs`. */
+  /** The stage's tab labels, short enough to fit one row on a phone; commands and notes come from `home.hosts.tabs`. */
   tabs: {
-    plugin: { en: "One plugin", zh: "单装插件" },
-    config: { en: "The whole set, with omp-config", zh: "整套接入 omp-config" },
-    tern: { en: "Panels in Tern", zh: "在 Tern 里显示面板" },
+    plugin: { en: "One plugin", zh: "单个插件" },
+    config: { en: "Full set", zh: "整套" },
+    tern: { en: "Tern panels", zh: "Tern 面板" },
   },
 } as const;
 
-/** Repository names that have a card on the repaired home page. */
+/** The four rules on the repaired page: its own heading, and the one summary it words differently from the rule page. */
+export const repairFigs = {
+  title: { en: "Four rules every component follows", zh: "每个组件都遵守的四条规则" },
+  lede: {
+    en: "They set what a component may change and which parts you can replace.",
+    zh: "它们规定组件能改什么、哪些部分可以换成你的。",
+  },
+  summary: {
+    roles: {
+      en: "Workers hold no state; advisors see your own prompts, not a summary.",
+      zh: "执行者不留状态；顾问直接看到你的原话，不是转述。",
+    },
+  } as Readonly<Record<string, Text>>,
+} as const;
+
+/** The page's close, as supabase.com ends on one action: install one plugin. */
+export const repairClose = {
+  title: { en: "Try it on one plugin", zh: "先拿一个插件试试" },
+  command: "omp install https://github.com/oh-my-omp/omp-sessions",
+  copy: { en: "Copy", zh: "复制" },
+  copied: { en: "Copied", zh: "已复制" },
+  all: { en: "All plugins", zh: "全部插件" },
+} as const;
+
+/** Repository names that have a card on the repaired home page: two rows of four, omp-config taking two columns. */
 export type RepairCard =
   | "omp-config"
   | "omp-ask-more"
   | "omp-todo-more"
-  | "omp-unified-exec"
   | "omp-sessions"
-  | "omp-peers"
   | "omp-playbooks"
   | "omp-dispatch"
-  | "omp-remote-build"
-  | "omp-codex-image-gen";
+  | "omp-remote-build";
 
-/** One line per card; `**…**` marks the few words that carry it. */
+/** Repository names listed in one hairline row under the cards, name and one line each. */
+export type RepairListed = "omp-unified-exec" | "omp-peers" | "omp-codex-image-gen";
+
+/** One line per card, twelve English words at most; `**…**` marks the few words that carry it. */
 export const repairLines: Readonly<Record<RepairCard, Text>> = {
   "omp-config": {
-    en: "At every seam of a task it **appends to the prompt, blocks a call, judges the delivery**.",
-    zh: "在任务的每道接缝上**追加提示、拦下操作、裁决交付**。",
+    en: "**Adds rules to the prompt, blocks unsafe calls**, checks results before stopping.",
+    zh: "往提示里补规则，**拦下危险调用**，代理停下前再检查结果。",
   },
   "omp-ask-more": {
-    en: "When the agent needs your call, **the question opens full-page**, with the tradeoff written on each option.",
+    en: "**Decisions open full-page**, with the tradeoff written on each option.",
     zh: "代理要你拍板时，**问题整页打开**，每个选项写明取舍。",
   },
   "omp-todo-more": {
-    en: "The plan states goal, phases and estimates; **each finished item gets its own commit**.",
-    zh: "计划写成目标、阶段和估时，**做完一项提交一次**。",
-  },
-  "omp-unified-exec": {
-    en: "Long commands run in a terminal that **you and the agent both type into**.",
-    zh: "长命令跑在终端里，**你和代理都能输入**。",
+    en: "Goal, phases and estimates; **each finished item is committed**.",
+    zh: "目标、阶段和估时写清楚，**做完一项提交一次**。",
   },
   "omp-sessions": {
-    en: "**Any past session opens by URL**, and SQL queries run across all of them.",
-    zh: "**按 URL 打开任意历史会话**，\n或用 SQL 跨会话查询。",
-  },
-  "omp-peers": {
-    en: "Find a session in another omp process and **ask it a side question**.",
-    zh: "找到其他 omp 进程里的会话，**向它旁路提问**。",
+    en: "**Open any past session by URL**, or query them all in SQL.",
+    zh: "**按 URL 打开任意历史会话**，或用 SQL 跨会话查询。",
   },
   "omp-playbooks": {
-    en: "You and the agent write the design in one YAML file, then **launch it block by block**.",
-    zh: "和代理在一个 YAML 里写设计，再**逐块启动执行**。",
+    en: "Design in one YAML file, then **launch it block by block**.",
+    zh: "在一个 YAML 里写设计，再**逐块启动执行**。",
   },
   "omp-dispatch": {
-    en: "Hand over an issue tree: **a fresh session delivers each issue, and another one judges it**.",
-    zh: "交出一棵 issue 树：\n**每个 issue 由新会话交付，再由另一个新会话验收**。",
+    en: "Hand over an issue tree; **fresh sessions deliver and judge each issue**.",
+    zh: "交出一棵 issue 树，**每个 issue 由新会话交付、再由新会话验收**。",
   },
   "omp-remote-build": {
-    en: "Edit code on your machine; **build and test it in a remote container**.",
+    en: "Edit locally; **build and test in a remote container**.",
     zh: "在本机改代码，**在远程容器里构建和测试**。",
   },
+};
+
+/** One line per listed plugin. */
+export const repairListLines: Readonly<Record<RepairListed, Text>> = {
+  "omp-unified-exec": {
+    en: "Long commands run in a terminal you and the agent both type into.",
+    zh: "长命令跑在终端里，你和代理都能输入。",
+  },
+  "omp-peers": {
+    en: "Ask a session in another omp process a question without interrupting it.",
+    zh: "找到其他 omp 进程里的会话，向它提问，不打断它手上的对话。",
+  },
   "omp-codex-image-gen": {
-    en: "**Generate and edit images** through the Codex login omp already has.",
-    zh: "复用 omp 已有的 Codex 登录，\n**生成和编辑图片**。",
+    en: "Generate and edit images through the Codex login omp already has.",
+    zh: "复用 omp 已有的 Codex 登录，生成和编辑图片。",
   },
 };
 
@@ -134,11 +168,6 @@ export const repairArt = {
       { en: "search route", zh: "search 路由" },
       { en: "webhooks route", zh: "webhooks 路由" },
     ],
-  },
-  exec: {
-    you: { en: "you", zh: "你" },
-    agent: { en: "agent", zh: "代理" },
-    prompt: { en: "build-01 password:", zh: "build-01 密码：" },
   },
   playbook: {
     titles: [

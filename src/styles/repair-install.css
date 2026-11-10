@@ -1,13 +1,8 @@
-/* Install stage on the repaired home page (src/islands/RepairInstall.tsx): one surface under the tab row —
-   the interface you work in on the left, the commands and what you get on the right, split by one hairline. */
+/* Install stage on the repaired home page (src/islands/RepairInstall.tsx): one framed surface under the tab row,
+   a window bar on top, the interface on the left and the commands on the right, split by one hairline. */
 .ri {
   display: grid;
   gap: 18px;
-}
-.ri-intro {
-  font-size: 15px;
-  color: var(--muted);
-  max-width: 62em;
 }
 .ri-tabs {
   justify-self: start;
@@ -40,33 +35,53 @@
   background: var(--text);
 }
 
-/* The single surface: two panes on the line colour, one 1px hairline between them. */
+/* The frame: a 28px window bar, then the panels stacked in one cell so the frame is as tall as the tallest. */
+.ri-frame {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--line);
+  overflow: hidden;
+}
+.ri-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-raised);
+}
+.ri-bar i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+.ri-stack {
+  display: grid;
+}
 .ri-surface {
+  grid-area: 1 / 1;
   display: grid;
   grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
   gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  overflow: hidden;
 }
-.ri-view,
-.ri-how {
-  background: var(--bg-raised);
+.ri-surface:not(.on) {
+  visibility: hidden;
 }
 .ri-view {
   display: grid;
-  align-content: center;
+  align-content: start;
   min-width: 0;
-  min-height: 420px;
-  padding: clamp(24px, 3vw, 44px);
+  padding: 48px clamp(24px, 3vw, 44px);
+  background: var(--bg-raised);
 }
 .ri-how {
   display: grid;
-  align-content: center;
+  align-content: start;
   gap: 20px;
   min-width: 0;
-  padding: clamp(24px, 3vw, 44px);
+  padding: 48px clamp(24px, 3vw, 44px);
   background: var(--bg);
 }
 /* The slices are authored around 12px; on a wide pane they run about a sixth larger. */
@@ -103,51 +118,29 @@
   color: var(--muted);
   font-size: 15px;
   line-height: 1.6;
-}
-.ri-after {
-  display: grid;
-  gap: 10px;
-  padding-top: 18px;
-  border-top: 1px solid var(--line);
-}
-.ri-cap {
-  font-size: 12px;
-  color: var(--dim);
-}
-.ri-after ul {
-  display: grid;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.ri-after li {
-  position: relative;
-  padding-left: 18px;
-  color: var(--soft);
-  font-size: 14.5px;
-}
-.ri-after li::before {
-  content: "";
-  position: absolute;
-  left: 2px;
-  top: 0.62em;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
+  text-wrap: pretty;
 }
 
-@media (max-width: 680px) {
-  /* Phone: the interface sits above the commands on the same surface. */
+@media (max-width: 640px) {
+  /* Phone: the commands first, then a 280px preview of the interface that fades out at its foot. */
   .ri-surface {
     grid-template-columns: minmax(0, 1fr);
   }
-  .ri-view {
-    min-height: 0;
+  .ri-how {
+    order: -1;
     padding: 20px;
   }
-  .ri-how {
+  .ri-view {
+    position: relative;
+    max-height: 280px;
+    overflow: hidden;
     padding: 20px;
+  }
+  .ri-view::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 72px;
+    background: linear-gradient(transparent, var(--bg-raised));
   }
 }

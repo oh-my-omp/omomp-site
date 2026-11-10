@@ -2,16 +2,16 @@
 import type { Lang } from "../i18n";
 
 /**
- * The four engineering rules redrawn for page B as line drawings (the same ideas as Fig.astro): hairline strokes,
- * one accent colour for what omomp adds, and at most four short labels in the page's own face.
+ * The four engineering rules redrawn for page B as line drawings (the same ideas as Fig.astro), as linear.app draws
+ * its figures: one stroke weight, grey lines, one accent colour for what omomp adds, and no words inside the drawing.
+ * What each drawing shows is its accessible name.
  */
 interface Props {
   fig: "append" | "signals" | "roles" | "policy";
   lang: Lang;
 }
 const { fig, lang } = Astro.props;
-const zh = lang === "zh";
-const L = (en: string, cn: string) => (zh ? cn : en);
+const L = (en: string, cn: string) => (lang === "zh" ? cn : en);
 const described = {
   append: L(
     "Two prompt rows. Rewriting the system prompt hatches the first segment and the cache misses; appending a reminder or a tools delta leaves the prefix unchanged and the cache hits.",
@@ -32,7 +32,7 @@ const described = {
 }[fig];
 ---
 
-<svg class:list={["rfig", { zh }]} viewBox="0 0 360 240" role="img" aria-label={described}>
+<svg class="rfig" viewBox="0 0 360 240" role="img" aria-label={described}>
   {
     fig === "append" && (
       <g>
@@ -44,7 +44,6 @@ const described = {
         <rect class="b" x="186" y="55" width="40" height="30" rx="3" />
         <rect class="b" x="230" y="55" width="40" height="30" rx="3" />
         <path class="miss" d="M20 96H270" />
-        <text class="t" x="20" y="114">{L("cache miss", "缓存失效")}</text>
 
         {/* Appended at the end: the prefix is byte-for-byte the same. */}
         <rect class="b" x="20" y="145" width="64" height="30" rx="3" />
@@ -53,10 +52,7 @@ const described = {
         <rect class="b" x="186" y="145" width="40" height="30" rx="3" />
         <rect class="b new" x="234" y="145" width="40" height="30" rx="3" />
         <rect class="b new" x="278" y="145" width="34" height="30" rx="3" />
-        <text class="t c" x="52" y="164">system</text>
-        <text class="t c new-t" x="254" y="164">rem</text>
         <path class="hit" d="M20 186H226" />
-        <text class="t" x="20" y="204">{L("cache hit", "命中缓存")}</text>
       </g>
     )
   }
@@ -67,14 +63,13 @@ const described = {
         <path class="l" d="M40 200C40 214 24 214 24 200V40C24 28 32 25 37 28" />
         <path class="l" d="M31 24 37 29 30 32" />
         {[
-          { y: 48, at: L("tool call", "工具调用"), g: "block" },
-          { y: 92, at: L("tool result", "工具返回"), g: "note" },
-          { y: 136, at: L("subagent yield", "子代理交付"), g: "judge" },
-          { y: 180, at: L("turn end", "回合结束"), g: "judge" },
+          { y: 48, g: "block" },
+          { y: 92, g: "note" },
+          { y: 136, g: "judge" },
+          { y: 180, g: "judge" },
         ].map((p) => (
           <g>
             <circle class="node" cx="40" cy={p.y} r="4" />
-            <text class="t" x="54" y={p.y + 4}>{p.at}</text>
             {/* The answer to the signal, then its path back into the loop. */}
             {p.g === "block" && <rect class="new" x="284" y={p.y - 9} width="18" height="18" rx="4" />}
             {p.g === "note" && (
@@ -97,7 +92,6 @@ const described = {
         <circle class="b" cx="44" cy="46" r="15" />
         <path class="l" d="M59 46H96" />
         <rect class="b" x="96" y="28" width="200" height="36" rx="6" />
-        <text class="t c" x="196" y="50">{L("main agent", "主代理")}</text>
 
         <path class="l" d="M196 64V84" />
         <path class="l" d="M191 79 196 85 201 79" />
@@ -105,18 +99,15 @@ const described = {
         {[96, 117, 138].map((y) => (
           <rect class="b" x="112" y={y} width="168" height="16" rx="3" />
         ))}
-        <text class="t c" x="196" y="182">{L("task workers", "执行者")}</text>
 
         {/* Main agent consults the advisor across the zone's edge. */}
         <path class="l d" d="M296 46H312V206H300" />
         <path class="l" d="M305 201 299 206 305 211" />
         <rect class="b" x="96" y="192" width="200" height="28" rx="6" />
-        <text class="t c" x="196" y="210">{L("advisor", "顾问")}</text>
 
         {/* Your own words reach the advisor directly. */}
         <path class="inject" d="M44 61V206H92" />
         <path class="inject" d="M87 201 93 206 87 211" />
-        <text class="t c new-t" x="60" y="236">user-prompt-inject</text>
       </g>
     )
   }
@@ -124,9 +115,7 @@ const described = {
     fig === "policy" && (
       <g>
         <rect class="b" x="60" y="16" width="240" height="30" rx="6" />
-        <text class="t c" x="180" y="35">{L("mechanism", "机制")}</text>
-        <path class="l d" d="M180 46V60" />
-        <text class="t c" x="180" y="74">{L("policy files", "策略文件")}</text>
+        <path class="l d" d="M180 46V78" />
 
         {[68, 146, 224].map((x, i) => (
           <g>
@@ -140,13 +129,11 @@ const described = {
 
         <path class="l d" d="M102 124C102 140 148 144 170 150M180 124V142M258 124C258 140 212 144 190 150" />
         <path class="new" d="M180 144 190 154 180 164 170 154 Z" />
-        <text class="t" x="196" y="158">{L("three-way merge", "三方合并")}</text>
 
         <path class="l" d="M180 164V172" />
         <rect class="b" x="146" y="172" width="68" height="36" rx="4" />
         <path class="in" d="M155 184H205" />
         <path class="mark" d="M155 196H198" />
-        <text class="t c" x="180" y="228">{L("your copy", "你的副本")}</text>
       </g>
     )
   }
@@ -156,15 +143,16 @@ const described = {
   .rfig {
     display: block;
     width: 100%;
-    max-width: 380px;
     height: auto;
-    margin-inline: auto;
     overflow: visible;
+  }
+  /* One stroke weight for every line in every drawing. */
+  .rfig :is(path, rect, circle) {
+    stroke-width: 1.25;
   }
   .b {
     fill: rgb(255 255 255 / 0.02);
     stroke: var(--line-strong);
-    stroke-width: 1;
   }
   .b.new {
     stroke: var(--accent);
@@ -188,7 +176,6 @@ const described = {
   }
   .hatch {
     stroke: var(--line-strong);
-    stroke-width: 1;
   }
   .miss {
     stroke: var(--line-strong);
@@ -196,7 +183,6 @@ const described = {
   }
   .hit {
     stroke: var(--accent);
-    stroke-width: 1.5;
   }
   .new {
     stroke: var(--accent);
@@ -204,44 +190,23 @@ const described = {
   }
   .back {
     stroke: var(--accent);
-    stroke-width: 1;
     fill: none;
   }
   .inject {
     stroke: var(--accent);
-    stroke-width: 1;
     fill: none;
     stroke-dasharray: 4 3;
   }
   .row {
     stroke: var(--line-strong);
-    stroke-width: 2;
     stroke-linecap: round;
   }
   .in {
     stroke: var(--muted);
-    stroke-width: 2;
     stroke-linecap: round;
   }
   .mark {
     stroke: var(--accent);
-    stroke-width: 2;
     stroke-linecap: round;
-  }
-  /* Words inside a drawing stay small and no brighter than the muted text around it. */
-  .t {
-    font-family: var(--mono);
-    font-size: 12px;
-    fill: var(--muted);
-  }
-  .zh .t {
-    font-family: var(--sans);
-    font-size: 12.5px;
-  }
-  .t.c {
-    text-anchor: middle;
-  }
-  .new-t {
-    fill: var(--accent);
   }
 </style>
