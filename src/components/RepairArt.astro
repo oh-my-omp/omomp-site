@@ -94,10 +94,10 @@ const a = repairArt;
         <code>{"  status: done"}</code>
         <code class="next">- id: b4</code>
         <code class="next">{`  title: ${t(a.playbook.titles[1], lang)}`}</code>
-        <code class="next">{"  status: todo"}</code>
+        <code class="next">{"  status: "}<em>{t(a.playbook.running, lang)}</em></code>
         <code>- id: b5</code>
         <code>{`  title: ${t(a.playbook.titles[2], lang)}`}</code>
-        <i class="launch" />
+        <code>{"  status: todo"}</code>
       </div>
     )
   }
@@ -285,11 +285,12 @@ const a = repairArt;
     color: var(--accent);
   }
 
-  /* omp-todo-more: the plan's items on one line that runs on past the card's foot. */
+  /* omp-todo-more: the plan's items on one line that runs on past the card's foot, which cuts the fourth item's
+     circle in half. */
   .todo {
     position: absolute;
     left: 24px;
-    top: 10px;
+    top: 30px;
     display: grid;
     gap: 24px;
   }
@@ -331,10 +332,11 @@ const a = repairArt;
     font-size: 12px;
   }
 
-  /* omp-sessions: a session's address, and the kinds of event on its timeline. */
+  /* omp-sessions: a session's address, and the kinds of event on its timeline; the card's foot cuts through the
+     fourth row. */
   .sess {
     position: absolute;
-    inset: 10px 0 0 24px;
+    inset: 24px 0 0 24px;
   }
   .sess .url {
     display: inline-flex;
@@ -365,11 +367,11 @@ const a = repairArt;
     width: 40px;
   }
 
-  /* omp-playbooks: the YAML file, one block done, and the button that launches the next. */
+  /* omp-playbooks: the YAML file, b3 done and b4 running in amber; the card's foot cuts through b5's rows. */
   .sheet {
     position: absolute;
     left: 24px;
-    top: 6px;
+    top: 20px;
     width: 300px;
     height: 262px;
     display: grid;
@@ -388,25 +390,9 @@ const a = repairArt;
   .sheet .next {
     background: rgb(255 255 255 / 0.045);
   }
-  /* The launch button sits right of the YAML text and, on a 1440px screen, about 36px clear of the card's edge. */
-  .sheet .launch {
-    position: absolute;
-    left: 180px;
-    top: 104px;
-    width: 46px;
-    height: 46px;
-    border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
-    border-radius: 50%;
-    background: var(--card);
-  }
-  .sheet .launch::after {
-    content: "";
-    position: absolute;
-    left: 18px;
-    top: 15px;
-    border: 7px solid transparent;
-    border-left: 11px solid var(--accent);
-    border-right-width: 0;
+  .sheet em {
+    font-style: normal;
+    color: var(--accent);
   }
 
   /* omp-dispatch: a parent issue, its three child issues, and how far the first has come. */
@@ -444,10 +430,11 @@ const a = repairArt;
     left: 183px;
     top: 82px;
   }
+  /* The card's foot cuts through the third step. */
   .tree .steps {
     position: absolute;
     left: 47px;
-    top: 136px;
+    top: 150px;
     display: grid;
     gap: 22px;
   }

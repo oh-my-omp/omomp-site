@@ -122,9 +122,13 @@
 }
 
 @media (max-width: 640px) {
-  /* Phone: the commands first, then a 280px preview of the interface that fades out at its foot. */
+  /* Phone: the commands first, then a 280px preview of the interface that fades out at its foot. Only the chosen
+     panel takes space, so the frame ends where its preview does. */
   .ri-surface {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .ri-surface:not(.on) {
+    display: none;
   }
   .ri-how {
     order: -1;

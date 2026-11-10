@@ -15,8 +15,8 @@ export const preview = {
         zh: "给 Oh My Pi（omp）编码代理和 Tern 终端用的插件。",
       },
       {
-        en: "omp-config checks every step of a task; three products each run a whole workflow.",
-        zh: "omp-config 检查任务的每一步；三个产品各跑通一条完整工作流。",
+        en: "omp-config checks every step of a task; omp-playbooks, omp-dispatch and omp-remote-build each run a whole workflow.",
+        zh: "omp-config 检查任务的每一步；omp-playbooks、omp-dispatch、omp-remote-build 各自跑完一整条工作流。",
       },
     ],
     primary: { en: "See the demo", zh: "查看演示" },
@@ -25,7 +25,7 @@ export const preview = {
   /** One sentence after the card grid, leading into the install stage; `**…**` is set bright, the rest grey. */
   bridge: {
     en: "**Use one plugin or the whole set.** Each runs on stock omp; omp-config adds the shared checks.",
-    zh: "**可以只装一个插件，也可以整套接入。**插件都能直接装在原版 omp 上，omp-config 补上共用的检查。",
+    zh: "**单装一个也行，整套接入也行。**插件直接装在原版 omp 上，omp-config 补上共用检查。",
   },
 } as const satisfies {
   hero: { title: readonly [Text, Text]; lede: readonly [Text, Text]; primary: Text; secondary: Text };
@@ -42,10 +42,11 @@ export const repairHero = {
 export const installStage = {
   /** Two lines; the second is set grey. */
   title: [
-    { en: "Start with one plugin", zh: "先装一个插件，" },
-    { en: "add omp-config and Tern when you want them", zh: "需要时再接入 omp-config 和 Tern" },
+    { en: "See it in a session", zh: "在会话里看它干活" },
+    { en: "alone, with omp-config, or inside Tern", zh: "单装、整套，或放进 Tern" },
   ],
-  /** Comment on `omp-light` in the second tab's commands; commands themselves are not localized. */
+  /** Comments on `omp` and `omp-light` in the second tab's commands; commands themselves are not localized. */
+  fullComment: { en: "full mode", zh: "完整模式" },
   lightComment: {
     en: "light mode: skips the governance extensions",
     zh: "轻量模式：跳过治理扩展",
@@ -73,9 +74,8 @@ export const repairFigs = {
   } as Readonly<Record<string, Text>>,
 } as const;
 
-/** The page's close, as supabase.com ends on one action: install one plugin. */
+/** The page's close, as supabase.com ends: the hero's first line again, then one action, install one plugin. */
 export const repairClose = {
-  title: { en: "Try it on one plugin", zh: "先拿一个插件试试" },
   command: "omp install https://github.com/oh-my-omp/omp-sessions",
   copy: { en: "Copy", zh: "复制" },
   copied: { en: "Copied", zh: "已复制" },
@@ -154,7 +154,7 @@ export const repairArt = {
     recommended: { en: "Recommended", zh: "推荐" },
     /** Each option with the tradeoff written on it. */
     options: [
-      { label: { en: "Token bucket", zh: "令牌桶" }, tradeoff: { en: "Allows bursts · more state", zh: "允许突发 · 状态更多" } },
+      { label: { en: "Token bucket", zh: "令牌桶" }, tradeoff: { en: "Allows bursts · more state", zh: "允许突发 · 需存更多状态" } },
       { label: { en: "Fixed window", zh: "固定窗口" }, tradeoff: { en: "Simple · spikes at window edges", zh: "简单 · 窗口边界有尖峰" } },
       { label: { en: "Per-instance memory", zh: "各实例内存" }, tradeoff: { en: "No Redis · limits drift apart", zh: "不用 Redis · 各实例限额不一致" } },
     ],
@@ -170,6 +170,7 @@ export const repairArt = {
     ],
   },
   playbook: {
+    running: { en: "running", zh: "执行中" },
     titles: [
       { en: "Rate limiter", zh: "限流器" },
       { en: "429 tests", zh: "429 测试" },
