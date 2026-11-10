@@ -41,7 +41,6 @@ export type ComponentId =
   | "delete-guard"
   | "tool-policy-nag"
   | "watchdog-agent"
-  | "thinking-translator"
   | "omomp-lang"
   | "sessions"
   | "peers"
@@ -444,23 +443,6 @@ const pastTimeline = (lang: Lang) => {
     "…",
   ];
 };
-
-const thinkingPanel = {
-    kind: "thinking",
-    data: {
-      block: 3,
-      thinking: [
-        "All 16 tests pass, including the signed-webhook case.",
-        "One commit per phase, so the middleware can be reverted on its own.",
-        "Report the 429 behaviour with the test names as evidence.",
-      ],
-      translated: [
-        "16 个测试全部通过，包括签名 webhook 那个用例。",
-        "每个阶段一个提交，这样中间件可以单独回滚。",
-        "汇报 429 的行为时，把测试名作为证据列出来。",
-      ],
-    },
-} as const;
 
 export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
   // intent
@@ -1033,10 +1015,6 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
     },
   },
   // delivery
-  "thinking-translator": {
-    en: { kind: "panel", panel: thinkingPanel },
-    zh: { kind: "panel", panel: thinkingPanel },
-  },
   "omomp-lang": {
     en: {
       kind: "code",

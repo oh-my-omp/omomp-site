@@ -188,11 +188,11 @@ delivery:
   sections:
     human:
       title:
-        en: Thinking and interface text in your language
-        zh: 思考与界面用你的语言
+        en: Interface text in your language
+        zh: 界面文字用你的语言
       lede:
-        en: omp-thinking-translator puts a translation under each thinking line and keeps it out of the transcript. omomp-lang sets one language for everything you read.
-        zh: omp-thinking-translator 给每行思考附上译文，译文不写进会话记录。omomp-lang 统一设定面向人的文字语言。
+        en: omomp-lang sets one language for every text a person reads, from notices and labels to dialogs and panels.
+        zh: omomp-lang 统一设定面向人的文字语言，提醒、标签、对话框和面板都用同一种语言。
     agent:
       title:
         en: Past sessions can be read and queried

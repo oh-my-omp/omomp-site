@@ -3,8 +3,7 @@ import type { Lang } from "../i18n";
 /**
  * Interface labels exactly as each plugin renders them, per language.
  * Sources: omp-ask-more src/nodes.ts and src/component.ts; omp-todo-more src/native.ts and src/reminders.ts;
- * omp-unified-exec fork-features/tern-terminal-hud.ts; omp-thinking-translator extensions/thinking-translator.ts;
- * omp-playbooks src/service/ui.ts.
+ * omp-unified-exec fork-features/tern-terminal-hud.ts; omp-playbooks src/service/ui.ts.
  */
 export const labels = {
   en: {
@@ -48,9 +47,6 @@ export const labels = {
       close: "Close",
       keysGo: "Keys go to the terminal",
       footer: (running: number, stored: number) => `${running} running · ${stored} stored`,
-    },
-    thinking: {
-      heading: (block: number, done: number, total: number) => `Thinking translation · Block ${block} · ${done}/${total}`,
     },
     playbooks: {
       subagent: "SUBAGENT",
@@ -106,9 +102,6 @@ export const labels = {
       close: "关闭",
       keysGo: "按键将发送到终端",
       footer: (running: number, stored: number) => `${running} 个运行中 · ${stored} 个已存储`,
-    },
-    thinking: {
-      heading: (block: number, done: number, total: number) => `思考翻译 · 块 ${block} · ${done}/${total}`,
     },
     playbooks: {
       subagent: "子代理",

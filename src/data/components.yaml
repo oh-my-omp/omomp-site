@@ -373,23 +373,6 @@ watchdog-agent:
       zh: 默认留空；写下 WATCHDOG 规则，看门狗才启用。
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#watchdog-agent
 
-thinking-translator:
-  name: omp-thinking-translator
-  repo: https://github.com/oh-my-omp/omp-thinking-translator
-  layer: human
-  seam: delivery
-  line:
-    en: Thinking lines are translated on screen and kept out of the transcript.
-    zh: 每行思考在屏幕上附译文，译文不写进会话记录。
-  defaults:
-    mechanism:
-      en: Per-line translation and rendering, with model fallback.
-      zh: 逐行翻译与渲染，带模型回退。
-    policy:
-      en: Target language and model chain. None shipped; you create them on first run.
-      zh: 目标语言和模型链。默认留空，首次运行时由你创建。
-    customize: https://github.com/oh-my-omp/omp-thinking-translator#readme
-
 omomp-lang:
   name: omomp-lang
   repo: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#omomp-lang

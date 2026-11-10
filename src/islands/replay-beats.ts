@@ -72,7 +72,6 @@ function lineLength(line: TLine): number {
   switch (line.kind) {
     case "user":
     case "say":
-    case "think":
       return line.text.length;
     case "call":
       return line.args.length + (line.result?.length ?? 0);

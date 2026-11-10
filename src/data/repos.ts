@@ -124,16 +124,6 @@ export const repos: readonly Repo[] = [
     },
   },
   {
-    name: "omp-thinking-translator",
-    kind: "plugin",
-    seams: ["delivery"],
-    art: { from: "component", id: "thinking-translator" },
-    line: {
-      en: "Each thinking line is translated under the original; the model never sees it.",
-      zh: "思考逐行附上译文，译文只给人看，不发给模型。",
-    },
-  },
-  {
     name: "omp-codex-image-gen",
     kind: "tool",
     seams: [],

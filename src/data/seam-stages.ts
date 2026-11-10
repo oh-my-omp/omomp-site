@@ -387,6 +387,84 @@ const peerList = (lang: Lang): TLine => {
   };
 };
 
+/**
+ * The plan panel as it looks once every item is done and committed: with `omomp-lang` set, its
+ * goal fields and every label — objective, measure, done-when, estimate, commit — come out in
+ * the language the person reads.
+ */
+const deliveredTodo = (lang: Lang): Panel => {
+  const en = lang === "en";
+  const item = (title: string, explanation: string, estimate: number, commit?: { sha: string; message: string }) =>
+    ({ title, status: "done", estimate, explanation, ...(commit ? { commit } : {}) }) as const;
+  return {
+    kind: "todo",
+    data: {
+      objective: en
+        ? "Rate-limit the public API per API key with Redis, and move the three routes onto it"
+        : "用 Redis 按 API key 给公开 API 限流，三个路由都改用它",
+      measure: en
+        ? "Requests past the limit get 429 with Retry-After; signed webhook callbacks are never limited; pnpm test passes"
+        : "超限请求拿到 429 和 Retry-After；带签名的 webhook 回调永远不限流；pnpm test 通过",
+      doneWhen: en
+        ? "Middleware and the three routes are committed on main with the full test suite green"
+        : "中间件和三个路由已提交到 main，完整测试套件全绿",
+      phases: [
+        {
+          name: en ? "Middleware" : "中间件",
+          items: [
+            item(
+              en ? "Token bucket in Redis" : "Redis 令牌桶",
+              en ? "One Lua script refills and takes a token atomically" : "一段 Lua 脚本原子地补充和取用令牌",
+              40,
+              { sha: "a41c9e2", message: "feat: Redis token-bucket rate limiter" },
+            ),
+            item(
+              en ? "Tests for refill and 429" : "令牌补充与 429 测试",
+              en ? "Cover the refill rate, the 429 body and Retry-After" : "覆盖补充速率、429 响应体和 Retry-After",
+              25,
+              { sha: "a41c9e2", message: "feat: Redis token-bucket rate limiter" },
+            ),
+          ],
+        },
+        {
+          name: en ? "Routes" : "路由",
+          items: [
+            item(
+              en ? "Switch the orders route" : "改 orders 路由",
+              en ? "Replace its hand-rolled counter with the middleware" : "用中间件替换它自己写的计数器",
+              10,
+              { sha: "9f31b20", message: en ? "feat: orders route on the shared limiter" : "feat: orders 路由接入共用限流器" },
+            ),
+            item(
+              en ? "Switch the search route" : "改 search 路由",
+              en ? "Same change as orders, with a higher limit" : "改法同 orders，额度更高",
+              10,
+              { sha: "2be88d4", message: "feat: search route on the shared limiter" },
+            ),
+            item(
+              en ? "Exempt signed webhooks" : "签名 webhook 免限流",
+              en ? "Skip the limiter once the provider signature verifies" : "服务商签名校验通过后跳过限流",
+              20,
+              { sha: "c607a39", message: "feat: signed webhooks skip the limiter" },
+            ),
+          ],
+        },
+        {
+          name: en ? "Verify" : "验证",
+          items: [
+            item(
+              en ? "Run the full suite and commit" : "跑完整测试并提交",
+              en ? "pnpm test, then one commit per phase" : "pnpm test，每个阶段一个提交",
+              15,
+              { sha: "7d03b1f", message: "fix: round Retry-After up to whole seconds" },
+            ),
+          ],
+        },
+      ],
+    },
+  };
+};
+
 /** delete-guard's non-literal refusal (guard.ts `reasonFor`, rule `nonLiteral`; posix.ts command-name detail). */
 const nonLiteralCommand = "$RM -rf coverage";
 const nonLiteralRefusal = `delete-guard: this call did not run. Non-literal command: \`${nonLiteralCommand}\` (the command name \`$RM\` comes from an expansion). Commands must be literal: no command name from a variable or substitution, no non-literal nested shell or eval script, no script fed to a shell through stdin; write the command out. To delete files, call the \`delete\` tool with literal paths and leave \`mode\` unset; the default moves them to the system trash.`;
@@ -723,25 +801,9 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
     case "delivery":
       switch (layer) {
         case "human":
-          // An earlier thinking block than the grid cell's, caught while its last line is still being translated.
-          return {
-            kind: "screen",
-            frame: session,
-            panels: [
-              {
-                kind: "thinking",
-                data: {
-                  block: 2,
-                  thinking: [
-                    "WebhooksRoute's yield came back: the signed-callback test still fails.",
-                    "In src/routes/webhooks.ts the limiter runs before the signature check.",
-                    "Move verifySignature ahead of rateLimit, then rerun webhooks.test.ts.",
-                  ],
-                  translated: ["WebhooksRoute 的 yield 被退回了：签名回调那个测试还是失败。", "src/routes/webhooks.ts 里，限流在签名校验之前执行。"],
-                },
-              },
-            ],
-          };
+          // omomp-lang at work: the finished plan's panel in the session, its goal fields and labels
+          // in the language the person reads.
+          return { kind: "screen", frame: session, panels: [deliveredTodo(lang)] };
         case "agent":
           return {
             kind: "screen",

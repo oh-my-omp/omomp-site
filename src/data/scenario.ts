@@ -865,25 +865,9 @@ function steps(lang: Lang): readonly Step[] {
       seam: "delivery",
       title: en ? "Done, with evidence" : "完成并附上证据",
       caption: en
-        ? "The agent runs the suite, commits, and reports with the test output as evidence. For a person who reads Chinese, each line of the model's English thinking appears translated beneath the original as it streams."
-        : "代理跑完测试、提交，并附上测试输出作为证据。模型用英文思考时，每一行思考都会在原文下方实时出现中文译文。",
+        ? "The agent runs the suite, commits, and reports with the test output as evidence."
+        : "代理跑完测试、提交，并附上测试输出作为证据。",
       front: [
-        {
-          kind: "thinking",
-          data: {
-            block: 3,
-            thinking: [
-              "All 16 tests pass, including the signed-webhook case.",
-              "The workers' commits are on main already; only the Retry-After rounding is left to commit.",
-              "Report the 429 behaviour with the test names as evidence.",
-            ],
-            translated: [
-              "16 个测试全部通过，包括签名 webhook 那个用例。",
-              "执行者的提交已经在 main 上，只剩 Retry-After 取整的改动要提交。",
-              "汇报 429 的行为时，用测试名称作证据。",
-            ],
-          },
-        },
         {
           kind: "transcript",
           lines: [

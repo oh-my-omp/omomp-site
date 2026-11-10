@@ -19,7 +19,7 @@
 | 维度 | 真实 `supabase.com` 首页 | 当前 `omomp-site` 首页（`src/views/Home.astro`） |
 | :--- | :--- | :--- |
 | **首屏结构与纵深** | 首屏顶部是不对称左右分栏（左列两行双色实色标题 `Build in a weekend / Scale to millions` + 两个按钮；右列 3 行平实说明交代包含哪些产品，总高仅约 `320px`）。**在首屏 `y ≈ 380px` 处直接进入 7 张产品的 Bento 网格**，不滚动就能看到全部核心模块与界面缩略图。 | `Home.astro:43-100`：首屏用 `padding-top: clamp(80px, 14vw, 160px)` 居中堆放脏黄紫 `.glow` 光斑、半透明灰渐变标题和 6 格带 `›` 圆圈的 `.seam-strip`；紧接着塞入两个各占一屏的巨型分栏区（`Where it sits` 和 `Take what you need`），把真正核心的积木卡片区挤到 `y > 1500px` 的第 4 屏。 |
-| **Bento 卡片内部构成** | 每张卡片遵循 **“30% 文字 + 70% 具象微缩界面”**：左上角仅放小图标、产品名和 2 行短句，卡片下半部或右半部 65%–70% 的面积是具象的 UI 控件切片（Postgres 卡内是特性勾选与结构图、Authentication 卡内是真实邮箱用户行 `alex16019@gmail.com`、Edge Functions 卡内是 `$ supabase functions deploy` 胶囊与地球网格、Data APIs 卡内是 `countries -> .../v1/countries` 映射组件）。 | `Home.astro:119-131`：6 张插件卡（`omp-ask-more` 到 `omp-thinking-translator`）是 **100% 纯文字黑灰框**（左上角 `<code>` 仓库名 + 中间两行灰字 + 底部 `Acts at 06 Delivery` 胶囊），连一个像素的界面切片或结构图都没有。3 张产品卡只放了简陋的 `320×88` 抽象灰条 SVG。 |
+| **Bento 卡片内部构成** | 每张卡片遵循 **“30% 文字 + 70% 具象微缩界面”**：左上角仅放小图标、产品名和 2 行短句，卡片下半部或右半部 65%–70% 的面积是具象的 UI 控件切片（Postgres 卡内是特性勾选与结构图、Authentication 卡内是真实邮箱用户行 `alex16019@gmail.com`、Edge Functions 卡内是 `$ supabase functions deploy` 胶囊与地球网格、Data APIs 卡内是 `countries -> .../v1/countries` 映射组件）。 | `Home.astro:119-131`：5 张插件卡（`omp-ask-more` 到 `omp-peers`）是 **100% 纯文字黑灰框**（左上角 `<code>` 仓库名 + 中间两行灰字 + 底部 `Acts at 06 Delivery` 胶囊），连一个像素的界面切片或结构图都没有。3 张产品卡只放了简陋的 `320×88` 抽象灰条 SVG。 |
 | **“按需取用”的表达方式** | Bento 网格正下方仅用一行高对比度的短句 `Use one or all. Best of breed products. Integrated as a platform.` 点题；第 2 屏（`desktop_supabase.com_.02.png`）用 `Table Editor / SQL Editor / RLS Policies` 胶囊切换器展示完整交互表单，旁配可切换 React/Next.js/Vue 图标的真实代码框。 | 把“按需取用”拆成一个占半屏高的独立双栏文字块（`Home.astro:80-100`），右边画一个顶栏带三个灰圆点的假终端框（`.term`），里面只放 4 行静态 `git clone` 文本，毫无信息量。 |
 
 ### 2.2 内页对照 Linear（`desktop_linear.app_*.png` vs `src/views/*.astro`）
@@ -164,7 +164,6 @@
      - `omp-unified-exec`：内嵌 Tern 终端 HUD 微缩切片（含运行中 PTY 会话标签、`Agent` 与 `You` 共用输入指示）。
      - `omp-sessions`：内嵌 `session://` 路径与 DuckDB SQL 查询结果表微缩切片。
      - `omp-peers`：内嵌多进程会话在线列表与 `peer_ask` 旁路问答气泡切片。
-     - `omp-thinking-translator`：内嵌思考流原文与实时中文译文双行对照切片。
      - 三个独立产品卡（`omp-playbooks`、`omp-dispatch`、`omp-remote-build`）：占大尺寸卡片，分别内嵌“YAML 块与 Tern 卡片双栏视图”、“Issue 树到独立 Owner/Judge 状态流转轨”、“本机多 Worktree 到远端容器镜像映射面板”。
 
 3. **“宿主边界与按需取用”合并为交互式切换舞台（参照 `desktop_supabase.com_.02.png`）**
@@ -206,7 +205,7 @@
      - **接缝 ③ 记忆**：左侧渲染 **Tern 的 `omp-todo-more` 待办面板实体界面**，右侧同步展示代理在剩 1 项未完时试图停下、被停止提醒拉回继续完成并自动触发 `git commit` 的闭环。
      - **接缝 ④ 派发**：左侧展示 3 个写文件任务混入同一工作区且混装多主题时被 `isolation-nudge` 与 `task-split-check` 拦截的红框对比；右侧展示拆分为 3 个 `isolated: true` 独立 Worktree 后的并行状态，以及顾问直接引用用户原话指出方案偏差的画面。
      - **接缝 ⑤ 执行**：渲染 **Tern 的 `omp-unified-exec` 终端 HUD 界面**（展示代理 `write_stdin` 与人工按键同屏操作同一长驻终端），并列展示 `delete-guard` 拦下 `shutil.rmtree` 改走回收站 `delete` 工具、`tool-policy-nag` 纠偏长串 shell 改文件的界面切片。
-     - **接缝 ⑥ 交付**：渲染 `omp-thinking-translator` 实时双语思考流面板、`task-completion-judge` 退回未跑验证的子代理交付卡片，以及 `omp-sessions` 用 DuckDB SQL 检索历史会话的查询表格。
+     - **接缝 ⑥ 交付**：渲染 `omomp-lang` 生效后的界面文字（如以页面语言呈现的计划面板）、`task-completion-judge` 退回未跑验证的子代理交付卡片，以及 `omp-sessions` 用 DuckDB SQL 检索历史会话的查询表格。
 
 2. **三个独立产品页用真实工作流舞台取代 CI 探针日志**
    - **`omp-playbooks`**：主舞台渲染左栏 Tern Playbook 卡片编辑器（设计块、带引用标签的执行块、`Launch` 请求按钮）+ 右栏协调者编译冻结 Prompt、派发子代理并将状态写回 YAML 的联动视图。

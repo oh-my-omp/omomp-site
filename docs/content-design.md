@@ -56,7 +56,7 @@ flowchart TB
 | 区块 | 内容 | Supabase 首页的对应做法 |
 |---|---|---|
 | 定位 | 首屏矮而不对称：左列两行实色标题，第二行用强调色，下面两个入口；右列三行平实导语，说清 omomp 叠在 Oh My Pi 与 Tern 之上、加了什么 | 左列双色标语与按钮，右列平实的平台说明 |
-| 积木卡片 | 紧接首屏、在第一屏内开始的 Bento 网格：omp-config、各插件、独立产品和工具各一张卡，约三成面积写名字、类别、所在接缝和一句话，其余是这个仓库工作时的界面切片。omp-config 是占满一行的主卡，左边写职责，右边是六道接缝 × 三层的钩子管道，标出追加、拦下和裁决；其余每行一张宽卡配一张窄卡，宽卡给三个独立产品、omp-ask-more 的整页决策面板和 omp-codex-image-gen 的生成与改图 | 产品 Bento 网格，主卡跨列，每张卡大半面积是该产品的微缩界面 |
+| 积木卡片 | 紧接首屏、在第一屏内开始的 Bento 网格：omp-config、各插件、独立产品和工具各一张卡，约三成面积写名字、类别、所在接缝和一句话，其余是这个仓库工作时的界面切片。omp-config 是占满一行的主卡，左边写职责，右边是六道接缝 × 三层的钩子管道，标出追加、拦下和裁决；其余每行一张宽卡配一张窄卡，宽卡给 omp-playbooks、omp-dispatch 两个独立产品、omp-ask-more 的整页决策面板和 omp-codex-image-gen 的生成与改图，omp-remote-build 占满一整行 | 产品 Bento 网格，主卡跨列，每张卡大半面积是该产品的微缩界面 |
 | 按需取用 | Bento 正下方一句桥接语：单装一个插件，或整套接入 | “Use one or all.” 一行 |
 | 宿主与安装 | 一个可切换的舞台：单装插件、接入 omp-config 完整治理、搭配 Tern 图形终端三种方式各一页，左边是这种方式下实际看到的工作界面和三者的挂载关系，右边是安装和启动命令、说明和装好之后得到什么；见[宿主边界](#宿主边界) | 胶囊切换的交互舞台，配可切换的代码框 |
 | 核心差异 | 四条工程信条排成两行两列，每格配原则页的同一张架构图，画得比原则页更大，链接到设计原则页 | Key Differentiators |
@@ -119,7 +119,7 @@ flowchart TB
 | ③ 长任务规划与记忆 | `omp-todo-more` 的 Tern 待办面板 | 结构化 `todo`（目标、阶段、时间预算、完成即提交）、`ctx` 回顾、`fork_task` 复制完整对话前缀 | 未完成项的停止提醒；`model-compaction` 按模型推迟有损压缩 |
 | ④ 子代理派发与顾问 | `/subagent-usage` 授权本机用量校准 | 按成本与可信度分档的 `task:*`、保守的 `discuss:steady`、发散的 `discuss:divergent`、无工具的 `mentor:default`、剩余派发次数估算 | `user-prompt-inject` 把用户原话注入顾问；`isolation-nudge` 退回会让多个改文件的子代理共用工作区、又没写明是否隔离的派发；`task-split-check` 拦截多主题混派和限制报告长度 |
 | ⑤ 命令执行与过程监督 | `omp-unified-exec` 的 Tern 终端视图，人可旁观并向同一终端输入；`/watchdog` 管理命令 | 长驻 PTY 会话（`exec_command`、`write_stdin`、`monitor`）、只收字面路径并默认进回收站的 `delete`、`wt` 会话工作树、`harness_restart` | `delete-guard` 拦截 shell 与 eval 中的删除和非字面执行；`tool-policy-nag` 阻断交互和长驻命令走 `bash`，其他误用照常执行并在结果末尾追加提醒；`watchdog-agent` 按动作数定期审查用户定义的会话 |
-| ⑥ 交付验收与跨会话协作 | `omp-thinking-translator` 流式翻译思考块；`omomp-lang` 统一界面语言 | `omp-sessions`（`session://` 与 `session_query` SQL）、`omp-peers`（跨进程发现、旁路询问、IRC 消息） | `task-completion-judge` 在子代理交付时核对范围、验证和 Todo；`turn-judge` 在主代理只说不做就收工时要求继续；`lang-nag` 在下一轮纠正用错的回复语言 |
+| ⑥ 交付验收与跨会话协作 | `omomp-lang` 统一界面语言 | `omp-sessions`（`session://` 与 `session_query` SQL）、`omp-peers`（跨进程发现、旁路询问、IRC 消息） | `task-completion-judge` 在子代理交付时核对范围、验证和 Todo；`turn-judge` 在主代理只说不做就收工时要求继续；`lang-nag` 在下一轮纠正用错的回复语言 |
 
 每个组件在接缝页的网格里只出现一次：名字、一句写清触发时机、动作和结果的话、指向仓库的链接，以及它工作时的切片。人机交互面的切片是它的面板或命令，代理原语层是一次调用和返回或这次调用送到另一端的消息，静默治理层是模型收到的那条消息。
 
@@ -145,7 +145,7 @@ flowchart TB
 | ⑤ | 命令行里改文件 | 用一串 `perl -pi` 改文件的 `bash` 调用 | `tool-policy-nag` 追加在结果后的提醒，指向 `edit` |
 | ⑥ | 执行者报告完成 | 一个没跑验证就交付的执行者被退回 | `task-completion-judge` 的退回 |
 | ⑥ | 只说不做 | 代理宣布下一步后停下，被送回继续 | `turn-judge` 的提示 |
-| ⑥ | 完成并附上证据 | 思考原文和逐行译文、测试通过、提交和带证据的汇报 | 无 |
+| ⑥ | 完成并附上证据 | 测试通过、提交和带证据的汇报 | 无 |
 | ⑥ | 检索历史会话 | 用 `session_query` 的 SQL 查过往会话，结果画成表格 | 无 |
 
 演示是为官网编写的模拟，但界面结构和标签取自各插件的真实界面，送到模型的每条消息都按对应扩展源码里的模板逐字填写。模板只有一种语言时，两版页面都照原文呈现，并在下方附上该页语言的译文。

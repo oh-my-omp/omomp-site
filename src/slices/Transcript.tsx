@@ -4,7 +4,6 @@ import { For, Show } from "solid-js";
 export type TLine =
   | { readonly kind: "user"; readonly text: string; readonly by?: string }
   | { readonly kind: "say"; readonly text: string }
-  | { readonly kind: "think"; readonly text: string }
   | {
       readonly kind: "call";
       /** Tool name, e.g. `exec_command`. */
@@ -39,8 +38,6 @@ export default function Transcript(props: { lines: readonly TLine[]; class?: str
               );
             case "say":
               return <p class="sl-tx-say">{line.text}</p>;
-            case "think":
-              return <p class="sl-tx-think">{line.text}</p>;
             case "call":
               return (
                 <div class={`sl-tx-call s-${line.status}`}>

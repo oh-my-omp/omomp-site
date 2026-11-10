@@ -780,10 +780,6 @@
 .sl-tx-say {
   color: var(--soft);
 }
-.sl-tx-think {
-  color: var(--muted);
-  font-style: italic;
-}
 .sl-tx-call {
   display: grid;
   gap: 0.35em;
@@ -852,54 +848,6 @@
 }
 .sl-tx-card p {
   color: var(--soft);
-}
-
-/* omp-thinking-translator */
-.sl-think {
-  font-size: 13px;
-  line-height: 1.5;
-  display: grid;
-  gap: 0.7em;
-  text-align: left;
-  min-width: 0;
-}
-/* As a grid cell's art it sits in its own frame, like the cell's other slices. */
-.sl-think.compact {
-  font-size: 11.5px;
-  padding: 0.9em;
-  border: 1px solid var(--line-strong);
-  border-radius: 8px;
-  background: var(--bg-panel);
-}
-.sl-think-src {
-  color: var(--muted);
-  font-style: italic;
-  display: grid;
-  gap: 0.35em;
-  padding-left: 0.9em;
-  border-left: 2px solid var(--line-strong);
-}
-.sl-think-tr {
-  display: grid;
-  gap: 0.45em;
-  padding: 0.7em 0.9em;
-  border-radius: 0.5em;
-  background: rgb(255 255 255 / 0.035);
-  color: var(--soft);
-}
-.sl-think-head {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-  color: var(--muted);
-  font-size: 0.92em;
-}
-.sl-think-head .spin {
-  width: 0.8em;
-  height: 0.8em;
-  border-radius: 50%;
-  border: 1.5px solid var(--accent);
-  border-right-color: transparent;
 }
 
 /* Request spans and the prompt cache */

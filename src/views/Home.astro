@@ -275,13 +275,16 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     gap: 28px;
     padding: 26px 26px 22px;
   }
-  /* Wide cards pair with a narrow one on each row: the products, the question page and the image tool. */
+  /* Wide cards pair with a narrow one on each row: two products, the question page and the image tool. */
   .card[data-repo="omp-ask-more"],
   .card[data-repo="omp-playbooks"],
   .card[data-repo="omp-dispatch"],
-  .card[data-repo="omp-remote-build"],
   .card[data-repo="omp-codex-image-gen"] {
     grid-column: span 8;
+  }
+  /* With no narrow card left to pair with it, the build product spans its row like the main card. */
+  .card[data-repo="omp-remote-build"] {
+    grid-column: 1 / -1;
   }
   /* The question page at width: the brief's three blocks side by side, then the options and the tradeoff card. */
   .card[data-repo="omp-ask-more"] .ca :global(.sl-ask-brief) {
@@ -403,14 +406,14 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     color: var(--text);
   }
   @media (max-width: 1080px) {
-    .card,
-    .card[data-repo="omp-codex-image-gen"] {
+    .card {
       grid-column: span 6;
     }
     .card[data-repo="omp-ask-more"],
     .card[data-repo="omp-playbooks"],
     .card[data-repo="omp-dispatch"],
-    .card[data-repo="omp-remote-build"] {
+    .card[data-repo="omp-remote-build"],
+    .card[data-repo="omp-codex-image-gen"] {
       grid-column: 1 / -1;
     }
   }
