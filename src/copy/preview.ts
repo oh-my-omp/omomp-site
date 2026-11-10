@@ -6,17 +6,17 @@ export const preview = {
     /** Two lines; the second is set in the accent colour. */
     title: [
       { en: "Keep agents on task", zh: "让编码代理按你说的做" },
-      { en: "Fix drift mid-run", zh: "偏离时当场纠正" },
+      { en: "Wrong calls refused", zh: "错的调用当场拦下" },
     ],
     /** Two sentences; on a wide screen the second starts its own line. */
     lede: [
       {
-        en: "A plugin set for the Oh My Pi (omp) coding agent and the Tern terminal.",
-        zh: "一套给 Oh My Pi（omp）编码代理和 Tern 终端用的插件。",
+        en: "Plugins for the Oh My Pi (omp) coding agent and the Tern terminal.",
+        zh: "给 Oh My Pi（omp）编码代理和 Tern 终端用的插件。",
       },
       {
-        en: "omp-config checks the agent at every step of a task, plugins add tools and panels, and three products each run one workflow end to end.",
-        zh: "omp-config 在任务的每一步检查代理，插件补上工具和面板，三个产品各跑通一条完整工作流。",
+        en: "omp-config checks every step of a task; three products each run a whole workflow.",
+        zh: "omp-config 检查任务的每一步；三个产品各跑通一条完整工作流。",
       },
     ],
     primary: { en: "See the demo", zh: "查看演示" },
