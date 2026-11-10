@@ -1,0 +1,64 @@
+---
+import { preview } from "../copy/preview";
+import { href, t, type Lang } from "../i18n";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+---
+
+<section class="hero wrap">
+  <div class="hl">
+    <h1>
+      <span>{t(preview.hero.title[0], lang)}</span>
+      <span class="second">{t(preview.hero.title[1], lang)}</span>
+    </h1>
+    <div class="ctas">
+      <a class="btn btn-primary" href={href("/replay/", lang)}>{t(preview.hero.primary, lang)}</a>
+      <a class="btn" href={href("/lifeline/", lang)}>{t(preview.hero.secondary, lang)}</a>
+    </div>
+  </div>
+  <p class="lede">{t(preview.hero.lede, lang)}</p>
+</section>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 24px clamp(32px, 5vw, 64px);
+    align-items: start;
+    padding-top: clamp(40px, 7vw, 100px);
+    padding-bottom: clamp(32px, 3.5vw, 44px);
+  }
+  .hl {
+    display: grid;
+    gap: 26px;
+    justify-items: start;
+  }
+  h1 {
+    display: grid;
+    font-size: clamp(32px, 3.7vw, 48px);
+    line-height: 1.1;
+  }
+  .second {
+    color: var(--accent);
+  }
+  .lede {
+    margin-top: 6px;
+    font-size: clamp(16px, 1.3vw, 17.5px);
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 30em;
+  }
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

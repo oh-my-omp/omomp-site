@@ -9,9 +9,11 @@ interface Props {
   lang: Lang;
   title: string;
   description: string;
+  /** Candidate pages that search engines must not list. */
+  noindex?: boolean;
 }
 
-const { lang, title, description } = Astro.props;
+const { lang, title, description, noindex = false } = Astro.props;
 const route = routeOf(Astro.url.pathname);
 const other: Lang = lang === "en" ? "zh" : "en";
 const fullTitle = route === "/" ? title : `${title} · oh-my-omp`;
@@ -26,6 +28,7 @@ const alternate = (l: Lang) => new URL(href(route, l), Astro.site).href;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="en" href={alternate("en")} />
     <link rel="alternate" hreflang="zh-CN" href={alternate("zh")} />

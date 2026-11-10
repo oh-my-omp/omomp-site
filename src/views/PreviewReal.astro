@@ -1,0 +1,15 @@
+---
+import Base from "../layouts/Base.astro";
+import PreviewHero from "../components/PreviewHero.astro";
+import { home } from "../copy/home";
+import { t, type Lang } from "../i18n";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+---
+
+<Base lang={lang} title={t(home.meta.title, lang)} description={t(home.meta.description, lang)} noindex>
+  <PreviewHero lang={lang} />
+</Base>
