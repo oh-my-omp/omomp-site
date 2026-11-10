@@ -1,14 +1,52 @@
 ---
+import { getCollection } from "astro:content";
 import Base from "../layouts/Base.astro";
+import SplitHead from "../components/SplitHead.astro";
 import PreviewHero from "../components/PreviewHero.astro";
 import RepairBento from "../components/RepairBento.astro";
+import RepairFig from "../components/RepairFig.astro";
+import RepairInstall, { type CommandLine, type InstallTab } from "../islands/RepairInstall";
+import type { Art } from "../slices/Art";
 import { home } from "../copy/home";
-import { t, type Lang } from "../i18n";
+import { installStage, preview } from "../copy/preview";
+import { componentArt } from "../data/component-art";
+import { sessionQuery } from "../data/seam-stages";
+import { href, inlineCode, t, type Lang } from "../i18n";
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
+const principles = (await getCollection("principles")).sort((a, b) => a.data.order - b.data.order);
+const figs = ["append", "signals", "roles", "policy"] as const;
+type FigId = (typeof figs)[number];
+const isFig = (id: string): id is FigId => (figs as readonly string[]).includes(id);
+
+/** What each way of installing looks like at work. */
+const tabArts: Readonly<Record<string, readonly Art[]>> = {
+  plugin: [{ kind: "panel", panel: sessionQuery(lang) }],
+  config: [componentArt["isolation-nudge"][lang]],
+  tern: [componentArt["todo-panel"][lang]],
+};
+
+/** Install and start as one command block; a line typed inside omp gets a `>` prompt instead of `$`. */
+const commandsOf = (install: readonly string[], start: readonly string[]): readonly CommandLine[] => [
+  ...install.map((text) => ({ in: text.startsWith("/") ? ("omp" as const) : ("sh" as const), text })),
+  { text: "" },
+  ...start.map((text) => ({
+    in: "sh" as const,
+    text: text === "omp-light    # light mode" ? `omp-light    # ${t(installStage.lightComment, lang)}` : text,
+  })),
+];
+const installTabs: readonly InstallTab[] = home.hosts.tabs.map((tab) => ({
+  id: tab.id,
+  label: t(installStage.tabs[tab.id as keyof typeof installStage.tabs], lang),
+  arts: tabArts[tab.id] ?? [],
+  commands: commandsOf(tab.install, tab.start),
+  note: t(tab.text, lang),
+  after: tab.after.map((a) => inlineCode(t(a, lang))),
+}));
+const routeHref = (route: string) => (route.startsWith("https://") ? route : href(route, lang));
 ---
 
 <Base lang={lang} title={t(home.meta.title, lang)} description={t(home.meta.description, lang)} noindex>
@@ -16,4 +54,183 @@ const { lang } = Astro.props;
   <section class="wrap blocks" aria-label={t(home.blocks.label, lang)}>
     <RepairBento lang={lang} />
   </section>
+
+  <div class="wrap install">
+    <p class="bridge">{t(preview.bridge, lang)}</p>
+    <RepairInstall
+      client:visible
+      data={{
+        lang,
+        intro: t(installStage.intro, lang),
+        afterLabel: t(home.hosts.after, lang),
+        tabs: installTabs,
+      }}
+    />
+  </div>
+
+  <section class="section figs">
+    <SplitHead title={t(home.principles.title, lang)} lede={t(home.principles.lede, lang)}>
+      <a class="more" href={href("/principles/", lang)}>{t(home.principles.more, lang)} →</a>
+    </SplitHead>
+    <div class="wrap body">
+      <div class="figgrid">
+        {principles.map((p) => {
+          if (!isFig(p.id)) throw new Error(`principle \`${p.id}\` has no figure in RepairFig.astro`);
+          return (
+            <a class="figcell" href={href(`/principles/#${p.id}`, lang)}>
+              <span class="fart">
+                <RepairFig fig={p.id} lang={lang} />
+              </span>
+              <span class="ftxt">
+                <span class="ftag">{`FIG 0.${p.data.order}`}</span>
+                <span class="ftitle">{p.data.short[lang]}</span>
+                <span class="fsum">{p.data.summary[lang]}</span>
+              </span>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <section class="section last">
+    <SplitHead title={t(home.next.title, lang)} />
+    <div class="wrap body">
+      <ul class="qgrid">
+        {
+          home.next.items.map((i) => (
+            <li>
+              <a href={routeHref(i.route)}>
+                <span class="q">{t(i.q, lang)}</span>
+                <span class="a">{t(i.a, lang)} →</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
 </Base>
+
+<style>
+  /* Bridge and install stage on the page grid; the sentence is set like supabase.com's line under its cards. */
+  .install {
+    margin-top: clamp(48px, 6vw, 80px);
+    display: grid;
+    gap: clamp(28px, 3vw, 40px);
+  }
+  .bridge {
+    font-size: clamp(19px, 1.9vw, 24px);
+    line-height: 1.45;
+    letter-spacing: -0.01em;
+    color: var(--muted);
+    max-width: 50em;
+  }
+  .body {
+    margin-top: clamp(40px, 5vw, 64px);
+  }
+  .last {
+    padding-bottom: clamp(72px, 10vw, 128px);
+  }
+
+  /* The four rules as on linear.app: cells divided by 1px hairlines, no card boxes. */
+  .figgrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border-block: 1px solid var(--line);
+  }
+  .figcell {
+    display: grid;
+    background: var(--bg);
+    color: inherit;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .figcell:hover {
+    background: var(--bg-hover);
+  }
+  .fart {
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    min-height: 300px;
+    padding: 40px 40px 24px;
+  }
+  .ftxt {
+    display: grid;
+    gap: 3px;
+    padding: 0 40px 36px;
+  }
+  .ftag {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--dim);
+  }
+  .ftitle {
+    font-size: 16px;
+    font-weight: 560;
+    color: var(--text);
+  }
+  .fsum {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 30em;
+  }
+
+  /* Where to go next: the same hairline treatment, question in grey, destination as the link. */
+  .qgrid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border-block: 1px solid var(--line);
+  }
+  .qgrid li {
+    background: var(--bg);
+  }
+  .qgrid a {
+    display: grid;
+    gap: 6px;
+    padding: 22px 24px;
+    color: inherit;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .qgrid a:hover {
+    background: var(--bg-hover);
+  }
+  .q {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .a {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  @media (max-width: 900px) {
+    .qgrid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 680px) {
+    .figgrid,
+    .qgrid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .fart {
+      min-height: 0;
+      padding: 32px 24px 16px;
+    }
+    .ftxt {
+      padding: 0 24px 28px;
+    }
+  }
+</style>

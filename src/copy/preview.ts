@@ -22,7 +22,35 @@ export const preview = {
     primary: { en: "See the demo", zh: "查看演示" },
     secondary: { en: "Walk the lifeline", zh: "浏览生命线" },
   },
-} as const satisfies { hero: { title: readonly [Text, Text]; lede: readonly [Text, Text]; primary: Text; secondary: Text } };
+  /** One plain sentence after the card grid, leading into the install stage. */
+  bridge: {
+    en: "Use one plugin or the whole set: every plugin runs on stock omp, omp-config adds the shared checks, and Tern draws the panels.",
+    zh: "单装一个插件，或整套接入：每个插件都能在原生 omp 上单独使用，omp-config 加上共用的检查，Tern 负责绘制面板。",
+  },
+} as const satisfies {
+  hero: { title: readonly [Text, Text]; lede: readonly [Text, Text]; primary: Text; secondary: Text };
+  bridge: Text;
+};
+
+/** The install stage under the bridge: how omomp mounts, then one tab per way of installing. */
+export const installStage = {
+  /** What the dropped host diagram stated, in one line. */
+  intro: {
+    en: "omomp is omp-config, plugins and products mounted on two hosts: the Oh My Pi (omp) agent and the Tern terminal.",
+    zh: "omomp 是装在两个宿主上的 omp-config、插件和产品：Oh My Pi（omp）代理和 Tern 终端。",
+  },
+  /** Comment on `omp-light` in the second tab's commands; commands themselves are not localized. */
+  lightComment: {
+    en: "light mode: skips the governance extensions",
+    zh: "轻量模式：跳过治理扩展",
+  },
+  /** The stage's tab labels; commands, notes and the 'what you get' items come from `home.hosts.tabs`. */
+  tabs: {
+    plugin: { en: "One plugin", zh: "单装插件" },
+    config: { en: "The whole set, with omp-config", zh: "整套接入 omp-config" },
+    tern: { en: "Panels in Tern", zh: "在 Tern 里显示面板" },
+  },
+} as const;
 
 /** Repository names that have a card on the repaired home page. */
 export type RepairCard =

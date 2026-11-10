@@ -1,0 +1,247 @@
+---
+import type { Lang } from "../i18n";
+
+/**
+ * The four engineering rules redrawn for page B as line drawings (the same ideas as Fig.astro): hairline strokes,
+ * one accent colour for what omomp adds, and at most four short labels in the page's own face.
+ */
+interface Props {
+  fig: "append" | "signals" | "roles" | "policy";
+  lang: Lang;
+}
+const { fig, lang } = Astro.props;
+const zh = lang === "zh";
+const L = (en: string, cn: string) => (zh ? cn : en);
+const described = {
+  append: L(
+    "Two prompt rows. Rewriting the system prompt hatches the first segment and the cache misses; appending a reminder or a tools delta leaves the prefix unchanged and the cache hits.",
+    "两行请求：原地改写 system prompt 时首段变化、缓存失效；在末尾追加提醒或工具差分时前缀不变、缓存命中。",
+  ),
+  signals: L(
+    "The agent loop with four points where omp-config answers a signal and feeds the result back: tool call, tool result, subagent yield and turn end.",
+    "代理循环上的四个信号点：工具调用、工具返回、子代理交付、回合结束，每个信号由 omp-config 处理后送回循环。",
+  ),
+  roles: L(
+    "The main agent briefs stateless task workers inside an isolated zone; the advisor sits outside and reads your own words through user-prompt-inject.",
+    "主代理向隔离区里的无状态执行者派工；顾问在区外，经 user-prompt-inject 读你的原话。",
+  ),
+  policy: L(
+    "The fixed mechanism reads policy files; upstream, base and your copy merge three ways into a copy that keeps your edits.",
+    "固定机制读取策略文件；仓库新版、共同基线与你的副本三方合并，得到保留你改动的副本。",
+  ),
+}[fig];
+---
+
+<svg class:list={["rfig", { zh }]} viewBox="0 0 360 240" role="img" aria-label={described}>
+  {
+    fig === "append" && (
+      <g>
+        {/* Rewritten in place: the changed segment breaks the prefix. */}
+        <rect class="b" x="20" y="55" width="64" height="30" rx="3" />
+        <path class="hatch" d="M28 85 44 55M40 85 56 55M52 85 68 55M64 85 80 55" />
+        <rect class="b" x="88" y="55" width="50" height="30" rx="3" />
+        <rect class="b" x="142" y="55" width="40" height="30" rx="3" />
+        <rect class="b" x="186" y="55" width="40" height="30" rx="3" />
+        <rect class="b" x="230" y="55" width="40" height="30" rx="3" />
+        <path class="miss" d="M20 96H270" />
+        <text class="t" x="20" y="114">{L("cache miss", "缓存失效")}</text>
+
+        {/* Appended at the end: the prefix is byte-for-byte the same. */}
+        <rect class="b" x="20" y="145" width="64" height="30" rx="3" />
+        <rect class="b" x="88" y="145" width="50" height="30" rx="3" />
+        <rect class="b" x="142" y="145" width="40" height="30" rx="3" />
+        <rect class="b" x="186" y="145" width="40" height="30" rx="3" />
+        <rect class="b new" x="234" y="145" width="40" height="30" rx="3" />
+        <rect class="b new" x="278" y="145" width="34" height="30" rx="3" />
+        <text class="t c" x="52" y="164">system</text>
+        <text class="t c new-t" x="254" y="164">rem</text>
+        <path class="hit" d="M20 186H226" />
+        <text class="t" x="20" y="204">{L("cache hit", "命中缓存")}</text>
+      </g>
+    )
+  }
+  {
+    fig === "signals" && (
+      <g>
+        <path class="l" d="M40 28V200" />
+        <path class="l" d="M40 200C40 214 24 214 24 200V40C24 28 32 25 37 28" />
+        <path class="l" d="M31 24 37 29 30 32" />
+        {[
+          { y: 48, at: L("tool call", "工具调用"), g: "block" },
+          { y: 92, at: L("tool result", "工具返回"), g: "note" },
+          { y: 136, at: L("subagent yield", "子代理交付"), g: "judge" },
+          { y: 180, at: L("turn end", "回合结束"), g: "judge" },
+        ].map((p) => (
+          <g>
+            <circle class="node" cx="40" cy={p.y} r="4" />
+            <text class="t" x="54" y={p.y + 4}>{p.at}</text>
+            {/* The answer to the signal, then its path back into the loop. */}
+            {p.g === "block" && <rect class="new" x="284" y={p.y - 9} width="18" height="18" rx="4" />}
+            {p.g === "note" && (
+              <g>
+                <rect class="new" x="283" y={p.y - 11} width="20" height="22" rx="3" />
+                <path class="new" d={`M288 ${p.y - 3}H298M288 ${p.y + 3}H295`} />
+              </g>
+            )}
+            {p.g === "judge" && <path class="new" d={`M293 ${p.y - 10} 303 ${p.y} 293 ${p.y + 10} 283 ${p.y} Z`} />}
+            <path class="back" d={`M280 ${p.y}C246 ${p.y + 20} 66 ${p.y + 16} 45 ${p.y + 5}`} />
+            <path class="back" d={`M51 ${p.y + 1} 45 ${p.y + 5} 52 ${p.y + 8}`} />
+          </g>
+        ))}
+      </g>
+    )
+  }
+  {
+    fig === "roles" && (
+      <g>
+        <circle class="b" cx="44" cy="46" r="15" />
+        <path class="l" d="M59 46H96" />
+        <rect class="b" x="96" y="28" width="200" height="36" rx="6" />
+        <text class="t c" x="196" y="50">{L("main agent", "主代理")}</text>
+
+        <path class="l" d="M196 64V84" />
+        <path class="l" d="M191 79 196 85 201 79" />
+        <rect class="zone" x="96" y="88" width="200" height="80" rx="6" />
+        {[96, 117, 138].map((y) => (
+          <rect class="b" x="112" y={y} width="168" height="16" rx="3" />
+        ))}
+        <text class="t c" x="196" y="182">{L("task workers", "执行者")}</text>
+
+        {/* Main agent consults the advisor across the zone's edge. */}
+        <path class="l d" d="M296 46H312V206H300" />
+        <path class="l" d="M305 201 299 206 305 211" />
+        <rect class="b" x="96" y="192" width="200" height="28" rx="6" />
+        <text class="t c" x="196" y="210">{L("advisor", "顾问")}</text>
+
+        {/* Your own words reach the advisor directly. */}
+        <path class="inject" d="M44 61V206H92" />
+        <path class="inject" d="M87 201 93 206 87 211" />
+        <text class="t c new-t" x="60" y="236">user-prompt-inject</text>
+      </g>
+    )
+  }
+  {
+    fig === "policy" && (
+      <g>
+        <rect class="b" x="60" y="16" width="240" height="30" rx="6" />
+        <text class="t c" x="180" y="35">{L("mechanism", "机制")}</text>
+        <path class="l d" d="M180 46V60" />
+        <text class="t c" x="180" y="74">{L("policy files", "策略文件")}</text>
+
+        {[68, 146, 224].map((x, i) => (
+          <g>
+            <rect class="b" x={x} y="82" width="68" height="42" rx="4" />
+            <path class="row" d={`M${x + 9} 94H${x + 59}M${x + 9} 105H${x + 53}M${x + 9} 116H${x + 59}`} />
+            {/* Upstream's new line, and your own edit, each kept distinct until the merge. */}
+            {i === 0 && <path class="in" d={`M${x + 9} 116H${x + 59}`} />}
+            {i === 2 && <path class="mark" d={`M${x + 9} 105H${x + 53}`} />}
+          </g>
+        ))}
+
+        <path class="l d" d="M102 124C102 140 148 144 170 150M180 124V142M258 124C258 140 212 144 190 150" />
+        <path class="new" d="M180 144 190 154 180 164 170 154 Z" />
+        <text class="t" x="196" y="158">{L("three-way merge", "三方合并")}</text>
+
+        <path class="l" d="M180 164V172" />
+        <rect class="b" x="146" y="172" width="68" height="36" rx="4" />
+        <path class="in" d="M155 184H205" />
+        <path class="mark" d="M155 196H198" />
+        <text class="t c" x="180" y="228">{L("your copy", "你的副本")}</text>
+      </g>
+    )
+  }
+</svg>
+
+<style>
+  .rfig {
+    display: block;
+    width: 100%;
+    max-width: 380px;
+    height: auto;
+    margin-inline: auto;
+    overflow: visible;
+  }
+  .b {
+    fill: rgb(255 255 255 / 0.02);
+    stroke: var(--line-strong);
+    stroke-width: 1;
+  }
+  .b.new {
+    stroke: var(--accent);
+    fill: var(--accent-soft);
+  }
+  .zone {
+    fill: none;
+    stroke: var(--line-strong);
+    stroke-dasharray: 2 4;
+  }
+  .node {
+    fill: var(--bg);
+    stroke: var(--muted);
+  }
+  .l {
+    stroke: var(--line-strong);
+    fill: none;
+  }
+  .l.d {
+    stroke-dasharray: 3 4;
+  }
+  .hatch {
+    stroke: var(--line-strong);
+    stroke-width: 1;
+  }
+  .miss {
+    stroke: var(--line-strong);
+    stroke-dasharray: 4 4;
+  }
+  .hit {
+    stroke: var(--accent);
+    stroke-width: 1.5;
+  }
+  .new {
+    stroke: var(--accent);
+    fill: none;
+  }
+  .back {
+    stroke: var(--accent);
+    stroke-width: 1;
+    fill: none;
+  }
+  .inject {
+    stroke: var(--accent);
+    stroke-width: 1;
+    fill: none;
+    stroke-dasharray: 4 3;
+  }
+  .row {
+    stroke: var(--line-strong);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  .in {
+    stroke: var(--muted);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  .mark {
+    stroke: var(--accent);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  /* Words inside a drawing stay small and no brighter than the muted text around it. */
+  .t {
+    font-family: var(--mono);
+    font-size: 12px;
+    fill: var(--muted);
+  }
+  .zh .t {
+    font-family: var(--sans);
+    font-size: 12.5px;
+  }
+  .t.c {
+    text-anchor: middle;
+  }
+  .new-t {
+    fill: var(--accent);
+  }
+</style>
