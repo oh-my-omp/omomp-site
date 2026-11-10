@@ -11,7 +11,10 @@ interface Props {
 }
 const { lang } = Astro.props;
 
-/** Row by row: the runtime with the two plugins a person meets first, the other plugins, then products and the tool. */
+/**
+ * Row by row: the runtime with the two plugins a person meets first, the other plugins and the first product, then
+ * the other two products and the tool. omp-remote-build takes two columns, so the last row is full.
+ */
 const order: readonly RepairCard[] = [
   "omp-config",
   "omp-ask-more",
@@ -19,7 +22,6 @@ const order: readonly RepairCard[] = [
   "omp-unified-exec",
   "omp-sessions",
   "omp-peers",
-  "omp-thinking-translator",
   "omp-playbooks",
   "omp-dispatch",
   "omp-remote-build",
@@ -80,7 +82,8 @@ const rail: readonly RailStop[] = seams.map((s) => ({ label: s.data.short[lang],
   .card:hover {
     border-color: var(--line-strong);
   }
-  .card[data-repo="omp-config"] {
+  .card[data-repo="omp-config"],
+  .card[data-repo="omp-remote-build"] {
     grid-column: span 2;
   }
   .ct {
@@ -92,7 +95,7 @@ const rail: readonly RailStop[] = seams.map((s) => ({ label: s.data.short[lang],
   .kind {
     font-size: 12px;
     line-height: 16px;
-    color: var(--dim);
+    color: var(--muted);
   }
   .name {
     margin-top: 6px;
@@ -132,10 +135,20 @@ const rail: readonly RailStop[] = seams.map((s) => ({ label: s.data.short[lang],
       grid-template-columns: minmax(0, 1fr);
     }
     .card,
-    .card[data-repo="omp-config"] {
+    .card[data-repo="omp-config"],
+    .card[data-repo="omp-remote-build"] {
       grid-column: auto;
       height: auto;
-      padding-bottom: 22px;
+      padding-bottom: 16px;
+    }
+    .ct {
+      padding: 16px 20px 0;
+    }
+    .name {
+      margin-top: 4px;
+    }
+    .ct p {
+      margin-top: 6px;
     }
   }
 </style>

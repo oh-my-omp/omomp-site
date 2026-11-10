@@ -36,11 +36,24 @@ export function inlineCode(s: string): string {
     .replace(/`([^`]+)`/g, "<code>$1</code>");
 }
 
-/** Escapes HTML, then renders `**phrase**` spans as <b>: the few words of a card line that carry it. */
+/**
+ * Escapes HTML, then renders `**phrase**` spans as <b> (the few words of a card line that carry it) and a
+ * newline as a line break, for a Chinese line that must break at its comma.
+ */
 export function emphasis(s: string): string {
   return s
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
-    .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+    .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>")
+    .replaceAll("\n", "<br>");
+}
+
+/** Escapes HTML, then keeps each hyphenated name (`omp-config`, `oh-my-omp`) on one line. */
+export function wholeNames(s: string): string {
+  return s
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replace(/[a-z]+(?:-[a-z]+)+/g, '<span style="white-space:nowrap">$&</span>');
 }
