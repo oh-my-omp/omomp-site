@@ -1,15 +1,232 @@
 ---
 import Base from "../layouts/Base.astro";
 import PreviewHero from "../components/PreviewHero.astro";
+import SplitHead from "../components/SplitHead.astro";
+import RealDemo from "../islands/RealDemo";
 import { home } from "../copy/home";
-import { t, type Lang } from "../i18n";
+import { real } from "../copy/real";
+import { moments, realRuns } from "../data/real-run";
+import { repos, repoUrl } from "../data/repos";
+import { href, inlineCode, t, type Lang } from "../i18n";
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
+const run = realRuns[lang];
+const products = repos.filter((r) => r.kind === "product");
+const others = repos.filter((r) => r.kind !== "product");
+const provenance = t(real.demo.provenance, lang)
+  .replace("{session}", run.session)
+  .replace("{date}", run.date)
+  .replace("{omp}", run.omp)
+  .replace("{model}", run.model);
 ---
 
 <Base lang={lang} title={t(home.meta.title, lang)} description={t(home.meta.description, lang)} noindex>
   <PreviewHero lang={lang} />
+
+  <section class="wrap demo" aria-label={t(real.demo.title, lang)}>
+    <p class="intro">{t(real.demo.lede, lang)}</p>
+    <RealDemo
+      client:load
+      data={{
+        lang,
+        base: import.meta.env.BASE_URL.replace(/\/$/, ""),
+        moments: moments.map((id, i) => ({
+          id,
+          n: i + 1,
+          label: t(real.demo.moments[id].label, lang),
+          caption: inlineCode(t(real.demo.moments[id].caption, lang)),
+          alt: t(real.demo.moments[id].alt, lang),
+          sent: run.sent[id],
+        })),
+        labels: {
+          sent: t(real.demo.sent, lang),
+          hidden: t(real.demo.hidden, lang),
+          shown: t(real.demo.shown, lang),
+          appended: t(real.demo.appended, lang),
+          quoted: t(real.demo.quoted, lang),
+          result: t(real.demo.result, lang),
+          gloss: t(real.demo.gloss, lang),
+        },
+        provenance,
+      }}
+    />
+    <a class="more" href={href("/replay/", lang)}>{t(real.demo.more, lang)} →</a>
+  </section>
+
+  <section class="section">
+    <SplitHead title={t(real.products.title, lang)} lede={t(real.products.lede, lang)} />
+    <div class="wrap body">
+      <ul class="rows">
+        {
+          products.map((p) => (
+            <li>
+              <a href={p.page ? href(p.page, lang) : repoUrl(p.name)}>
+                <code>{p.name}</code>
+                <span>{t(p.line, lang)}</span>
+                <i aria-hidden="true">→</i>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="plugins">
+        <span>{t(real.products.plugins, lang)}</span>
+        <div class="chips">
+          {others.map((r) => <a class="chip" href={repoUrl(r.name)}>{r.name}</a>)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section last">
+    <SplitHead title={t(real.install.title, lang)} lede={t(real.install.lede, lang)} />
+    <div class="wrap body">
+      <div class="ways">
+        {
+          home.hosts.tabs.map((tab) => (
+            <div class="way">
+              <h3>{t(tab.label, lang)}</h3>
+              <pre>{[...tab.install, ...tab.start].join("\n")}</pre>
+              <p>{t(tab.text, lang)}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
 </Base>
+
+<style>
+  .demo {
+    display: grid;
+    gap: 20px;
+    padding-bottom: clamp(64px, 8vw, 104px);
+  }
+  .intro {
+    max-width: 46em;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .more {
+    justify-self: start;
+  }
+  .body {
+    margin-top: clamp(36px, 4.5vw, 56px);
+  }
+  /* Products as rows: name, one line, and the way in. */
+  .rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--line);
+  }
+  .rows li {
+    border-bottom: 1px solid var(--line);
+  }
+  .rows a {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 24px;
+    padding: 22px 4px;
+    color: inherit;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .rows a:hover {
+    background: var(--bg-hover);
+  }
+  .rows code {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: 16px;
+    color: var(--text);
+  }
+  .rows span {
+    font-size: 16px;
+    color: var(--muted);
+  }
+  .rows i {
+    font-style: normal;
+    color: var(--muted);
+  }
+  .plugins {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 24px;
+    align-items: baseline;
+    padding: 22px 4px 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  /* Three ways to install, side by side: the commands, then what each one sets up. */
+  .ways {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .way {
+    display: grid;
+    align-content: start;
+    gap: 16px;
+    padding: 26px;
+  }
+  .way + .way {
+    border-left: 1px solid var(--line);
+  }
+  .way pre {
+    margin: 0;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg-raised);
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--soft);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .way p {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .last {
+    padding-bottom: clamp(72px, 10vw, 128px);
+  }
+  @media (max-width: 900px) {
+    .ways {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .way + .way {
+      border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+  }
+  @media (max-width: 680px) {
+    .rows a {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 6px 16px;
+    }
+    .rows span {
+      grid-column: 1;
+      font-size: 15px;
+    }
+    .rows i {
+      grid-row: 1;
+      grid-column: 2;
+    }
+    .plugins {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+    }
+  }
+</style>
