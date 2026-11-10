@@ -74,7 +74,7 @@ export const repairLines: Readonly<Record<RepairCard, Text>> = {
   },
   "omp-dispatch": {
     en: "Hand over an issue tree: **a fresh session delivers each ticket and a fresh judge rules on it**.",
-    zh: "交出一棵 issue 树：每张工单**由新会话交付、新判定者裁决**。",
+    zh: "交出一棵 issue 树，**新会话交付，新判定者裁决**。",
   },
   "omp-remote-build": {
     en: "Code is edited on your machine and **built and tested in a remote container**.",
