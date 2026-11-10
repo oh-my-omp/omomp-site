@@ -14,20 +14,35 @@ interface Props {
 }
 const { lang } = Astro.props;
 const run = realRuns[lang];
+const d = real.demo;
 const products = repos.filter((r) => r.kind === "product");
-const others = repos.filter((r) => r.kind !== "product");
-const provenance = t(real.demo.provenance, lang)
-  .replace("{session}", run.session)
-  .replace("{date}", run.date)
-  .replace("{omp}", run.omp)
-  .replace("{model}", run.model);
+const plugins = repos.filter((r) => r.kind !== "product");
+const productLine = (name: string) => {
+  const line = real.products.lines[name];
+  if (!line) throw new Error(`product \`${name}\` has no line in src/copy/real.ts`);
+  return t(line, lang);
+};
+const provenance = t(d.provenance, lang).replace("{date}", run.date).replace("{omp}", run.omp);
+const prompt = { shell: "$", omp: ">" } as const;
 ---
 
 <Base lang={lang} title={t(home.meta.title, lang)} description={t(home.meta.description, lang)} noindex>
-  <PreviewHero lang={lang} />
+  <PreviewHero
+    lang={lang}
+    actions={[
+      { label: real.hero.primary, to: "#install" },
+      { label: real.hero.secondary, to: "/replay/" },
+    ]}
+  />
 
-  <section class="wrap demo" aria-label={t(real.demo.title, lang)}>
-    <p class="intro">{t(real.demo.lede, lang)}</p>
+  <section class="wrap demo" aria-labelledby="demo-title">
+    <header class="demo-head">
+      <h2 id="demo-title">
+        <span>{t(d.title[0], lang)}</span>
+        <span>{t(d.title[1], lang)}</span>
+      </h2>
+      <p>{t(d.lede, lang)}</p>
+    </header>
     <RealDemo
       client:load
       data={{
@@ -36,24 +51,33 @@ const provenance = t(real.demo.provenance, lang)
         moments: moments.map((id, i) => ({
           id,
           n: i + 1,
-          label: t(real.demo.moments[id].label, lang),
-          caption: inlineCode(t(real.demo.moments[id].caption, lang)),
-          alt: t(real.demo.moments[id].alt, lang),
+          label: t(d.moments[id].label, lang),
+          caption: inlineCode(t(d.moments[id].caption, lang)),
+          alt: t(d.moments[id].alt, lang),
           sent: run.sent[id],
+          shot: run.shots[id],
         })),
         labels: {
-          sent: t(real.demo.sent, lang),
-          hidden: t(real.demo.hidden, lang),
-          shown: t(real.demo.shown, lang),
-          appended: t(real.demo.appended, lang),
-          quoted: t(real.demo.quoted, lang),
-          result: t(real.demo.result, lang),
-          gloss: t(real.demo.gloss, lang),
+          sent: t(d.sent, lang),
+          hidden: t(d.hidden, lang),
+          shown: t(d.shown, lang),
+          message: t(d.message, lang),
+          chars: t(d.chars, lang),
+          total: t(d.total, lang),
+          quoted: t(d.quoted, lang),
+          gloss: t(d.gloss, lang),
+          tool: t(d.tool, lang),
+          refusedBy: t(d.refusedBy, lang),
+          ran: t(d.ran, lang),
+          no: t(d.no, lang),
+          movedTo: t(d.movedTo, lang),
+          restorable: t(d.restorable, lang),
+          yes: t(d.yes, lang),
         },
+        gloss: run.sent.ask.kind === "appended" ? inlineCode(run.sent.ask.quote.gloss) : "",
         provenance,
       }}
     />
-    <a class="more" href={href("/replay/", lang)}>{t(real.demo.more, lang)} →</a>
   </section>
 
   <section class="section">
@@ -65,63 +89,122 @@ const provenance = t(real.demo.provenance, lang)
             <li>
               <a href={p.page ? href(p.page, lang) : repoUrl(p.name)}>
                 <code>{p.name}</code>
-                <span>{t(p.line, lang)}</span>
+                <span>{productLine(p.name)}</span>
                 <i aria-hidden="true">→</i>
               </a>
             </li>
           ))
         }
       </ul>
-      <div class="plugins">
-        <span>{t(real.products.plugins, lang)}</span>
-        <div class="chips">
-          {others.map((r) => <a class="chip" href={repoUrl(r.name)}>{r.name}</a>)}
-        </div>
-      </div>
+      <p class="plugins-head">{t(real.products.plugins, lang)}</p>
+      <ul class="plugins">
+        {
+          plugins.map((r) => (
+            <li>
+              <a href={repoUrl(r.name)}>
+                <code>{r.name}</code>
+                <span>{t(r.line, lang)}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 
-  <section class="section last">
+  <section class="section last" id="install">
     <SplitHead title={t(real.install.title, lang)} lede={t(real.install.lede, lang)} />
     <div class="wrap body">
-      <div class="ways">
+      <ol class="ways">
         {
-          home.hosts.tabs.map((tab) => (
-            <div class="way">
-              <h3>{t(tab.label, lang)}</h3>
-              <pre>{[...tab.install, ...tab.start].join("\n")}</pre>
-              <p>{t(tab.text, lang)}</p>
-            </div>
+          real.install.ways.map((w) => (
+            <li class="way">
+              <div class="what">
+                <h3>{t(w.title, lang)}</h3>
+                <p set:html={inlineCode(t(w.note, lang))} />
+              </div>
+              <div class="code">
+                <div class="pre">
+                  {w.lines.map((l) => (
+                    <span class="line">
+                      <span class="p" aria-hidden="true">{prompt[l.at]}</span>
+                      {l.text}
+                      {"comment" in l && l.comment && <span class="c">{`  # ${t(l.comment, lang)}`}</span>}
+                    </span>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  class="copy"
+                  data-copy={w.lines.filter((l) => l.at === "shell").map((l) => l.text).join("\n")}
+                  data-done={t(real.install.copied, lang)}
+                >
+                  {t(real.install.copy, lang)}
+                </button>
+              </div>
+            </li>
           ))
         }
-      </div>
+      </ol>
     </div>
   </section>
 </Base>
 
+<script>
+  // Copy buttons: put the block's shell lines on the clipboard and say so on the button for a moment.
+  for (const button of document.querySelectorAll<HTMLButtonElement>("button.copy")) {
+    const label = button.textContent ?? "";
+    button.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(button.dataset.copy ?? "");
+      button.textContent = button.dataset.done ?? label;
+      setTimeout(() => (button.textContent = label), 1600);
+    });
+  }
+</script>
+
 <style>
   .demo {
     display: grid;
-    gap: 20px;
+    gap: 28px;
+    padding-top: clamp(40px, 6vw, 80px);
     padding-bottom: clamp(64px, 8vw, 104px);
   }
-  .intro {
+  .demo-head {
+    display: grid;
+    gap: 14px;
     max-width: 46em;
-    font-size: 15px;
+  }
+  .demo-head h2 {
+    display: grid;
+    font-size: clamp(26px, 3vw, 36px);
+    font-weight: 500;
+    line-height: 1.15;
+  }
+  .demo-head h2 span + span {
+    color: var(--muted);
+  }
+  .demo-head p {
+    font-size: 16px;
     line-height: 1.6;
     color: var(--muted);
   }
-  .more {
-    justify-self: start;
+  /* Chinese headings on this page, the split heads included, break only at punctuation, so no word is cut in two. */
+  :global(main:lang(zh) h2),
+  :global(main:lang(zh) h3) {
+    word-break: keep-all;
   }
   .body {
     margin-top: clamp(36px, 4.5vw, 56px);
   }
   /* Products as rows: name, one line, and the way in. */
-  .rows {
+  .rows,
+  .plugins,
+  .ways {
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+  .rows {
     border-top: 1px solid var(--line);
   }
   .rows li {
@@ -137,15 +220,18 @@ const provenance = t(real.demo.provenance, lang)
     text-decoration: none;
     transition: background 0.15s;
   }
-  .rows a:hover {
+  .rows a:hover,
+  .plugins a:hover {
     background: var(--bg-hover);
   }
-  .rows code {
+  code {
     padding: 0;
     border: 0;
     background: none;
-    font-size: 16px;
     color: var(--text);
+  }
+  .rows code {
+    font-size: 16px;
   }
   .rows span {
     font-size: 16px;
@@ -155,60 +241,112 @@ const provenance = t(real.demo.provenance, lang)
     font-style: normal;
     color: var(--muted);
   }
-  .plugins {
-    display: grid;
-    grid-template-columns: 220px minmax(0, 1fr);
-    gap: 24px;
-    align-items: baseline;
-    padding: 22px 4px 0;
+  /* Plugins as a grid of name and one line, each a link to its repository. */
+  .plugins-head {
+    margin-top: 44px;
     font-size: 14px;
     color: var(--muted);
   }
-  /* Three ways to install, side by side: the commands, then what each one sets up. */
-  .ways {
+  .plugins {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .plugins a {
+    display: grid;
+    gap: 8px;
+    height: 100%;
+    padding: 18px 20px;
     border: 1px solid var(--line);
-    border-radius: 14px;
-    overflow: hidden;
+    border-radius: 12px;
+    color: inherit;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .plugins code {
+    font-size: 14.5px;
+  }
+  .plugins span {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+  /* Three ways to install, one row each: what it sets up on the left, the lines to type on the right. */
+  .ways {
+    border-top: 1px solid var(--line);
   }
   .way {
     display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: 32px;
+    padding: 28px 4px;
+    border-bottom: 1px solid var(--line);
+  }
+  .what {
+    display: grid;
     align-content: start;
-    gap: 16px;
-    padding: 26px;
+    gap: 10px;
   }
-  .way + .way {
-    border-left: 1px solid var(--line);
+  .what h3 {
+    font-size: 17px;
   }
-  .way pre {
-    margin: 0;
-    padding: 14px 16px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: var(--bg-raised);
-    font-family: var(--mono);
-    font-size: 12.5px;
-    line-height: 1.7;
-    color: var(--soft);
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-  }
-  .way p {
+  .what p {
     font-size: 14.5px;
     line-height: 1.6;
     color: var(--muted);
+  }
+  .code {
+    position: relative;
+    min-width: 0;
+  }
+  .code .pre {
+    padding: 16px 92px 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--bg-raised);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--soft);
+    overflow-x: auto;
+  }
+  .line {
+    display: block;
+    white-space: pre;
+  }
+  .p {
+    margin-right: 10px;
+    color: var(--dim);
+    user-select: none;
+  }
+  .c {
+    color: var(--dim);
+  }
+  .copy {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    height: 28px;
+    padding: 0 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: 7px;
+    background: var(--bg);
+    color: var(--muted);
+    font: inherit;
+    font-size: 12.5px;
+    cursor: pointer;
+  }
+  .copy:hover {
+    color: var(--text);
   }
   .last {
     padding-bottom: clamp(72px, 10vw, 128px);
   }
   @media (max-width: 900px) {
-    .ways {
+    .way {
       grid-template-columns: minmax(0, 1fr);
-    }
-    .way + .way {
-      border-left: 0;
-      border-top: 1px solid var(--line);
+      gap: 16px;
     }
   }
   @media (max-width: 680px) {
@@ -223,10 +361,6 @@ const provenance = t(real.demo.provenance, lang)
     .rows i {
       grid-row: 1;
       grid-column: 2;
-    }
-    .plugins {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 12px;
     }
   }
 </style>

@@ -1,90 +1,149 @@
 import { createMemo, createSignal, For, Show, type JSX } from "solid-js";
 import type { Lang } from "../i18n";
-import type { MomentId, Sent } from "../data/real-run";
+import type { MomentId, Sent, ShotSize } from "../data/real-run";
 import "../styles/real-demo.css";
 
 export interface RealMoment {
   readonly id: MomentId;
-  /** Position in the run, from 1; names the shot files. */
+  /** Position in the run, from 1; names the capture files. */
   readonly n: number;
   readonly label: string;
   /** One or two sentences on what happened, as HTML from `inlineCode`. */
   readonly caption: string;
   readonly alt: string;
   readonly sent: Sent;
+  readonly shot: ShotSize;
 }
+
+type LabelKey =
+  | "sent"
+  | "hidden"
+  | "shown"
+  | "message"
+  | "chars"
+  | "total"
+  | "quoted"
+  | "gloss"
+  | "tool"
+  | "refusedBy"
+  | "ran"
+  | "no"
+  | "movedTo"
+  | "restorable"
+  | "yes";
 
 export interface RealDemoData {
   readonly lang: Lang;
   /** Site base path without a trailing slash. */
   readonly base: string;
   readonly moments: readonly RealMoment[];
-  readonly labels: Readonly<Record<"sent" | "hidden" | "shown" | "appended" | "quoted" | "result" | "gloss", string>>;
+  readonly labels: Readonly<Record<LabelKey, string>>;
+  /** HTML from `inlineCode`, so the code spans in the translation render as code. */
+  readonly gloss: string;
   readonly provenance: string;
 }
 
+const count = (n: number) => n.toLocaleString("en-US");
+
 /** The model-side half of a moment: what was appended after the prompt, or what a tool call returned. */
-function SentView(props: { sent: Sent; labels: RealDemoData["labels"]; gloss: boolean }) {
+function SentView(props: { sent: Sent; data: RealDemoData }) {
   const s = props.sent;
-  const quoted = s.kind === "appended" ? s.quote : s;
-  let lead: JSX.Element;
+  const l = props.data.labels;
+  let body: JSX.Element;
   switch (s.kind) {
     case "appended":
-      lead = (
+      body = (
         <>
-          <p class="rd-sum">{props.labels.appended}</p>
-          <ul class="rd-list">
-            <For each={s.messages}>
-              {(m) => (
-                <li>
-                  <span>{m.source}</span>
-                  <span>{m.chars.toLocaleString("en-US")}</span>
-                </li>
-              )}
-            </For>
-          </ul>
+          <table class="rd-table">
+            <thead>
+              <tr>
+                <th>{l.message}</th>
+                <th>{l.chars}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <For each={s.messages}>
+                {(m) => (
+                  <tr>
+                    <td>{m.source}</td>
+                    <td>{count(m.chars)}</td>
+                  </tr>
+                )}
+              </For>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td>{l.total}</td>
+                <td>{count(s.messages.reduce((sum, m) => sum + m.chars, 0))}</td>
+              </tr>
+            </tfoot>
+          </table>
           <p class="rd-from">
-            {props.labels.quoted} <code>{s.quote.source}</code>
+            {l.quoted} <code>{s.quote.source}</code>
           </p>
+          <pre class="rd-pre">{s.quote.text}</pre>
+          <Show when={props.data.lang === "zh"}>
+            <p class="rd-gloss">
+              <span>{l.gloss}</span>
+              <span innerHTML={props.data.gloss} />
+            </p>
+          </Show>
         </>
       );
       break;
-    case "result":
-      lead = (
-        <p class="rd-from">
-          <code>{s.tool}</code> {props.labels.result} · {s.at}
-        </p>
+    case "refused":
+      body = (
+        <dl class="rd-kv">
+          <dt>{l.tool}</dt>
+          <dd>
+            <code>{s.tool}</code> · {s.at}
+          </dd>
+          <dt>{l.refusedBy}</dt>
+          <dd>
+            <code>{s.guard}</code>
+          </dd>
+          <dt>{l.ran}</dt>
+          <dd>{l.no}</dd>
+        </dl>
+      );
+      break;
+    case "trashed":
+      body = (
+        <dl class="rd-kv">
+          <dt>{l.tool}</dt>
+          <dd>
+            <code>{s.tool}</code> · {s.at}
+          </dd>
+          <dt>{l.movedTo}</dt>
+          <dd>
+            <code>{s.to}</code>
+          </dd>
+          <dt>{l.restorable}</dt>
+          <dd>{l.yes}</dd>
+        </dl>
       );
       break;
   }
   return (
     <div class="rd-sent">
       <div class="rd-sent-head">
-        <span>{props.labels.sent}</span>
+        <span>{l.sent}</span>
         <span class="rd-tag" classList={{ "off-screen": s.kind === "appended" }}>
-          {s.kind === "appended" ? props.labels.hidden : props.labels.shown}
+          {s.kind === "appended" ? l.hidden : l.shown}
         </span>
       </div>
-      {lead}
-      <pre class="rd-pre">{quoted.text}</pre>
-      <Show when={props.gloss}>
-        <p class="rd-gloss">
-          <span>{props.labels.gloss}</span>
-          {quoted.gloss}
-        </p>
-      </Show>
+      {body}
     </div>
   );
 }
 
 /**
- * One real session, three moments: on the left the screen as Tern drew it, on the right what reached the model
- * at that moment, quoted from the same session's log.
+ * One real session, three moments: the screen as Tern drew it beside what reached the model at that moment, quoted
+ * from the same session's log. On a phone the caption comes first, then the capture, then the model's side.
  */
 export default function RealDemo(props: { data: RealDemoData }) {
   const [current, setCurrent] = createSignal(0);
   const moment = createMemo(() => props.data.moments[current()]!);
-  /** Shot files are `<lang>-<n>-desktop.png` and `-mobile.png` under `public/real/`. */
   const stem = createMemo(() => `${props.data.base}/real/${props.data.lang}-${moment().n}`);
   return (
     <div class="rd">
@@ -99,17 +158,25 @@ export default function RealDemo(props: { data: RealDemoData }) {
         </For>
       </div>
       <div class="rd-body">
+        <p class="rd-cap" innerHTML={moment().caption} />
         <picture class="rd-shot">
-          <source media="(max-width: 760px)" srcset={`${stem()}-mobile.png`} width="360" height="640" />
-          <img src={`${stem()}-desktop.png`} alt={moment().alt} width="720" height="640" />
+          <source
+            media="(max-width: 760px)"
+            srcset={`${stem()}-mobile.png`}
+            width={moment().shot.mobile[0] / 2}
+            height={moment().shot.mobile[1] / 2}
+          />
+          <img
+            src={`${stem()}-desktop.png`}
+            alt={moment().alt}
+            width={moment().shot.desktop[0] / 2}
+            height={moment().shot.desktop[1] / 2}
+          />
         </picture>
-        <div class="rd-side">
-          <p class="rd-cap" innerHTML={moment().caption} />
-          {/* Keyed: the pane is built anew for each moment, since its shape depends on the kind of message. */}
-          <Show when={moment()} keyed>
-            {(m) => <SentView sent={m.sent} labels={props.data.labels} gloss={props.data.lang === "zh"} />}
-          </Show>
-        </div>
+        {/* Keyed: the pane is built anew for each moment, since its shape depends on the kind of message. */}
+        <Show when={moment()} keyed>
+          {(m) => <SentView sent={m.sent} data={props.data} />}
+        </Show>
       </div>
       <p class="rd-prov">{props.data.provenance}</p>
     </div>

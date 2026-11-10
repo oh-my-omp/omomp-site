@@ -11,6 +11,7 @@
   padding: 4px;
   border: 1px solid var(--line);
   border-radius: 20px;
+  background: var(--bg);
 }
 .rd-tabs button {
   appearance: none;
@@ -19,14 +20,14 @@
   gap: 8px;
   height: 34px;
   padding: 0 14px;
-  border: 0;
+  border: 1px solid transparent;
   border-radius: 999px;
   background: none;
   color: var(--muted);
   font: inherit;
   font-size: 14px;
   cursor: pointer;
-  transition: color 0.15s;
+  transition: color 0.15s, border-color 0.15s;
 }
 .rd-tabs button:hover {
   color: var(--text);
@@ -36,15 +37,24 @@
   font-size: 12px;
   opacity: 0.6;
 }
+/* The selected step is outlined, so it does not compete with the filled button in the first screen. */
 .rd-tabs button.on {
-  background: var(--text);
-  color: var(--bg);
+  border-color: var(--line-strong);
+  color: var(--text);
 }
+/* Wide: the capture on the left; the caption and the model's side stacked on the right. */
 .rd-body {
   display: grid;
   grid-template-columns: minmax(0, 720px) minmax(0, 1fr);
-  gap: 36px;
+  grid-template-areas:
+    "shot cap"
+    "shot sent";
+  grid-template-rows: auto 1fr;
+  gap: 22px 36px;
   align-items: start;
+}
+.rd-shot {
+  grid-area: shot;
 }
 .rd-shot img {
   display: block;
@@ -53,17 +63,15 @@
   border: 1px solid var(--line-strong);
   border-radius: 14px;
 }
-.rd-side {
-  display: grid;
-  gap: 22px;
-  padding-top: 4px;
-}
 .rd-cap {
+  grid-area: cap;
+  padding-top: 4px;
   font-size: 17px;
   line-height: 1.55;
   color: var(--soft);
 }
 .rd-sent {
+  grid-area: sent;
   display: grid;
   gap: 12px;
   padding-top: 20px;
@@ -88,24 +96,30 @@
   border-color: color-mix(in srgb, var(--accent) 50%, transparent);
   color: var(--accent);
 }
-.rd-sum {
-  font-size: 14.5px;
-  color: var(--text);
-}
-.rd-list {
-  display: grid;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-family: var(--mono);
+.rd-table {
+  width: 100%;
+  border-collapse: collapse;
   font-size: 12.5px;
   color: var(--muted);
 }
-.rd-list li {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
+.rd-table th {
+  padding-bottom: 6px;
+  font-weight: 400;
+  font-size: 12px;
+  text-align: left;
+  color: var(--dim);
+}
+.rd-table td {
+  padding: 3px 0;
+  font-family: var(--mono);
+}
+.rd-table :is(th, td):last-child {
+  text-align: right;
+}
+.rd-table tfoot td {
+  padding-top: 7px;
+  border-top: 1px solid var(--line);
+  color: var(--text);
 }
 .rd-from {
   font-size: 13px;
@@ -127,10 +141,26 @@
   line-height: 1.6;
   color: var(--muted);
 }
-.rd-gloss span {
+.rd-gloss span:first-child {
   display: block;
   font-size: 12px;
   color: var(--dim);
+}
+/* A tool call the screen shows too: its facts as rows, not the text again. */
+.rd-kv {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 10px 20px;
+  margin: 0;
+  font-size: 14px;
+}
+.rd-kv dt {
+  color: var(--muted);
+}
+.rd-kv dd {
+  margin: 0;
+  color: var(--text);
+  overflow-wrap: anywhere;
 }
 .rd-prov {
   max-width: 72em;
@@ -141,13 +171,24 @@
 @media (max-width: 1040px) {
   .rd-body {
     grid-template-columns: minmax(0, 1fr);
-    gap: 24px;
+    grid-template-areas:
+      "cap"
+      "shot"
+      "sent";
+    grid-template-rows: none;
+    gap: 20px;
   }
   .rd-shot {
     max-width: 720px;
   }
 }
 @media (max-width: 760px) {
+  /* The steps stay reachable while the capture scrolls under the site header. */
+  .rd-tabs {
+    position: sticky;
+    top: 64px;
+    z-index: 2;
+  }
   .rd-tabs button {
     padding: 0 11px;
     font-size: 13px;

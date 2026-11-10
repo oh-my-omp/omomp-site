@@ -1,11 +1,26 @@
 ---
 import { preview } from "../copy/preview";
-import { href, t, wholeNames, type Lang } from "../i18n";
+import { href, t, wholeNames, type Lang, type Text } from "../i18n";
+
+/** A button in the first screen; `to` is a site route, or a `#fragment` on the same page. */
+export interface HeroAction {
+  readonly label: Text;
+  readonly to: string;
+}
 
 interface Props {
   lang: Lang;
+  /** Primary then secondary; by default the replay and the lifeline. */
+  actions?: readonly [HeroAction, HeroAction];
 }
-const { lang } = Astro.props;
+const {
+  lang,
+  actions = [
+    { label: preview.hero.primary, to: "/replay/" },
+    { label: preview.hero.secondary, to: "/lifeline/" },
+  ],
+} = Astro.props;
+const target = (to: string) => (to.startsWith("#") ? to : href(to, lang));
 ---
 
 <section class="hero wrap">
@@ -18,8 +33,8 @@ const { lang } = Astro.props;
     <span set:html={wholeNames(t(preview.hero.lede[1], lang))} />
   </p>
   <div class="ctas">
-    <a class="btn btn-primary" href={href("/replay/", lang)}>{t(preview.hero.primary, lang)}</a>
-    <a class="btn" href={href("/lifeline/", lang)}>{t(preview.hero.secondary, lang)}</a>
+    <a class="btn btn-primary" href={target(actions[0].to)}>{t(actions[0].label, lang)}</a>
+    <a class="btn" href={target(actions[1].to)}>{t(actions[1].label, lang)}</a>
   </div>
 </section>
 
@@ -59,9 +74,12 @@ const { lang } = Astro.props;
   .lede span {
     display: block;
   }
-  /* Chinese breaks only at punctuation and spaces, so no clause is cut in the middle of a word. */
-  .lede:lang(zh) {
-    word-break: keep-all;
+  /* On a wide screen Chinese breaks only at punctuation and spaces, so no clause is cut in the middle of a word.
+     A phone's column is too narrow for whole clauses, so there it wraps as usual. */
+  @media (min-width: 901px) {
+    .lede:lang(zh) {
+      word-break: keep-all;
+    }
   }
   .ctas {
     grid-area: cta;
