@@ -35,3 +35,12 @@ export function inlineCode(s: string): string {
     .replaceAll(">", "&gt;")
     .replace(/`([^`]+)`/g, "<code>$1</code>");
 }
+
+/** Escapes HTML, then renders `**phrase**` spans as <b>: the few words of a card line that carry it. */
+export function emphasis(s: string): string {
+  return s
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+}
