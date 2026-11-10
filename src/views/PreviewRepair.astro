@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import PreviewHero from "../components/PreviewHero.astro";
+import RepairBento from "../components/RepairBento.astro";
 import { home } from "../copy/home";
 import { t, type Lang } from "../i18n";
 
@@ -12,4 +13,7 @@ const { lang } = Astro.props;
 
 <Base lang={lang} title={t(home.meta.title, lang)} description={t(home.meta.description, lang)} noindex>
   <PreviewHero lang={lang} />
+  <section class="wrap blocks" aria-label={t(home.blocks.label, lang)}>
+    <RepairBento lang={lang} />
+  </section>
 </Base>
