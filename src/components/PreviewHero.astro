@@ -9,49 +9,57 @@ const { lang } = Astro.props;
 ---
 
 <section class="hero wrap">
-  <div class="hl">
-    <h1>
-      <span>{t(preview.hero.title[0], lang)}</span>
-      <span class="second">{t(preview.hero.title[1], lang)}</span>
-    </h1>
-    <div class="ctas">
-      <a class="btn btn-primary" href={href("/replay/", lang)}>{t(preview.hero.primary, lang)}</a>
-      <a class="btn" href={href("/lifeline/", lang)}>{t(preview.hero.secondary, lang)}</a>
-    </div>
+  <h1>
+    <span>{t(preview.hero.title[0], lang)}</span>
+    <span class="second">{t(preview.hero.title[1], lang)}</span>
+  </h1>
+  <p class="lede">
+    <span>{t(preview.hero.lede[0], lang)}</span>
+    <span>{t(preview.hero.lede[1], lang)}</span>
+  </p>
+  <div class="ctas">
+    <a class="btn btn-primary" href={href("/replay/", lang)}>{t(preview.hero.primary, lang)}</a>
+    <a class="btn" href={href("/lifeline/", lang)}>{t(preview.hero.secondary, lang)}</a>
   </div>
-  <p class="lede">{t(preview.hero.lede, lang)}</p>
 </section>
 
 <style>
+  /* First screen as supabase.com: heading and buttons on the left, a plain lede on the right. On a phone the lede
+     comes before the buttons, so the reader knows what the product is before being asked to act. */
   .hero {
     display: grid;
     grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: 24px clamp(32px, 5vw, 64px);
+    grid-template-areas:
+      "h lede"
+      "cta lede";
+    gap: 26px clamp(32px, 5vw, 64px);
     align-items: start;
     padding-top: clamp(40px, 7vw, 100px);
     padding-bottom: clamp(32px, 3.5vw, 44px);
   }
-  .hl {
-    display: grid;
-    gap: 26px;
-    justify-items: start;
-  }
   h1 {
+    grid-area: h;
     display: grid;
-    font-size: clamp(32px, 3.7vw, 48px);
-    line-height: 1.1;
+    font-size: clamp(33px, 4vw, 52px);
+    font-weight: 500;
+    line-height: 1.08;
   }
   .second {
     color: var(--accent);
   }
   .lede {
+    grid-area: lede;
     margin-top: 6px;
     font-size: clamp(16px, 1.3vw, 17.5px);
     line-height: 1.6;
     color: var(--muted);
     max-width: 30em;
   }
+  .lede span {
+    display: block;
+  }
   .ctas {
+    grid-area: cta;
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
@@ -59,6 +67,17 @@ const { lang } = Astro.props;
   @media (max-width: 900px) {
     .hero {
       grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        "h"
+        "lede"
+        "cta";
+      gap: 18px;
+    }
+    .lede {
+      margin-top: 0;
+    }
+    .lede span {
+      display: inline;
     }
   }
 </style>
