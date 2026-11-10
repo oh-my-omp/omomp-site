@@ -5,7 +5,7 @@ export const preview = {
   hero: {
     /** Two lines; the second is set in the accent colour. */
     title: [
-      { en: "Keep agents on task", zh: "让编码代理按你说的做" },
+      { en: "Your rules, enforced", zh: "规则不只写给代理看" },
       { en: "Wrong calls refused", zh: "错的调用当场拦下" },
     ],
     /** Two sentences; on a wide screen the second starts its own line. */

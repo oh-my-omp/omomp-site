@@ -1,5 +1,5 @@
 ---
-import { inlineCode } from "../i18n";
+import { inlineCode, wholeNames } from "../i18n";
 interface Props {
   title: string;
   lede?: string;
@@ -8,8 +8,10 @@ interface Props {
   kicker?: string;
   /** 1 when the split head opens the page and its title is the page's h1. */
   level?: 1 | 2;
+  /** Keep hyphenated names in the lede on one line instead of rendering `backtick` spans as code. */
+  names?: "whole";
 }
-const { title, lede, id, kicker, level = 2 } = Astro.props;
+const { title, lede, id, kicker, level = 2, names } = Astro.props;
 const Heading = level === 1 ? "h1" : "h2";
 // Without a right column the heading takes the width the lede would have shared, instead of wrapping beside an empty half.
 const solo = !lede && !Astro.slots.has("default");
@@ -23,7 +25,7 @@ const solo = !lede && !Astro.slots.has("default");
   {
     !solo && (
       <div class="r">
-        {lede && <p class="lede" set:html={inlineCode(lede)} />}
+        {lede && <p class="lede" set:html={names === "whole" ? wholeNames(lede) : inlineCode(lede)} />}
         <slot />
       </div>
     )

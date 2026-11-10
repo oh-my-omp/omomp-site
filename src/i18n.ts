@@ -49,11 +49,12 @@ export function emphasis(s: string): string {
     .replaceAll("\n", "<br>");
 }
 
+/** Keeps each hyphenated name (`omp-config`, `oh-my-omp`) in already-escaped HTML on one line. */
+export function keepNamesWhole(html: string): string {
+  return html.replace(/[a-z]+(?:-[a-z]+)+/g, '<span style="white-space:nowrap">$&</span>');
+}
+
 /** Escapes HTML, then keeps each hyphenated name (`omp-config`, `oh-my-omp`) on one line. */
 export function wholeNames(s: string): string {
-  return s
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replace(/[a-z]+(?:-[a-z]+)+/g, '<span style="white-space:nowrap">$&</span>');
+  return keepNamesWhole(s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
 }

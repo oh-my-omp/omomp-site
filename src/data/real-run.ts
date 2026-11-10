@@ -1,17 +1,17 @@
-import type { Lang } from "../i18n";
-
 /** What reached the model at one moment of a run, quoted from that run's session log. */
 export type Sent =
-  /** Messages appended after the prompt and kept off the screen, with one sentence quoted from one of them. */
-  | {
-      readonly kind: "appended";
-      readonly messages: readonly { readonly source: string; readonly chars: number }[];
-      readonly quote: { readonly source: string; readonly text: string; readonly gloss: string };
-    }
-  /** A tool call that a guard refused before it ran; the screen shows the refusal too. */
-  | { readonly kind: "refused"; readonly tool: string; readonly at: string; readonly guard: string }
-  /** A delete call that moved its path to the system trash; the screen shows the result too. */
-  | { readonly kind: "trashed"; readonly tool: string; readonly at: string; readonly to: string };
+  /** Messages omp-config sent with the prompt and kept off the screen. */
+  | { readonly kind: "appended"; readonly messages: readonly { readonly source: string; readonly chars: number }[] }
+  /**
+   * A call refused before it ran. The screen shows the refusal, so this quotes the sentence of an appended message
+   * that already told the model not to make the call.
+   */
+  | { readonly kind: "refused"; readonly quote: { readonly source: string; readonly text: string; readonly gloss: string } }
+  /**
+   * The `delete` call that moved its paths to the system trash. The screen shows only how many paths it sent, so this
+   * lists them; the call set no `mode`, so the tool used its default, the trash.
+   */
+  | { readonly kind: "trashed"; readonly paths: readonly string[] };
 
 export type MomentId = "ask" | "refused" | "trash";
 
@@ -39,40 +39,27 @@ const appended = [
 const quote = {
   source: "omp-config/tool-topics",
   text: "Delete files with the `delete` tool when the session has it, never from bash: deletion commands (`rm`, `unlink`, `rmdir`, `shred`, `find -delete`) and commands whose name or nested script is not literal are refused before they run.",
-  gloss: "会话里有 `delete` 工具时，删文件一律用它，不要在 bash 里删：`rm`、`unlink`、`rmdir`、`shred`、`find -delete` 这类删除命令，以及命令名或内嵌脚本不是明文写出的命令，运行前就会被拒绝。",
+  gloss: "会话里有 `delete` 工具时，删文件一律用它，不要在 bash 里删：`rm`、`unlink`、`rmdir`、`shred`、`find -delete` 这类删除命令，以及命令名或内嵌脚本不是字面写死的命令，运行前就会被拒绝。",
 } as const;
 
-/** Captures of moment `n` live in `public/real/<lang>-<n>-desktop.png` and `-mobile.png`. */
+/** Captures of moment `n` live in `public/real/<n>-desktop.png` and `-mobile.png`. */
 export const moments: readonly MomentId[] = ["ask", "refused", "trash"];
 
-/** Times are the local time Tern shows on screen (GMT+9). */
-export const realRuns: Readonly<Record<Lang, RealRun>> = {
-  en: {
-    date: "2026-11-10",
-    omp: "18.18.6",
-    sent: {
-      ask: { kind: "appended", messages: appended, quote },
-      refused: { kind: "refused", tool: "bash", at: "14:06:15", guard: "delete-guard" },
-      trash: { kind: "trashed", tool: "delete", at: "14:06:17", to: "~/.Trash/build 14-06-17-079" },
-    },
-    shots: {
-      ask: { desktop: [1440, 615], mobile: [720, 580] },
-      refused: { desktop: [1440, 435], mobile: [720, 560] },
-      trash: { desktop: [1440, 385], mobile: [720, 455] },
-    },
+/**
+ * The one recorded session, in English. Both language pages show it: the Chinese page translates the text around the
+ * captures, not the captures.
+ */
+export const realRun: RealRun = {
+  date: "2026-11-10",
+  omp: "18.18.6",
+  sent: {
+    ask: { kind: "appended", messages: appended },
+    refused: { kind: "refused", quote },
+    trash: { kind: "trashed", paths: ["/tmp/shop-api/build"] },
   },
-  zh: {
-    date: "2026-11-10",
-    omp: "18.18.6",
-    sent: {
-      ask: { kind: "appended", messages: appended, quote },
-      refused: { kind: "refused", tool: "bash", at: "14:08:56", guard: "delete-guard" },
-      trash: { kind: "trashed", tool: "delete", at: "14:08:58", to: "~/.Trash/build 14-08-58-307" },
-    },
-    shots: {
-      ask: { desktop: [1440, 450], mobile: [720, 535] },
-      refused: { desktop: [1440, 407], mobile: [720, 545] },
-      trash: { desktop: [1440, 357], mobile: [720, 473] },
-    },
+  shots: {
+    ask: { desktop: [1440, 615], mobile: [720, 580] },
+    refused: { desktop: [1440, 435], mobile: [720, 560] },
+    trash: { desktop: [1440, 385], mobile: [720, 455] },
   },
 };

@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, Show, type JSX } from "solid-js";
+import { createSignal, For, Show, type JSX } from "solid-js";
 import type { Lang } from "../i18n";
 import type { MomentId, Sent, ShotSize } from "../data/real-run";
 import "../styles/real-demo.css";
@@ -15,22 +15,7 @@ export interface RealMoment {
   readonly shot: ShotSize;
 }
 
-type LabelKey =
-  | "sent"
-  | "hidden"
-  | "shown"
-  | "message"
-  | "chars"
-  | "total"
-  | "quoted"
-  | "gloss"
-  | "tool"
-  | "refusedBy"
-  | "ran"
-  | "no"
-  | "movedTo"
-  | "restorable"
-  | "yes";
+type LabelKey = "sent" | "hidden" | "message" | "chars" | "total" | "quoted" | "gloss" | "rule" | "enforced" | "args" | "modeUnset";
 
 export interface RealDemoData {
   readonly lang: Lang;
@@ -45,13 +30,20 @@ export interface RealDemoData {
 
 const count = (n: number) => n.toLocaleString("en-US");
 
-/** The model-side half of a moment: what was appended after the prompt, or what a tool call returned. */
+/** The model-side half of a moment: only what the capture beside it leaves out. */
 function SentView(props: { sent: Sent; data: RealDemoData }) {
   const s = props.sent;
   const l = props.data.labels;
+  let head: JSX.Element;
   let body: JSX.Element;
   switch (s.kind) {
     case "appended":
+      head = (
+        <>
+          <span>{l.sent}</span>
+          <span class="rd-tag">{l.hidden}</span>
+        </>
+      );
       body = (
         <>
           <table class="rd-table">
@@ -78,6 +70,13 @@ function SentView(props: { sent: Sent; data: RealDemoData }) {
               </tr>
             </tfoot>
           </table>
+        </>
+      );
+      break;
+    case "refused":
+      head = <span>{l.rule}</span>;
+      body = (
+        <>
           <p class="rd-from">
             {l.quoted} <code>{s.quote.source}</code>
           </p>
@@ -88,95 +87,86 @@ function SentView(props: { sent: Sent; data: RealDemoData }) {
               <span innerHTML={props.data.gloss} />
             </p>
           </Show>
+          <p class="rd-note">{l.enforced}</p>
         </>
       );
       break;
-    case "refused":
-      body = (
-        <dl class="rd-kv">
-          <dt>{l.tool}</dt>
-          <dd>
-            <code>{s.tool}</code> · {s.at}
-          </dd>
-          <dt>{l.refusedBy}</dt>
-          <dd>
-            <code>{s.guard}</code>
-          </dd>
-          <dt>{l.ran}</dt>
-          <dd>{l.no}</dd>
-        </dl>
-      );
-      break;
     case "trashed":
+      head = (
+        <>
+          <span>{l.args}</span>
+          <span class="rd-tag">{l.hidden}</span>
+        </>
+      );
       body = (
         <dl class="rd-kv">
-          <dt>{l.tool}</dt>
+          <dt>
+            <code>paths</code>
+          </dt>
           <dd>
-            <code>{s.tool}</code> · {s.at}
+            <code>{JSON.stringify(s.paths)}</code>
           </dd>
-          <dt>{l.movedTo}</dt>
-          <dd>
-            <code>{s.to}</code>
-          </dd>
-          <dt>{l.restorable}</dt>
-          <dd>{l.yes}</dd>
+          <dt>
+            <code>mode</code>
+          </dt>
+          <dd>{l.modeUnset}</dd>
         </dl>
       );
       break;
   }
   return (
     <div class="rd-sent">
-      <div class="rd-sent-head">
-        <span>{l.sent}</span>
-        <span class="rd-tag" classList={{ "off-screen": s.kind === "appended" }}>
-          {s.kind === "appended" ? l.hidden : l.shown}
-        </span>
-      </div>
+      <div class="rd-sent-head">{head}</div>
       {body}
+    </div>
+  );
+}
+
+/** One moment: the caption, the capture, and the model's side. */
+function Step(props: { moment: RealMoment; data: RealDemoData; on: boolean }) {
+  const m = props.moment;
+  const stem = `${props.data.base}/real/${m.n}`;
+  return (
+    <div class="rd-body" role="tabpanel" classList={{ on: props.on }} aria-hidden={!props.on}>
+      <p class="rd-cap" innerHTML={m.caption} />
+      <picture class="rd-shot">
+        <source media="(max-width: 760px)" srcset={`${stem}-mobile.png`} width={m.shot.mobile[0] / 2} height={m.shot.mobile[1] / 2} />
+        <img src={`${stem}-desktop.png`} alt={m.alt} width={m.shot.desktop[0] / 2} height={m.shot.desktop[1] / 2} />
+      </picture>
+      <SentView sent={m.sent} data={props.data} />
     </div>
   );
 }
 
 /**
  * One real session, three moments: the screen as Tern drew it beside what reached the model at that moment, quoted
- * from the same session's log. On a phone the caption comes first, then the capture, then the model's side.
+ * from the same session's log. On a phone the caption comes first, then the capture, then the model's side. All
+ * three steps share one grid cell and only the selected one is visible, so the stage keeps the height of the tallest
+ * step and nothing below it moves when the step changes.
  */
 export default function RealDemo(props: { data: RealDemoData }) {
   const [current, setCurrent] = createSignal(0);
-  const moment = createMemo(() => props.data.moments[current()]!);
-  const stem = createMemo(() => `${props.data.base}/real/${props.data.lang}-${moment().n}`);
+  let stack!: HTMLDivElement;
+  // On a phone the tab bar sticks under the header; a step whose top has scrolled under it is brought back into view.
+  const select = (i: number) => {
+    setCurrent(i);
+    const margin = Number.parseFloat(getComputedStyle(stack).scrollMarginTop);
+    if (stack.getBoundingClientRect().top < margin) stack.scrollIntoView({ block: "start" });
+  };
   return (
     <div class="rd">
       <div class="rd-tabs" role="tablist">
         <For each={props.data.moments}>
           {(m, i) => (
-            <button type="button" role="tab" aria-selected={current() === i()} classList={{ on: current() === i() }} onClick={() => setCurrent(i())}>
+            <button type="button" role="tab" aria-selected={current() === i()} classList={{ on: current() === i() }} onClick={() => select(i())}>
               <span class="n">{m.n}</span>
               {m.label}
             </button>
           )}
         </For>
       </div>
-      <div class="rd-body">
-        <p class="rd-cap" innerHTML={moment().caption} />
-        <picture class="rd-shot">
-          <source
-            media="(max-width: 760px)"
-            srcset={`${stem()}-mobile.png`}
-            width={moment().shot.mobile[0] / 2}
-            height={moment().shot.mobile[1] / 2}
-          />
-          <img
-            src={`${stem()}-desktop.png`}
-            alt={moment().alt}
-            width={moment().shot.desktop[0] / 2}
-            height={moment().shot.desktop[1] / 2}
-          />
-        </picture>
-        {/* Keyed: the pane is built anew for each moment, since its shape depends on the kind of message. */}
-        <Show when={moment()} keyed>
-          {(m) => <SentView sent={m.sent} data={props.data} />}
-        </Show>
+      <div class="rd-stack" ref={stack}>
+        <For each={props.data.moments}>{(m, i) => <Step moment={m} data={props.data} on={current() === i()} />}</For>
       </div>
       <p class="rd-prov">{props.data.provenance}</p>
     </div>

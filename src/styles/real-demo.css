@@ -42,6 +42,17 @@
   border-color: var(--line-strong);
   color: var(--text);
 }
+/* The steps overlap in one cell; the hidden ones still take space, so the stage is as tall as the tallest step. */
+.rd-stack {
+  display: grid;
+}
+.rd-stack > .rd-body {
+  grid-area: 1 / 1;
+  align-content: start;
+}
+.rd-body:not(.on) {
+  visibility: hidden;
+}
 /* Wide: the capture on the left; the caption and the model's side stacked on the right. */
 .rd-body {
   display: grid;
@@ -87,14 +98,19 @@
 }
 .rd-tag {
   padding: 2px 9px;
-  border: 1px solid var(--line-strong);
+  border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
   border-radius: 999px;
   font-size: 12px;
   white-space: nowrap;
-}
-.rd-tag.off-screen {
-  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
   color: var(--accent);
+}
+.rd-note {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--soft);
+}
+.rd-note code {
+  white-space: nowrap;
 }
 .rd-table {
   width: 100%;
@@ -146,7 +162,7 @@
   font-size: 12px;
   color: var(--dim);
 }
-/* A tool call the screen shows too: its facts as rows, not the text again. */
+/* Arguments of a call, one per row. */
 .rd-kv {
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr);
@@ -183,11 +199,25 @@
   }
 }
 @media (max-width: 760px) {
-  /* The steps stay reachable while the capture scrolls under the site header. */
+  /* The steps stay reachable while the capture scrolls under the site header. The bar is opaque and spans the
+     column, so text scrolling under it does not show between the buttons. */
   .rd-tabs {
     position: sticky;
     top: 64px;
     z-index: 2;
+    justify-self: stretch;
+    border-radius: 0;
+    border-width: 0 0 1px;
+    padding: 8px 0;
+  }
+  .rd-cap,
+  .rd-note,
+  .rd-gloss {
+    text-wrap: pretty;
+  }
+  /* Site header (64px) plus the sticky tab bar (51px) plus a gap: where a step starts after a tab is chosen. */
+  .rd-stack {
+    scroll-margin-top: 128px;
   }
   .rd-tabs button {
     padding: 0 11px;
