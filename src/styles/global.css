@@ -1,28 +1,49 @@
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource-variable/bricolage-grotesque";
+@import "@fontsource-variable/newsreader";
 
+/* Palette and type follow DESIGN.md. */
 :root {
-  color-scheme: dark;
-  --bg: #08090a;
-  --bg-raised: #0f1011;
-  --bg-panel: #151617;
-  --bg-hover: rgb(255 255 255 / 0.04);
-  --line: rgb(255 255 255 / 0.07);
-  --line-strong: rgb(255 255 255 / 0.12);
-  --text: #f7f8f8;
-  --soft: #d0d6e0;
-  --muted: #8a8f98;
-  --dim: #62666d;
-  --accent: #f7a823;
-  --accent-soft: rgb(247 168 35 / 0.12);
-  --human: #7cc4fa;
-  --agent: #c3b1fb;
-  --silent: #7fdba5;
-  --danger: #f2837d;
-  --warn: #e8c46b;
+  color-scheme: light;
+  --color-ember-orange: #ff4f00;
+  --color-cream-paper: #fffefb;
+  --color-parchment: #f8f4f0;
+  --color-stone-linen: #eceae3;
+  --color-driftwood: #c5c0b1;
+  --color-ash-mist: #b7b6b3;
+  --color-ink-brown: #201515;
+  --color-bark: #36342e;
+  --color-coffee-stone: #413735;
+  --color-stone-gray: #939084;
+
+  --bg: var(--color-cream-paper);
+  --bg-raised: var(--color-parchment);
+  --bg-panel: var(--color-cream-paper);
+  --bg-hover: rgb(32 21 21 / 0.04);
+  --line: var(--color-stone-linen);
+  --line-strong: var(--color-driftwood);
+  --text: var(--color-ink-brown);
+  --soft: var(--color-bark);
+  --muted: var(--color-coffee-stone);
+  --dim: var(--color-stone-gray);
+  --on-accent: var(--color-cream-paper);
+  --accent: var(--color-ember-orange);
+  --accent-hover: #e64700;
+  --accent-soft: rgb(255 79 0 / 0.08);
+  /* The three layers of the lifeline: human surface, agent primitives, silent governance. */
+  --human: #2c6e9e;
+  --agent: #7048b0;
+  --silent: #2e7d4f;
+  --danger: #c4312b;
+  --warn: #a76a00;
+  --shadow: 0 4px 24px rgb(32 21 21 / 0.08);
   --sans: "Inter Variable", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+  --display: "Bricolage Grotesque Variable", "Inter Variable", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+  --serif: "Newsreader Variable", "Songti SC", "Noto Serif SC", Georgia, serif;
   --mono: "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo, monospace;
-  --radius: 10px;
+  --radius: 8px;
+  --radius-pill: 20px;
   --page: 1200px;
   --gutter: clamp(20px, 4vw, 40px);
 }
@@ -39,6 +60,7 @@ html {
   font-family: var(--sans);
   font-size: 16px;
   line-height: 1.6;
+  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   scroll-behavior: smooth;
@@ -91,8 +113,9 @@ code {
   font-size: 0.86em;
   padding: 0.08em 0.32em;
   border-radius: 4px;
-  background: rgb(255 255 255 / 0.05);
+  background: var(--bg-raised);
   border: 1px solid var(--line);
+  letter-spacing: 0;
 }
 
 h1,
@@ -101,30 +124,51 @@ h3,
 h4 {
   margin: 0;
   color: var(--text);
-  font-weight: 520;
+  font-weight: 600;
   text-wrap: balance;
 }
 
+/* Display headings keep the display face's open, positive tracking. */
+h1,
+h2 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-feature-settings: "ss01" on;
+}
+
 h1 {
-  font-size: clamp(40px, 5.2vw, 64px);
-  letter-spacing: -0.032em;
+  font-size: clamp(40px, 5vw, 56px);
+  letter-spacing: 0.02em;
   line-height: 1.04;
 }
 
 h2 {
-  font-size: clamp(30px, 3.4vw, 44px);
-  letter-spacing: -0.026em;
-  line-height: 1.08;
+  font-size: clamp(30px, 3.2vw, 40px);
+  letter-spacing: 0.02em;
+  line-height: 1.1;
 }
 
 h3 {
   font-size: 16px;
-  font-weight: 560;
-  letter-spacing: -0.008em;
+  letter-spacing: -0.16px;
   line-height: 1.35;
 }
 
 :lang(zh) :is(h1, h2) {
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+/* The one editorial serif heading a page may carry. */
+.editorial {
+  font-family: var(--serif);
+  font-weight: 250;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+}
+
+:lang(zh) .editorial {
+  font-weight: 300;
   letter-spacing: 0;
   line-height: 1.2;
 }
@@ -141,11 +185,14 @@ p {
   padding-inline: var(--gutter);
 }
 
-/* Section kicker above a title: plain case, quiet grey. */
+/* Eyebrow label above a section title. */
 .kicker {
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 600;
   line-height: 1.4;
-  color: var(--muted);
+  letter-spacing: 0.042em;
+  text-transform: uppercase;
+  color: var(--accent);
 }
 
 /* A full-bleed hairline separates the major sections of a page. */
@@ -157,30 +204,31 @@ p {
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 38px;
-  padding: 0 16px;
-  border-radius: 8px;
-  font-size: 14px;
+  gap: 12px;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: var(--radius-pill);
+  font-size: 15px;
   font-weight: 500;
-  border: 1px solid var(--line-strong);
+  letter-spacing: -0.15px;
+  border: 1px solid var(--text);
+  background: var(--bg);
   color: var(--text);
-  transition: border-color 0.15s, background 0.15s;
+  transition: background 0.15s;
 }
 
 .btn:hover {
-  border-color: rgb(255 255 255 / 0.24);
-  background: var(--bg-hover);
+  background: var(--bg-raised);
 }
 
 .btn-primary {
-  background: var(--text);
-  color: var(--bg);
+  background: var(--accent);
+  color: var(--on-accent);
   border-color: transparent;
 }
 
 .btn-primary:hover {
-  background: #fff;
+  background: var(--accent-hover);
 }
 
 /* A quiet text link that ends in an arrow, as under a section lede. */
@@ -189,12 +237,14 @@ p {
   align-items: center;
   gap: 6px;
   font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.15px;
   color: var(--muted);
-  transition: color 0.15s;
 }
 
 .more:hover {
-  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .layer-human {
