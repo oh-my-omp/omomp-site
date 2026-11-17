@@ -341,7 +341,7 @@ const example = {
   .cols,
   .row {
     display: grid;
-    grid-template-columns: 220px minmax(0, 1.2fr) minmax(0, 1.6fr) 72px;
+    grid-template-columns: 220px minmax(0, 1.2fr) minmax(0, 1.6fr) 104px;
     grid-template-areas: "name mech policy go";
     column-gap: 24px;
     padding-inline: 20px;
@@ -358,7 +358,7 @@ const example = {
   }
   .c-policy,
   .policy .k {
-    color: var(--accent);
+    color: var(--dim);
   }
   .group {
     scroll-margin-top: 88px;
@@ -377,7 +377,7 @@ const example = {
     color: var(--soft);
   }
   h2 a:hover {
-    color: var(--accent);
+    color: var(--text);
   }
   .row {
     padding-block: 12px;
@@ -402,11 +402,11 @@ const example = {
   .mech {
     grid-area: mech;
   }
-  /* The replaceable half carries a thin accent rule, like the changed lines in the merge above. */
+  /* The replaceable half carries a thin rule that sets it apart from the fixed mechanism. */
   .policy {
     grid-area: policy;
     padding-left: 12px;
-    border-left: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+    border-left: 1px solid var(--line-strong);
   }
   .mech p,
   .policy p {
@@ -425,10 +425,16 @@ const example = {
   .go {
     grid-area: go;
     justify-self: end;
-    font-size: 13px;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.15px;
     line-height: 26px;
-    color: var(--accent);
+    color: var(--muted);
     white-space: nowrap;
+  }
+  .go:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
   @media (max-width: 860px) {
     .cols {
