@@ -1,11 +1,11 @@
-import { createEffect, createMemo, createSignal, For, on, onCleanup, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, For, on, onCleanup, onMount, Show } from "solid-js";
 import type { PlayerLabels, Step } from "../data/scenario";
 import type { Lang } from "../i18n";
 import HookMessage, { type HookKind } from "../slices/HookMessage";
 import PanelView from "../slices/Panel";
 import Transcript from "../slices/Transcript";
 import Window from "../slices/Window";
-import { anchorKey, beatsOf, dwell, keyOf, reveal } from "./replay-beats";
+import { anchorKey, beatsOf, dwell, keyOf, reveal, type Reveal } from "./replay-beats";
 import "../styles/replay.css";
 
 /** Pause after a step's last beat before the next step starts. */
@@ -15,18 +15,35 @@ const REDUCED_STEP_MS = 6000;
 
 /**
  * Where playback is. `shown` counts the beats of `step` on screen: a jump while paused shows the whole step,
- * playing reveals them one by one, a pause keeps whatever is on screen.
+ * playing reveals them one by one, a pause keeps whatever is on screen. `ended` is the whole last step after
+ * playback ran through it; Play starts over from the first step only from there.
  */
 type Playback =
   | { readonly kind: "paused"; readonly step: number; readonly shown: number }
-  | { readonly kind: "playing"; readonly step: number; readonly shown: number };
+  | { readonly kind: "playing"; readonly step: number; readonly shown: number }
+  | { readonly kind: "ended"; readonly step: number; readonly shown: number };
+
+/**
+ * Natural heights of one step's panes with every beat shown, measured from a hidden copy, and `room`: the height left
+ * for the split when the controls sit just below the site header, so controls, caption and panes share one screen.
+ */
+interface Fit {
+  readonly split: number;
+  readonly front: number;
+  readonly back: number;
+  readonly room: number;
+}
+
+/** The split never gets less room than this, however short the viewport; the panes scroll instead. */
+const MIN_ROOM = 360;
 
 const reducedMotion = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /**
- * The demo scenario as a split screen: on the left what the person sees, on the right what reached the model.
+ * The demo scenario as a split screen: what the person sees, and what reached the model.
  * Opens on step `start` (the first by default), fully shown. Play reveals each step beat by beat; when a hook fires, the hook and
- * the front element it reacts to light up together.
+ * the front element it reacts to light up together. The split is as tall as the current step needs with every beat shown,
+ * up to a height that fits the viewport, so a step never jumps while it plays and a short step leaves no empty pane.
  */
 export default function ReplayPlayer(props: {
   lang: Lang;
@@ -47,9 +64,11 @@ export default function ReplayPlayer(props: {
   const opening = Math.max(0, Math.min(last(), props.start ?? 0));
   const [state, setState] = createSignal<Playback>({ kind: "paused", step: opening, shown: beatCount(opening) });
   const [hover, setHover] = createSignal<number | undefined>(undefined);
+  const [fit, setFit] = createSignal<Fit | undefined>(undefined);
 
   const step = createMemo(() => props.steps[state().step]!);
   const rev = createMemo(() => reveal(step(), beats()[state().step]!, state().shown));
+  const whole = createMemo(() => reveal(step(), beats()[state().step]!, beatCount(state().step)));
   /** The hook lit up with its anchor: the one being pointed at, else the one that just fired. */
   const paired = createMemo((): { hook: number; anchor: string; tone: HookKind } | undefined => {
     const h = hover();
@@ -57,12 +76,15 @@ export default function ReplayPlayer(props: {
     if (h !== undefined && timed && rev().hooks.has(h)) return { hook: h, anchor: anchorKey(timed.anchor), tone: timed.hook.kind };
     return rev().firing;
   });
-  const lit = (key: string) => paired()?.anchor === key;
+  /** Tone of the element with this beat key while it is lit: a hook (`h<i>`) or the front element it reacts to. */
+  const toneOf = (key: string): HookKind | undefined => {
+    const p = paired();
+    return p && (key === p.anchor || key === `h${p.hook}`) ? p.tone : undefined;
+  };
 
   /** A slice cannot report its own length as the scenario total, so the total stays blank until the caller passes it. */
   const total = () => props.total ?? (props.firstNumber === undefined ? props.steps.length : undefined);
   const number = (i: number) => (props.firstNumber ?? 1) + i;
-  const atEnd = () => state().step === last() && state().shown >= beatCount(last());
 
   const progress = createMemo(() => {
     const all = beats().reduce((n, b) => n + b.length, 0);
@@ -85,21 +107,36 @@ export default function ReplayPlayer(props: {
 
   let root: HTMLDivElement | undefined;
   let head: HTMLDivElement | undefined;
+  let split: HTMLDivElement | undefined;
+  let measure: HTMLDivElement | undefined;
+  let caption: HTMLParagraphElement | undefined;
 
   /** Whole steps under reduced motion, otherwise one beat. */
   const firstShown = (s: number) => (reducedMotion() ? beatCount(s) : 1);
 
   const play = () => {
     const s = state();
-    if (atEnd()) setState({ kind: "playing", step: 0, shown: firstShown(0) });
-    else if (s.shown >= beatCount(s.step)) setState({ kind: "playing", step: s.step, shown: firstShown(s.step) });
-    else setState({ kind: "playing", step: s.step, shown: s.shown + 1 });
+    switch (s.kind) {
+      case "ended":
+        setState({ kind: "playing", step: 0, shown: firstShown(0) });
+        break;
+      case "paused":
+        setState(
+          s.shown >= beatCount(s.step)
+            ? { kind: "playing", step: s.step, shown: firstShown(s.step) }
+            : { kind: "playing", step: s.step, shown: s.shown + 1 },
+        );
+        break;
+      case "playing":
+        return;
+    }
     bringIntoView();
   };
   const pause = () => {
     const s = state();
     setState({ kind: "paused", step: s.step, shown: s.shown });
   };
+  const toggle = () => (state().kind === "playing" ? pause() : play());
   const go = (i: number) => {
     const target = Math.max(0, Math.min(last(), i));
     setHover(undefined);
@@ -110,13 +147,13 @@ export default function ReplayPlayer(props: {
     );
   };
 
-  /** One tick of playback: the next beat, else the next step, else stop on the last step. */
+  /** One tick of playback: the next beat, else the next step, else end on the last step. */
   const advance = () => {
     const s = state();
     if (s.kind !== "playing") return;
     if (s.shown < beatCount(s.step)) setState({ kind: "playing", step: s.step, shown: s.shown + 1 });
     else if (s.step < last()) setState({ kind: "playing", step: s.step + 1, shown: firstShown(s.step + 1) });
-    else setState({ kind: "paused", step: s.step, shown: s.shown });
+    else setState({ kind: "ended", step: s.step, shown: s.shown });
   };
 
   createEffect(() => {
@@ -135,8 +172,8 @@ export default function ReplayPlayer(props: {
   /** Keep the newest beat in view inside its pane; a new step starts both panes at the top. */
   createEffect(
     on(state, (s, prev) => {
-      if (!root) return;
-      const el = root;
+      if (!split) return;
+      const el = split;
       requestAnimationFrame(() => {
         const panes = [...el.querySelectorAll<HTMLElement>(".rp-scroll")];
         if (!prev || prev.step !== s.step) for (const p of panes) p.scrollTop = 0;
@@ -154,18 +191,49 @@ export default function ReplayPlayer(props: {
   );
 
   /**
+   * The hidden copy holds the current step with every beat shown; its size is the size the split needs. The room left
+   * under the controls changes with the viewport and with the head and caption of each step.
+   */
+  onMount(() => {
+    const el = measure;
+    const h = head;
+    const s = split;
+    if (!el || !h || !s) return;
+    const read = () => {
+      const [front, back] = [...el.children].map((c) => (c instanceof HTMLElement ? c.offsetHeight : 0));
+      const above = s.getBoundingClientRect().top - h.getBoundingClientRect().top;
+      setFit({ split: el.offsetHeight, front: front ?? 0, back: back ?? 0, room: Math.max(MIN_ROOM, window.innerHeight - headerBottom() - above) });
+    };
+    const ro = new ResizeObserver(read);
+    for (const watched of [el, h, caption]) if (watched) ro.observe(watched);
+    window.addEventListener("resize", read);
+    onCleanup(() => {
+      ro.disconnect();
+      window.removeEventListener("resize", read);
+    });
+  });
+  const splitStyle = () => {
+    const f = fit();
+    return f
+      ? {
+          "--rp-fit": `${f.split}px`,
+          "--rp-room": `${f.room}px`,
+          "--rp-rows": `minmax(0, ${Math.max(1, f.front)}fr) minmax(0, ${Math.max(1, f.back)}fr)`,
+        }
+      : undefined;
+  };
+
+  /**
    * Scrolls the page so the controls and both panes are on screen, when they are not already.
-   * The step bar comes along when everything fits below the site header; otherwise the controls lead.
+   * The step bar and caption come along when everything fits below the site header; otherwise the controls lead,
+   * and when even those do not fit with the panes, the panes do.
    */
   const bringIntoView = () => {
-    if (!head || !root) return;
-    const header = document.querySelector<HTMLElement>(".site-header");
-    const top = (header?.getBoundingClientRect().bottom ?? 0) + 12;
-    const h = head.getBoundingClientRect();
-    const r = root.getBoundingClientRect();
-    const split = root.querySelector<HTMLElement>(".rp-split")?.getBoundingClientRect();
-    const bottom = split?.bottom ?? h.bottom;
-    const lead = bottom - r.top <= window.innerHeight - top ? r.top : h.top;
+    if (!head || !root || !split) return;
+    const top = headerBottom();
+    const room = window.innerHeight - top;
+    const bottom = split.getBoundingClientRect().bottom;
+    const lead = [root.getBoundingClientRect().top, head.getBoundingClientRect().top].find((t) => bottom - t <= room) ?? split.getBoundingClientRect().top;
     if (lead >= top && bottom <= window.innerHeight) return;
     window.scrollTo({ top: window.scrollY + lead - top, behavior: reducedMotion() ? "auto" : "smooth" });
   };
@@ -180,16 +248,15 @@ export default function ReplayPlayer(props: {
       go(state().step + 1);
     } else if (e.key === " " && !t?.closest("button, a, input, textarea")) {
       e.preventDefault();
-      state().kind === "playing" ? pause() : play();
+      toggle();
     }
   };
 
-  /** One numbered tick per step; the current one fills as its beats appear. */
+  /** One numbered tick per step; the current one is filled. */
   const tick = ({ step: s, i }: { step: Step; i: number }) => (
     <button
       type="button"
       classList={{ on: i === state().step, past: i < state().step }}
-      style={i === state().step ? { "--p": `${Math.round((state().shown / Math.max(1, beatCount(i))) * 100)}%` } : undefined}
       aria-label={`${props.labels.step} ${number(i)}: ${s.title}`}
       aria-current={i === state().step ? "step" : undefined}
       onClick={() => go(i)}
@@ -197,6 +264,17 @@ export default function ReplayPlayer(props: {
       <span>{number(i)}</span>
     </button>
   );
+
+  const playLabel = () => {
+    switch (state().kind) {
+      case "playing":
+        return props.labels.pause;
+      case "ended":
+        return props.labels.again;
+      case "paused":
+        return props.labels.play;
+    }
+  };
 
   return (
     <div
@@ -248,8 +326,8 @@ export default function ReplayPlayer(props: {
               <button type="button" class="rp-btn" aria-label={props.labels.prev} disabled={state().step === 0} onClick={() => go(state().step - 1)}>
                 ←
               </button>
-              <button type="button" class="rp-btn rp-play" onClick={() => (state().kind === "playing" ? pause() : play())}>
-                {state().kind === "playing" ? props.labels.pause : atEnd() ? props.labels.again : props.labels.play}
+              <button type="button" class="rp-btn rp-play" onClick={toggle}>
+                {playLabel()}
               </button>
               <button type="button" class="rp-btn" aria-label={props.labels.next} disabled={state().step === last()} onClick={() => go(state().step + 1)}>
                 →
@@ -261,71 +339,105 @@ export default function ReplayPlayer(props: {
       <div class="rp-progress" aria-hidden="true">
         <span style={{ width: `${(progress() * 100).toFixed(2)}%` }} />
       </div>
-      <p class="rp-caption">{step().caption}</p>
+      <p class="rp-caption" ref={caption}>
+        {step().caption}
+      </p>
 
-      <div class="rp-split">
-        <section class="rp-front" aria-label={props.labels.front}>
-          <span class="rp-side">{props.labels.front}</span>
-          <Window class="rp-win" tabs={["shop-api"]} meta="omp">
-            <div class="rp-scroll rp-panels">
-              <For each={step().front}>
-                {(panel, i) => (
-                  <Show when={rev().panels.has(i())}>
-                    {panel.kind === "transcript" ? (
-                      <div class="rp-beat rp-tx" data-beat-key={`p${i()}`} classList={{ lit: lit(`p${i()}`) }} data-tone={lit(`p${i()}`) ? paired()?.tone : undefined}>
-                        <For each={panel.lines.slice(0, rev().panels.get(i()) ?? 0)}>
-                          {(line, j) => (
-                            <div
-                              class="rp-beat"
-                              data-beat-key={`l${i()}.${j()}`}
-                              classList={{ lit: lit(`l${i()}.${j()}`) }}
-                              data-tone={lit(`l${i()}.${j()}`) ? paired()?.tone : undefined}
-                            >
-                              <Transcript lines={[line]} />
-                            </div>
-                          )}
-                        </For>
-                      </div>
-                    ) : (
-                      <div class="rp-beat" data-beat-key={`p${i()}`} classList={{ lit: lit(`p${i()}`) }} data-tone={lit(`p${i()}`) ? paired()?.tone : undefined}>
-                        <PanelView lang={props.lang} panel={panel} compact={!!props.compact} />
-                      </div>
-                    )}
-                  </Show>
-                )}
-              </For>
-            </div>
-          </Window>
-        </section>
-        <section class="rp-back" aria-label={props.labels.back}>
-          <span class="rp-side">{props.labels.back}</span>
-          <div class="rp-scroll rp-hooks">
-            <Show when={step().hooks.length > 0} fallback={<p class="rp-quiet">{props.labels.quiet}</p>}>
-              <For each={step().hooks}>
-                {(timed, i) => (
-                  <Show when={rev().hooks.has(i())}>
-                    <div
-                      class="rp-beat"
-                      data-beat-key={`h${i()}`}
-                      classList={{ lit: paired()?.hook === i() }}
-                      data-tone={paired()?.hook === i() ? timed.hook.kind : undefined}
-                      onMouseEnter={() => setHover(i())}
-                      onMouseLeave={() => setHover(undefined)}
-                      onFocusIn={() => setHover(i())}
-                      onFocusOut={() => setHover(undefined)}
-                      tabIndex={0}
-                    >
-                      <HookMessage hook={timed.hook} />
-                    </div>
-                  </Show>
-                )}
-              </For>
-            </Show>
-          </div>
-        </section>
+      <div class="rp-split" ref={split} style={splitStyle()}>
+        <Panes step={step()} rev={rev()} labels={props.labels} lang={props.lang} compact={!!props.compact} tone={toneOf} onHover={setHover} keyed />
+      </div>
+      <div class="rp-measure" aria-hidden="true" inert>
+        <div class="rp-split" ref={measure}>
+          <Panes step={step()} rev={whole()} labels={props.labels} lang={props.lang} compact={!!props.compact} tone={() => undefined} keyed={false} />
+        </div>
       </div>
     </div>
   );
+}
+
+/**
+ * The two panes of one step as far as `rev` reveals it. `keyed` marks each beat with its `data-beat-key` and makes hooks
+ * focusable, for the live split that playback scrolls and lights; the hidden measuring copy leaves both out.
+ */
+function Panes(props: {
+  step: Step;
+  rev: Reveal;
+  labels: PlayerLabels;
+  lang: Lang;
+  compact: boolean;
+  tone: (key: string) => HookKind | undefined;
+  onHover?: (hook: number | undefined) => void;
+  keyed: boolean;
+}) {
+  const key = (k: string) => (props.keyed ? k : undefined);
+  return (
+    <>
+      <section class="rp-front" aria-label={props.labels.front}>
+        <span class="rp-side">{props.labels.front}</span>
+        <Window class="rp-win" tabs={["shop-api"]} meta="omp">
+          <div class="rp-scroll rp-panels">
+            <For each={props.step.front}>
+              {(panel, i) => (
+                <Show when={props.rev.panels.has(i())}>
+                  {panel.kind === "transcript" ? (
+                    <div class="rp-beat rp-tx" data-beat-key={key(`p${i()}`)} classList={{ lit: !!props.tone(`p${i()}`) }} data-tone={props.tone(`p${i()}`)}>
+                      <For each={panel.lines.slice(0, props.rev.panels.get(i()) ?? 0)}>
+                        {(line, j) => (
+                          <div
+                            class="rp-beat"
+                            data-beat-key={key(`l${i()}.${j()}`)}
+                            classList={{ lit: !!props.tone(`l${i()}.${j()}`) }}
+                            data-tone={props.tone(`l${i()}.${j()}`)}
+                          >
+                            <Transcript lines={[line]} />
+                          </div>
+                        )}
+                      </For>
+                    </div>
+                  ) : (
+                    <div class="rp-beat" data-beat-key={key(`p${i()}`)} classList={{ lit: !!props.tone(`p${i()}`) }} data-tone={props.tone(`p${i()}`)}>
+                      <PanelView lang={props.lang} panel={panel} compact={props.compact} />
+                    </div>
+                  )}
+                </Show>
+              )}
+            </For>
+          </div>
+        </Window>
+      </section>
+      <section class="rp-back" aria-label={props.labels.back}>
+        <span class="rp-side">{props.labels.back}</span>
+        <div class="rp-scroll rp-hooks">
+          <Show when={props.step.hooks.length > 0} fallback={<p class="rp-quiet">{props.labels.quiet}</p>}>
+            <For each={props.step.hooks}>
+              {(timed, i) => (
+                <Show when={props.rev.hooks.has(i())}>
+                  <div
+                    class="rp-beat"
+                    data-beat-key={key(`h${i()}`)}
+                    classList={{ lit: !!props.tone(`h${i()}`) }}
+                    data-tone={props.tone(`h${i()}`)}
+                    onMouseEnter={() => props.onHover?.(i())}
+                    onMouseLeave={() => props.onHover?.(undefined)}
+                    onFocusIn={() => props.onHover?.(i())}
+                    onFocusOut={() => props.onHover?.(undefined)}
+                    tabIndex={props.keyed ? 0 : undefined}
+                  >
+                    <HookMessage hook={timed.hook} />
+                  </div>
+                </Show>
+              )}
+            </For>
+          </Show>
+        </div>
+      </section>
+    </>
+  );
+}
+
+/** Where content may start below the sticky site header, with a small margin. */
+function headerBottom(): number {
+  return (document.querySelector<HTMLElement>(".site-header")?.getBoundingClientRect().bottom ?? 0) + 12;
 }
 
 /** Scrolls an element's pane (not the page) so the element shows: its top for `start`, its bottom for `end`. */

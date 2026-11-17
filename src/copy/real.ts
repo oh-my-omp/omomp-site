@@ -17,8 +17,8 @@ export const real = {
   demo: {
     /** One line above the steps; the stage has no heading of its own, so the first screen has one headline. */
     intro: {
-      en: "One real session in Tern: the screen on the left, what the model got on the right.",
-      zh: "一次真实的 Tern 会话：左边是屏幕，右边是模型实际收到的。",
+      en: "One real session in Tern: what you saw on screen, and what the model got.",
+      zh: "一次真实的 Tern 会话：你在屏幕上看到的，和模型实际收到的。",
     },
     moments: {
       ask: {

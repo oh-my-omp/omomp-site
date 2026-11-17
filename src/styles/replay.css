@@ -1,5 +1,6 @@
 /* Replay player: the demo scenario as a split screen (src/islands/ReplayPlayer.tsx). */
 .rp {
+  position: relative;
   display: grid;
   gap: 20px;
 }
@@ -51,11 +52,10 @@
 .rp-ticks button.past {
   color: var(--muted);
 }
-/* The current step fills from left to right as its beats appear. */
 .rp-ticks button.on {
   color: var(--bg);
   border-color: var(--text);
-  background: linear-gradient(90deg, var(--text) var(--p, 100%), rgb(32 21 21 / 0.55) var(--p, 100%));
+  background: var(--text);
 }
 
 .rp-head {
@@ -149,15 +149,40 @@
 
 /*
  * Split: the screen the person sees, and the messages that reached the model without showing there.
- * The split keeps one height that fits the viewport; each pane scrolls inside it and follows the newest beat,
- * so a change never happens off screen.
+ * The split is as tall as the current step needs with every beat shown (`--rp-fit`), up to the room left on screen
+ * under the controls and caption (`--rp-room`), both measured by the player; past that each pane scrolls inside it and
+ * follows the newest beat, so a change never happens off screen. Before the player measures, an estimate applies.
  */
 .rp-split {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
   gap: 20px;
-  height: clamp(380px, calc(100vh - 380px), 700px);
-  height: clamp(380px, calc(100svh - 380px), 700px);
+  height: min(var(--rp-fit, 100vh), var(--rp-room, clamp(380px, calc(100vh - 380px), 700px)));
+  height: min(var(--rp-fit, 100svh), var(--rp-room, clamp(380px, calc(100svh - 380px), 700px)));
+  transition: height 0.3s ease;
+}
+/* The hidden copy of the current step, fully shown at its natural height, that `--rp-fit` is measured from. */
+.rp-measure {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+}
+.rp-measure .rp-split {
+  height: auto;
+  align-items: start;
+  transition: none;
+}
+.rp-measure .rp-scroll {
+  overflow: visible;
+}
+.rp-measure .rp-scroll,
+.rp-measure .rp-beat {
+  animation: none;
+  mask-image: none;
 }
 .rp-front,
 .rp-back {
@@ -258,6 +283,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .rp-beat,
+  .rp-split,
   .rp-progress span {
     animation: none;
     transition: none;
@@ -295,19 +321,19 @@
 }
 
 /*
- * Narrow: the two panes stack inside the same fitted height, the screen above the messages.
- * The caption moves below them so the controls and both panes fit one screen while playing.
+ * Narrow: the two panes stack, the screen above the messages. Each pane gets the share of the split its content needs
+ * (`--rp-rows`, measured by the player), so both fit whole when the split does.
  */
 @media (max-width: 900px) {
   .rp-split {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1.2fr) minmax(0, 1fr);
+    grid-template-rows: var(--rp-rows, minmax(0, 1.2fr) minmax(0, 1fr));
     gap: 14px;
-    height: clamp(420px, calc(100vh - 230px), 760px);
-    height: clamp(420px, calc(100svh - 230px), 760px);
+    height: min(var(--rp-fit, 100vh), var(--rp-room, clamp(360px, calc(100vh - 330px), 760px)));
+    height: min(var(--rp-fit, 100svh), var(--rp-room, clamp(360px, calc(100svh - 330px), 760px)));
   }
-  .rp-caption {
-    order: 1;
+  .rp-measure .rp-split {
+    grid-template-rows: auto auto;
   }
   .rp-front,
   .rp-back {
