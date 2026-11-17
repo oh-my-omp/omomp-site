@@ -516,7 +516,7 @@
   padding: 8px 10px;
   border: 1px solid var(--line-strong);
   border-radius: 7px;
-  background: #0b0c0d;
+  background: var(--bg-raised);
   font-family: var(--mono);
   font-size: 10.5px;
   line-height: 1.55;
@@ -550,7 +550,7 @@
   margin: -58px 0 0 28px;
   position: relative;
   z-index: 1;
-  box-shadow: 0 -10px 24px rgb(0 0 0 / 0.45);
+  box-shadow: 0 -6px 24px rgb(32 21 21 / 0.1);
   border-radius: 8px;
 }
 .hx-key {

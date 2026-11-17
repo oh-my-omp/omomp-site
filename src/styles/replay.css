@@ -54,7 +54,7 @@
 .rp-ticks button.on {
   color: var(--bg);
   border-color: var(--text);
-  background: linear-gradient(90deg, var(--text) var(--p, 100%), rgb(255 255 255 / 0.55) var(--p, 100%));
+  background: linear-gradient(90deg, var(--text) var(--p, 100%), rgb(32 21 21 / 0.55) var(--p, 100%));
 }
 
 .rp-head {
@@ -108,8 +108,8 @@
   border-color: var(--muted);
 }
 .rp-btn:disabled {
-  color: rgb(255 255 255 / 0.35);
-  border-color: rgb(255 255 255 / 0.16);
+  color: rgb(32 21 21 / 0.35);
+  border-color: rgb(32 21 21 / 0.16);
   cursor: default;
 }
 .rp-play {
