@@ -39,7 +39,7 @@ const { hub, around } = product.data.roles;
 
 <Base lang={lang} title={product.data.name} description={product.data.tagline[lang]}>
   <section class="lead">
-    <SplitHead level={1} kicker={`${t(copy.kicker, lang)} · ${product.data.name}`} title={product.data.headline[lang]} lede={product.data.intro[lang]}>
+    <SplitHead level={1} kicker={t(copy.kicker, lang)} kickerName={product.data.name} title={product.data.headline[lang]} lede={product.data.intro[lang]}>
       <div class="top">
         <a class="btn" href={product.data.repo}>{t(copy.repo, lang)} ↗</a>
         <nav class="seg switch" aria-label={t(copy.all, lang)}>
@@ -120,7 +120,7 @@ const { hub, around } = product.data.roles;
 <style>
   /* Page top: a split head whose title is the page's h1, with the product's stage below. */
   .lead {
-    padding-block: clamp(72px, 11vw, 140px) clamp(72px, 10vw, 128px);
+    padding-block: clamp(72px, 11vw, 140px) clamp(32px, 4vw, 48px);
   }
   .top {
     display: flex;

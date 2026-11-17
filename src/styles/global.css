@@ -195,10 +195,16 @@ p {
   color: var(--accent);
 }
 
-/* A full-bleed hairline separates the major sections of a page. */
+.kicker-name {
+  font-family: var(--mono);
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Major sections flow on with no visible divider; the space between two of them is 64–96px. */
 .section {
-  border-top: 1px solid var(--line);
-  padding-block: clamp(72px, 10vw, 128px);
+  padding-block: clamp(32px, 4vw, 48px);
 }
 
 .btn {
