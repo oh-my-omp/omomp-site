@@ -5,7 +5,7 @@ import HookMessage, { type HookKind } from "../slices/HookMessage";
 import PanelView from "../slices/Panel";
 import Transcript from "../slices/Transcript";
 import Window from "../slices/Window";
-import { anchorKey, beatsOf, dwell, keyOf, reveal, type Reveal } from "./replay-beats";
+import { anchorKey, beatsOf, dwell, keyOf, reveal, type Beat, type Reveal } from "./replay-beats";
 import "../styles/replay.css";
 
 /** Pause after a step's last beat before the next step starts. */
@@ -24,13 +24,12 @@ type Playback =
   | { readonly kind: "ended"; readonly step: number; readonly shown: number };
 
 /**
- * Natural heights of one step's panes with every beat shown, measured from a hidden copy, and `room`: the height left
- * for the split when the controls sit just below the site header, so controls, caption and panes share one screen.
+ * `split`: the natural height of the panes with every beat of the current step shown, measured from a hidden copy.
+ * `room`: the height left for them when the controls sit just below the site header, so controls, caption and panes
+ * share one screen.
  */
 interface Fit {
   readonly split: number;
-  readonly front: number;
-  readonly back: number;
   readonly room: number;
 }
 
@@ -69,8 +68,13 @@ export default function ReplayPlayer(props: {
   const step = createMemo(() => props.steps[state().step]!);
   const rev = createMemo(() => reveal(step(), beats()[state().step]!, state().shown));
   const whole = createMemo(() => reveal(step(), beats()[state().step]!, beatCount(state().step)));
-  /** The hook lit up with its anchor: the one being pointed at, else the one that just fired. */
+  /**
+   * The hook lit up with its anchor: while playing, the one that just fired; otherwise the one being pointed at, else
+   * the one that fired last. Playback ignores the pointer: after Play scrolls the page, a resting cursor lands on the
+   * back pane and would otherwise hold one hook lit over every later one.
+   */
   const paired = createMemo((): { hook: number; anchor: string; tone: HookKind } | undefined => {
+    if (state().kind === "playing") return rev().firing;
     const h = hover();
     const timed = h === undefined ? undefined : step().hooks[h];
     if (h !== undefined && timed && rev().hooks.has(h)) return { hook: h, anchor: anchorKey(timed.anchor), tone: timed.hook.kind };
@@ -105,7 +109,6 @@ export default function ReplayPlayer(props: {
     return out;
   });
 
-  let root: HTMLDivElement | undefined;
   let head: HTMLDivElement | undefined;
   let split: HTMLDivElement | undefined;
   let measure: HTMLDivElement | undefined;
@@ -162,11 +165,22 @@ export default function ReplayPlayer(props: {
     const stepBeats = beats()[s.step]!;
     const done = s.shown >= stepBeats.length;
     const current = stepBeats[s.shown - 1];
-    const delay = reducedMotion()
-      ? Math.max(REDUCED_STEP_MS, stepBeats.reduce((n, b, i) => n + dwell(props.steps[s.step]!, b, stepBeats[i + 1]), 0))
-      : (current ? dwell(props.steps[s.step]!, current, stepBeats[s.shown]) : 0) + (done ? STEP_GAP_MS : 0);
-    const timer = window.setTimeout(advance, delay);
-    onCleanup(() => window.clearTimeout(timer));
+    /** What a beat put on screen, read back from the live split, which already shows it when this effect runs. */
+    const el = (b: Beat) => split?.querySelector<HTMLElement>(`[data-beat-key="${keyOf(b)}"]`) ?? null;
+    const text = (b: Beat) => el(b)?.textContent ?? "";
+    if (reducedMotion()) {
+      const delay = Math.max(REDUCED_STEP_MS, stepBeats.reduce((n, b, i) => n + dwell(b, stepBeats[i + 1], text(b)), 0));
+      const timer = window.setTimeout(advance, delay);
+      onCleanup(() => window.clearTimeout(timer));
+      return;
+    }
+    const stay = current ? dwell(current, stepBeats[s.shown], text(current)) : 0;
+    const timer = window.setTimeout(advance, stay + (done ? STEP_GAP_MS : 0));
+    const stopGlide = current ? glide(el(current), stay) : undefined;
+    onCleanup(() => {
+      window.clearTimeout(timer);
+      stopGlide?.();
+    });
   });
 
   /** Keep the newest beat in view inside its pane; a new step starts both panes at the top. */
@@ -200,9 +214,8 @@ export default function ReplayPlayer(props: {
     const s = split;
     if (!el || !h || !s) return;
     const read = () => {
-      const [front, back] = [...el.children].map((c) => (c instanceof HTMLElement ? c.offsetHeight : 0));
       const above = s.getBoundingClientRect().top - h.getBoundingClientRect().top;
-      setFit({ split: el.offsetHeight, front: front ?? 0, back: back ?? 0, room: Math.max(MIN_ROOM, window.innerHeight - headerBottom() - above) });
+      setFit({ split: el.offsetHeight, room: Math.max(MIN_ROOM, window.innerHeight - headerBottom() - above) });
     };
     const ro = new ResizeObserver(read);
     for (const watched of [el, h, caption]) if (watched) ro.observe(watched);
@@ -214,28 +227,18 @@ export default function ReplayPlayer(props: {
   });
   const splitStyle = () => {
     const f = fit();
-    return f
-      ? {
-          "--rp-fit": `${f.split}px`,
-          "--rp-room": `${f.room}px`,
-          "--rp-rows": `minmax(0, ${Math.max(1, f.front)}fr) minmax(0, ${Math.max(1, f.back)}fr)`,
-        }
-      : undefined;
+    return f ? { "--rp-fit": `${f.split}px`, "--rp-room": `${f.room}px` } : undefined;
   };
 
   /**
-   * Scrolls the page so the controls and both panes are on screen, when they are not already.
-   * The step bar and caption come along when everything fits below the site header; otherwise the controls lead,
-   * and when even those do not fit with the panes, the panes do.
+   * Scrolls the page so the controls sit just below the site header. The split's height is capped at the room left
+   * under them (`Fit.room`), so from there every step of the playback, however tall, stays on screen.
    */
   const bringIntoView = () => {
-    if (!head || !root || !split) return;
-    const top = headerBottom();
-    const room = window.innerHeight - top;
-    const bottom = split.getBoundingClientRect().bottom;
-    const lead = [root.getBoundingClientRect().top, head.getBoundingClientRect().top].find((t) => bottom - t <= room) ?? split.getBoundingClientRect().top;
-    if (lead >= top && bottom <= window.innerHeight) return;
-    window.scrollTo({ top: window.scrollY + lead - top, behavior: reducedMotion() ? "auto" : "smooth" });
+    if (!head) return;
+    const offset = head.getBoundingClientRect().top - headerBottom();
+    if (Math.abs(offset) < 2) return;
+    window.scrollTo({ top: window.scrollY + offset, behavior: reducedMotion() ? "auto" : "smooth" });
   };
 
   const onKey = (e: KeyboardEvent) => {
@@ -280,7 +283,6 @@ export default function ReplayPlayer(props: {
     <div
       class="rp"
       classList={{ compact: !!props.compact, playing: state().kind === "playing" }}
-      ref={root}
       onKeyDown={onKey}
     >
       <Show when={groups().length > 1}>
@@ -433,6 +435,41 @@ function Panes(props: {
       </section>
     </>
   );
+}
+
+/** How long a beat taller than its pane holds still before gliding, and how long its end shows before the next beat. */
+const GLIDE_HOLD_MS = 1500;
+const GLIDE_TAIL_MS = 1200;
+
+/**
+ * Scrolls a beat that is taller than its pane down through the pane while it is the newest one, so its end has shown
+ * by the time the next beat appears. Stops as soon as someone else scrolls the pane. Returns the cancel function.
+ */
+function glide(el: HTMLElement | null, stay: number): () => void {
+  const pane = el?.closest<HTMLElement>(".rp-scroll");
+  const run = stay - GLIDE_HOLD_MS - GLIDE_TAIL_MS;
+  if (!el || !pane || run <= 0) return () => {};
+  let raf = 0;
+  const hold = window.setTimeout(() => {
+    const below = el.getBoundingClientRect().bottom - pane.getBoundingClientRect().bottom + 12;
+    if (below <= 0) return;
+    const from = pane.scrollTop;
+    let last = from;
+    let t0: number | undefined;
+    const frame = (t: number) => {
+      if (Math.abs(pane.scrollTop - last) > 2) return;
+      t0 ??= t;
+      const k = Math.min(1, (t - t0) / run);
+      pane.scrollTop = from + below * k;
+      last = pane.scrollTop;
+      if (k < 1) raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+  }, GLIDE_HOLD_MS);
+  return () => {
+    window.clearTimeout(hold);
+    window.cancelAnimationFrame(raf);
+  };
 }
 
 /** Where content may start below the sticky site header, with a small margin. */

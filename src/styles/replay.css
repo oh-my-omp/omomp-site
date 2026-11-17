@@ -161,6 +161,14 @@
   height: min(var(--rp-fit, 100svh), var(--rp-room, clamp(380px, calc(100svh - 380px), 700px)));
   transition: height 0.3s ease;
 }
+/*
+ * While playing, the split's slot keeps the full room below the pinned controls even when a step needs less, so the
+ * page never gets shorter under a short step; otherwise the browser scrolls it back and the next tall step runs past
+ * the bottom of the screen.
+ */
+.rp.playing .rp-split {
+  margin-bottom: calc(var(--rp-room, 0px) - min(var(--rp-fit, 0px), var(--rp-room, 0px)));
+}
 /* The hidden copy of the current step, fully shown at its natural height, that `--rp-fit` is measured from. */
 .rp-measure {
   position: absolute;
@@ -267,6 +275,14 @@
   box-shadow: 0 0 0 1px var(--tone);
   background-color: color-mix(in srgb, var(--tone) 6%, transparent);
 }
+/* A transcript line starts with its status glyph at its very edge; the ring stands 6px clear of it, tinted inside. */
+.rp-tx > .rp-beat.lit {
+  --tint: color-mix(in srgb, var(--tone) 6%, var(--bg-panel));
+  background-color: var(--tint);
+  box-shadow:
+    0 0 0 6px var(--tint),
+    0 0 0 7px var(--tone);
+}
 .rp-hooks > .rp-beat:focus-visible {
   outline: 2px solid var(--muted);
   outline-offset: 2px;
@@ -321,13 +337,14 @@
 }
 
 /*
- * Narrow: the two panes stack, the screen above the messages. Each pane gets the share of the split its content needs
- * (`--rp-rows`, measured by the player), so both fit whole when the split does.
+ * Narrow: the two panes stack, the screen above the messages. Each row is as tall as what is on screen in it so far;
+ * when both outgrow the split they share it evenly, so the screen keeps its room until messages to the model arrive.
  */
 @media (max-width: 900px) {
   .rp-split {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: var(--rp-rows, minmax(0, 1.2fr) minmax(0, 1fr));
+    grid-template-rows: minmax(0, auto) minmax(0, auto);
+    align-content: start;
     gap: 14px;
     height: min(var(--rp-fit, 100vh), var(--rp-room, clamp(360px, calc(100vh - 330px), 760px)));
     height: min(var(--rp-fit, 100svh), var(--rp-room, clamp(360px, calc(100svh - 330px), 760px)));

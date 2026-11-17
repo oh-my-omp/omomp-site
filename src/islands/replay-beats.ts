@@ -1,6 +1,5 @@
 import type { HookKind } from "../slices/HookMessage";
 import type { Anchor, Step } from "../data/scenario";
-import type { TLine } from "../slices/Transcript";
 
 /**
  * One unit of playback inside a step. The front is revealed a transcript line or a whole panel at a time;
@@ -51,33 +50,23 @@ export function beatsOf(step: Step): readonly Beat[] {
   return out;
 }
 
-/** How long a beat stays the newest one before the next appears, in milliseconds. */
-export function dwell(step: Step, beat: Beat, next: Beat | undefined): number {
+/** Milliseconds per Latin character at a skimming pace; a CJK character counts as 2.5 of them. */
+const MS_PER_CHAR = 30;
+const CJK = /[\u3000-\u9fff\uff00-\uffef]/;
+/** Shortest and longest time a beat stays the newest one; past the cap a reader pauses to finish it. */
+const MIN_DWELL = { line: 1200, panel: 2000, hook: 2500 } as const;
+const MAX_DWELL = 12000;
+
+/**
+ * How long a beat stays the newest one before the next appears, in milliseconds, from `text`: what the beat put on
+ * screen, as rendered (a hook's translation included).
+ */
+export function dwell(beat: Beat, next: Beat | undefined, text: string): number {
   // A hook reacts to the element just revealed, so it lands right after it; reading time comes after the hook.
   if (beat.kind !== "hook" && next?.kind === "hook") return 600;
-  switch (beat.kind) {
-    case "line": {
-      const p = step.front[beat.panel];
-      const line = p?.kind === "transcript" ? p.lines[beat.line] : undefined;
-      return Math.min(2600, 1100 + (line ? lineLength(line) : 0) * 8);
-    }
-    case "panel":
-      return 2600;
-    case "hook":
-      return 3200;
-  }
-}
-
-function lineLength(line: TLine): number {
-  switch (line.kind) {
-    case "user":
-    case "say":
-      return line.text.length;
-    case "call":
-      return line.args.length + (line.result?.length ?? 0);
-    case "card":
-      return line.head.length + (line.text?.length ?? 0);
-  }
+  let units = 0;
+  for (const ch of text.replace(/\s+/g, " ").trim()) units += CJK.test(ch) ? 2.5 : 1;
+  return Math.min(MAX_DWELL, Math.max(MIN_DWELL[beat.kind], 900 + Math.round(units * MS_PER_CHAR)));
 }
 
 /** The element a beat reveals, as a key the rendered DOM carries in `data-beat-key`. */
