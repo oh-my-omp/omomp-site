@@ -8,12 +8,12 @@ function Badge() {
   return (
     <span class="st-dispatch-badge">
       <svg viewBox="0 0 12 12" aria-hidden="true">
-        <circle cx="6" cy="6" r="1.4" fill="#fff" />
-        <circle cx="6" cy="1.6" r="1.1" fill="#fff" />
-        <circle cx="10.4" cy="6" r="1.1" fill="#fff" />
-        <circle cx="6" cy="10.4" r="1.1" fill="#fff" />
-        <circle cx="1.6" cy="6" r="1.1" fill="#fff" />
-        <path d="M6 2.7v1.9M9.3 6H7.4M6 9.3V7.4M2.7 6h1.9" stroke="#fff" stroke-width="0.7" />
+        <circle cx="6" cy="6" r="1.4" fill="currentColor" />
+        <circle cx="6" cy="1.6" r="1.1" fill="currentColor" />
+        <circle cx="10.4" cy="6" r="1.1" fill="currentColor" />
+        <circle cx="6" cy="10.4" r="1.1" fill="currentColor" />
+        <circle cx="1.6" cy="6" r="1.1" fill="currentColor" />
+        <path d="M6 2.7v1.9M9.3 6H7.4M6 9.3V7.4M2.7 6h1.9" stroke="currentColor" stroke-width="0.7" />
       </svg>
       Coordinate with Dispatch
     </span>

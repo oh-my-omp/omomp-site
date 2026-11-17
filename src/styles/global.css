@@ -31,12 +31,12 @@
   --accent: var(--color-ember-orange);
   --accent-hover: #e64700;
   --accent-soft: rgb(255 79 0 / 0.08);
-  /* The three layers of the lifeline: human surface, agent primitives, silent governance. */
-  --human: #2c6e9e;
-  --agent: #7048b0;
-  --silent: #2e7d4f;
-  --danger: #c4312b;
-  --warn: #a76a00;
+  /* Layers and hook outcomes use the DESIGN.md palette only. */
+  --human: var(--color-ember-orange);
+  --agent: var(--color-ink-brown);
+  --silent: var(--color-stone-gray);
+  --danger: var(--color-ember-orange);
+  --warn: var(--color-coffee-stone);
   --shadow: 0 4px 24px rgb(32 21 21 / 0.08);
   --sans: "Inter Variable", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
   --display: "Bricolage Grotesque Variable", "Inter Variable", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
