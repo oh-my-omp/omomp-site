@@ -182,7 +182,7 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
   </section>
 
   <section class="section last">
-    <SplitHead title={t(home.next.title, lang)} />
+    <SplitHead title={t(home.next.title, lang)} editorial />
     <div class="wrap body">
       <ul class="next">
         {
@@ -248,7 +248,7 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     gap: 1px;
     background: var(--line);
     border: 1px solid var(--line);
-    border-radius: 14px;
+    border-radius: var(--radius);
     overflow: hidden;
   }
   .card {
@@ -265,7 +265,7 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     transition: background 0.15s;
   }
   .card:hover {
-    background: #0c0d0e;
+    background: var(--bg-raised);
   }
   /* omp-config spans the row: what it is on the left, the pipeline on the right. */
   .card[data-repo="omp-config"] {

@@ -275,12 +275,12 @@ const example = {
   .via::after {
     content: "";
     flex: 1;
-    border-top: 1px dashed rgb(255 255 255 / 0.22);
+    border-top: 1px dashed rgb(32 21 21 / 0.22);
   }
   .merge-mech {
     margin-top: 2px;
     padding-top: 8px;
-    border-top: 3px solid rgb(255 255 255 / 0.32);
+    border-top: 3px solid rgb(32 21 21 / 0.32);
     font-size: 12px;
     color: var(--muted);
   }
@@ -305,7 +305,7 @@ const example = {
   /* The index reads as one panel: a title bar with the layer key, a column header, then one block per seam. */
   .index {
     border: 1px solid var(--line-strong);
-    border-radius: 10px;
+    border-radius: var(--radius);
     background: var(--bg-panel);
     overflow: hidden;
   }

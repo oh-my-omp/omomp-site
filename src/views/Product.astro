@@ -174,7 +174,7 @@ const { hub, around } = product.data.roles;
     width: min(100%, 460px);
     padding: 18px 22px;
     border: 1px solid var(--line-strong);
-    border-radius: 12px;
+    border-radius: var(--radius);
     background: var(--bg-panel);
     text-align: center;
   }
@@ -186,7 +186,7 @@ const { hub, around } = product.data.roles;
     font-size: 14.5px;
   }
   .spokes {
-    --arrow: rgb(255 255 255 / 0.22);
+    --arrow: rgb(32 21 21 / 0.22);
     position: relative;
     display: grid;
     grid-template-columns: repeat(var(--n), minmax(0, 1fr));
@@ -277,7 +277,7 @@ const { hub, around } = product.data.roles;
     min-width: 0;
     padding: 14px 16px;
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: var(--radius);
     background: var(--bg-panel);
   }
   .node b {
