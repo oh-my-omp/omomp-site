@@ -75,13 +75,13 @@ const rail: readonly RailStop[] = seams.map((s) => ({ label: s.data.short[lang],
     gap: 12px;
   }
   .card {
-    --card: #0c0d0e;
+    --card: var(--bg);
     position: relative;
     display: block;
     height: 412px;
     min-width: 0;
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: var(--radius);
     background: var(--card);
     color: inherit;
     text-decoration: none;

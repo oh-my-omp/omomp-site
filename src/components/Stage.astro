@@ -36,14 +36,13 @@ const hasSwitch = Astro.slots.has("switch");
 </div>
 
 <style>
-  /* The full-width interface stage under a section head: one 1px structural frame with a faint highlight along its top edge. */
+  /* The full-width interface stage under a section head: a parchment panel inside one hairline frame. */
   .stage {
     position: relative;
     width: 100%;
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    background: linear-gradient(rgb(255 255 255 / 0.025), transparent 180px), var(--bg-raised);
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
+    background: var(--bg-raised);
     overflow: hidden;
   }
   .canvas {

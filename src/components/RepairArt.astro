@@ -220,7 +220,7 @@ const a = repairArt;
     content: "";
     position: absolute;
     inset: -10px;
-    border: 1px solid rgb(255 255 255 / 0.07);
+    border: 1px solid rgb(32 21 21 / 0.07);
     border-radius: 50%;
   }
   .rail li.on .node::after {
@@ -250,12 +250,12 @@ const a = repairArt;
     height: 62px;
     padding: 0 18px;
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: var(--radius);
     background: var(--bg-raised);
     white-space: nowrap;
   }
   .opts li.sel {
-    border-color: rgb(255 255 255 / 0.24);
+    border-color: rgb(32 21 21 / 0.24);
   }
   .opts i {
     flex: none;
@@ -378,7 +378,7 @@ const a = repairArt;
     align-content: start;
     padding: 12px 0;
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: var(--radius);
     background: var(--bg-raised);
   }
   .sheet code {
@@ -388,7 +388,7 @@ const a = repairArt;
     line-height: 27px;
   }
   .sheet .next {
-    background: rgb(255 255 255 / 0.045);
+    background: rgb(32 21 21 / 0.045);
   }
   .sheet em {
     font-style: normal;
@@ -524,7 +524,7 @@ const a = repairArt;
     gap: 8px;
     padding: 14px 18px;
     border: 1px solid var(--line-strong);
-    border-radius: 12px;
+    border-radius: var(--radius);
     background: var(--bg-raised);
   }
   .rb .host span {

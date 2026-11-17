@@ -46,7 +46,7 @@ const hasArt = Astro.slots.has("default");
     transition: background 0.15s;
   }
   .link:hover {
-    background: #0c0d0e;
+    background: var(--bg-raised);
   }
   /* Cells in a row share the art row's height; each slice sits in the middle of it, as on Linear's feature grids. */
   .art {
