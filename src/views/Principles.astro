@@ -259,16 +259,16 @@ const layers = ["human", "agent", "silent"] as const;
   }
   .sw-list h3 {
     font-size: 15px;
-    color: var(--muted);
+    color: var(--soft);
   }
   .sw-list p {
-    color: var(--dim);
+    color: var(--muted);
     font-size: 14px;
   }
   .sw-in:nth-of-type(1):checked ~ .sw-list li:nth-child(1) label,
   .sw-in:nth-of-type(2):checked ~ .sw-list li:nth-child(2) label,
   .sw-in:nth-of-type(3):checked ~ .sw-list li:nth-child(3) label {
-    background: rgb(32 21 21 / 0.04);
+    background: var(--line);
     border-color: var(--line);
   }
   .sw-in:nth-of-type(1):checked ~ .sw-list li:nth-child(1) h3,
