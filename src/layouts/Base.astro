@@ -37,7 +37,7 @@ const alternate = (l: Lang) => new URL(href(route, l), Astro.site).href;
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta name="theme-color" content="#08090a" />
+    <meta name="theme-color" content="#fffefb" />
   </head>
   <body>
     <a class="skip" href="#main">{t(ui.skip, lang)}</a>
@@ -129,24 +129,26 @@ const alternate = (l: Lang) => new URL(href(route, l), Astro.site).href;
     gap: 10px;
     font-weight: 600;
     font-size: 15px;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.15px;
   }
   .nav {
     display: flex;
-    gap: 2px;
+    gap: 8px;
     margin-left: auto;
   }
   .nav a {
-    font-size: 14px;
-    color: var(--muted);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.15px;
+    color: var(--soft);
     padding: 6px 10px;
-    border-radius: 8px;
+    border-radius: var(--radius-pill);
     transition: color 0.15s, background 0.15s;
   }
   .nav a:hover,
   .nav a.on {
     color: var(--text);
-    background: rgb(255 255 255 / 0.05);
+    background: var(--bg-raised);
   }
   .tools {
     margin-left: 12px;
@@ -156,6 +158,7 @@ const alternate = (l: Lang) => new URL(href(route, l), Astro.site).href;
   }
   .lang {
     font-size: 13px;
+    font-weight: 500;
     color: var(--muted);
     padding: 4px 10px;
     border: 1px solid var(--line-strong);
@@ -178,23 +181,25 @@ const alternate = (l: Lang) => new URL(href(route, l), Astro.site).href;
     align-items: center;
     justify-content: space-between;
     gap: 20px;
-    padding-block: 36px;
-    color: var(--dim);
-    font-size: 13px;
+    padding-block: 40px;
+    color: var(--muted);
+    font-size: 15px;
   }
   .foot-brand {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: var(--muted);
+    font-weight: 600;
+    color: var(--text);
   }
   .foot-nav {
     display: flex;
     flex-wrap: wrap;
-    gap: 18px;
+    gap: 12px 24px;
   }
   .foot-nav a:hover {
-    color: var(--text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
   @media (max-width: 480px) {
     .foot-nav {
@@ -227,8 +232,8 @@ const alternate = (l: Lang) => new URL(href(route, l), Astro.site).href;
     padding: 8px;
     border: 1px solid var(--line-strong);
     border-radius: var(--radius);
-    background: var(--bg-raised);
-    box-shadow: 0 20px 50px -20px rgb(0 0 0 / 0.8);
+    background: var(--bg);
+    box-shadow: var(--shadow);
   }
   .menu-panel a {
     padding: 10px 12px;
@@ -236,7 +241,7 @@ const alternate = (l: Lang) => new URL(href(route, l), Astro.site).href;
     font-size: 15px;
   }
   .menu-panel a:hover {
-    background: rgb(255 255 255 / 0.05);
+    background: var(--bg-raised);
   }
   @media (max-width: 760px) {
     .nav {
