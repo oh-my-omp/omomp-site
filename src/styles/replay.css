@@ -34,9 +34,10 @@
   font: inherit;
   font-family: var(--mono);
   font-size: 12px;
-  width: 30px;
-  height: 26px;
-  border-radius: 6px;
+  min-width: 30px;
+  height: 28px;
+  padding: 0 6px;
+  border-radius: 9999px;
   border: 1px solid var(--line-strong);
   background: transparent;
   color: var(--dim);
@@ -93,19 +94,18 @@
 .rp-btn {
   font: inherit;
   font-size: 14px;
-  height: 34px;
-  min-width: 38px;
+  height: 40px;
+  min-width: 40px;
   padding: 0 14px;
-  border-radius: 8px;
-  border: 1px solid var(--line-strong);
-  background: transparent;
-  color: var(--soft);
+  border-radius: 9999px;
+  border: 1px solid var(--text);
+  background: var(--bg);
+  color: var(--text);
   cursor: pointer;
   transition: color 0.15s, border-color 0.15s;
 }
 .rp-btn:hover:not(:disabled) {
-  color: var(--text);
-  border-color: var(--muted);
+  background: var(--bg-raised);
 }
 .rp-btn:disabled {
   color: rgb(32 21 21 / 0.35);
@@ -114,13 +114,16 @@
 }
 .rp-play {
   min-width: 96px;
-  color: var(--bg);
-  background: var(--text);
-  border-color: var(--text);
+  padding: 0 20px;
+  color: var(--on-accent);
+  background: var(--accent);
+  border-color: transparent;
+  font-size: 15px;
   font-weight: 500;
+  letter-spacing: -0.15px;
 }
 .rp-play:hover:not(:disabled) {
-  color: var(--bg);
+  background: var(--accent-hover);
 }
 .rp-caption {
   max-width: 780px;
@@ -236,9 +239,7 @@
   --tone: var(--warn);
 }
 .rp-beat.lit {
-  box-shadow:
-    0 0 0 1.5px var(--tone),
-    0 0 0 6px color-mix(in srgb, var(--tone) 16%, transparent);
+  box-shadow: 0 0 0 1px var(--tone);
   background-color: color-mix(in srgb, var(--tone) 6%, transparent);
 }
 .rp-hooks > .rp-beat:focus-visible {
