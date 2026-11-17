@@ -45,7 +45,7 @@ export default function HostStage(props: { data: HostStageData }) {
   const lit = (p: Part) => tab().uses.includes(p);
   return (
     <div class="hs">
-      <div class="hs-tabs" role="tablist">
+      <div class="seg hs-tabs" role="tablist">
         <For each={props.data.tabs}>
           {(t, i) => (
             <button type="button" role="tab" aria-selected={current() === i()} classList={{ on: current() === i() }} onClick={() => setCurrent(i())}>

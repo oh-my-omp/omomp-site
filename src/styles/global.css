@@ -231,6 +231,75 @@ p {
   background: var(--accent-hover);
 }
 
+/* One-of-N selection: a pill track whose current item fills with ink. */
+.seg {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 4px;
+  border: 1px solid var(--line-strong);
+  border-radius: 9999px;
+}
+
+.seg > a,
+.seg > button {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.14px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.seg > a:hover,
+.seg > button:hover {
+  color: var(--text);
+  background: var(--bg-raised);
+}
+
+.seg > .on,
+.seg > [aria-current="page"],
+.seg > [aria-selected="true"] {
+  color: var(--on-accent);
+  background: var(--text);
+}
+
+.seg > .on:hover,
+.seg > [aria-current="page"]:hover,
+.seg > [aria-selected="true"]:hover {
+  color: var(--on-accent);
+  background: var(--text);
+}
+
+/* On a phone the items wrap, so each is its own pill rather than a shared track split over two rows. */
+@media (max-width: 560px) {
+  .seg {
+    gap: 8px;
+    padding: 0;
+    border: 0;
+  }
+
+  .seg > a,
+  .seg > button {
+    padding: 6px 12px;
+    font-size: 13.5px;
+    border: 1px solid var(--line-strong);
+  }
+
+  .seg > .on,
+  .seg > [aria-current="page"],
+  .seg > [aria-selected="true"] {
+    border-color: var(--text);
+  }
+}
+
 /* A quiet text link that ends in an arrow, as under a section lede. */
 .more {
   display: inline-flex;

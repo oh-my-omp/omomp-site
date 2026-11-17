@@ -47,9 +47,7 @@ const seamKey = (id: string): SeamKey => {
 
   <section class="section">
     <SplitHead title={t(copy.seamsTitle, lang)} lede={t(copy.seamsLede, lang)}>
-      <div class="chips">
-        <a class="chip" href={href("/replay/", lang)}>{t(copy.mapDemo, lang)} →</a>
-      </div>
+      <a class="more" href={href("/replay/", lang)}>{t(copy.mapDemo, lang)} →</a>
     </SplitHead>
     <div class="wrap body">
       <Stage title={t(copy.trackTitle, lang)} text={t(copy.trackText, lang)}>
@@ -109,9 +107,7 @@ const seamKey = (id: string): SeamKey => {
 
   <section class="section">
     <SplitHead title={t(copy.mapTitle, lang)} lede={t(copy.mapLede, lang)}>
-      <div class="chips">
-        <a class="chip" href={href("/defaults/", lang)}>{t(copy.mapDefaults, lang)} →</a>
-      </div>
+      <a class="more" href={href("/defaults/", lang)}>{t(copy.mapDefaults, lang)} →</a>
     </SplitHead>
     <div class="wrap body">
       <Stage>

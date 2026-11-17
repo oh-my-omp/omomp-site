@@ -5,30 +5,6 @@
 }
 .hs-tabs {
   justify-self: start;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px;
-  padding: 3px;
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-}
-.hs-tabs button {
-  font: inherit;
-  font-size: 14px;
-  padding: 6px 16px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-  transition: color 0.15s, background 0.15s;
-}
-.hs-tabs button:hover {
-  color: var(--text);
-}
-.hs-tabs button.on {
-  color: var(--bg);
-  background: var(--text);
 }
 .hs-body {
   display: grid;
@@ -202,20 +178,6 @@
   }
 }
 @media (max-width: 560px) {
-  /* The tabs wrap, so each one is its own pill rather than a shared track split over two rows. */
-  .hs-tabs {
-    gap: 8px;
-    padding: 0;
-    border: 0;
-  }
-  .hs-tabs button {
-    padding: 6px 12px;
-    font-size: 13.5px;
-    border: 1px solid var(--line-strong);
-  }
-  .hs-tabs button.on {
-    border-color: var(--text);
-  }
   /* The two hosts stay side by side, each relation above its own host, as on wide screens. */
   .hs-links,
   .hs-hosts {

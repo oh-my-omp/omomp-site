@@ -42,7 +42,7 @@ const { hub, around } = product.data.roles;
     <SplitHead level={1} kicker={`${t(copy.kicker, lang)} · ${product.data.name}`} title={product.data.headline[lang]} lede={product.data.intro[lang]}>
       <div class="top">
         <a class="btn" href={product.data.repo}>{t(copy.repo, lang)} ↗</a>
-        <nav class="switch" aria-label={t(copy.all, lang)}>
+        <nav class="seg switch" aria-label={t(copy.all, lang)}>
           {all.map((p) => (
             <a href={href(`/products/${p.id}/`, lang)} aria-current={p.id === product.id ? "page" : undefined}>
               {p.data.name}
@@ -129,35 +129,12 @@ const { hub, around } = product.data.roles;
     gap: 16px 24px;
     width: 100%;
   }
-  /* A connected segmented control, like the seam bar on the Lifeline pages. */
-  .switch {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    background: var(--line);
-    overflow: hidden;
-  }
+  /* Product names stay in the monospace face the rest of the site gives package names. */
   .switch a {
-    flex: 1 1 0;
-    min-width: max-content;
-    padding: 8px 14px;
-    background: var(--bg);
     font-family: var(--mono);
-    font-size: 12.5px;
-    color: var(--muted);
-    text-align: center;
-    text-decoration: none;
-    transition: color 0.15s, background 0.15s;
-  }
-  .switch a:hover {
-    color: var(--text);
-    background: var(--bg-hover);
-  }
-  .switch a[aria-current="page"] {
-    color: var(--text);
-    background: var(--bg-raised);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0;
   }
   .body {
     margin-top: clamp(40px, 5vw, 64px);

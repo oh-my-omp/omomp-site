@@ -45,12 +45,12 @@ const colsFor = (n: number) => (n === 2 || n === 4 ? 2 : 3);
 
 <Base lang={lang} title={seam.data.name[lang]} description={seam.data.claim[lang]}>
   <PageHead kicker={seam.data.name[lang]} title={seam.data.claim[lang]} lede={seam.data.drift[lang]}>
-    <nav class="seams" aria-label={t(copy.seams, lang)}>
+    <nav class="seg seams" aria-label={t(copy.seams, lang)}>
       {
         seams.map((s) => (
           <a
             href={href(`/lifeline/${s.id}/`, lang)}
-            class:list={{ on: s.id === seam.id, past: s.data.order < seam.data.order }}
+            class:list={{ on: s.id === seam.id }}
             aria-current={s.id === seam.id ? "page" : undefined}
           >
             {s.data.short[lang]}
@@ -126,38 +126,7 @@ const colsFor = (n: number) => (n === 2 || n === 4 ? 2 : 3);
 
 <style>
   .seams {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1px;
     margin-top: 12px;
-    background: var(--line);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-  .seams a {
-    flex: 1 1 0;
-    min-width: max-content;
-    display: flex;
-    gap: 10px;
-    align-items: baseline;
-    padding: 10px 16px;
-    background: var(--bg);
-    color: var(--dim);
-    font-size: 14px;
-    text-decoration: none;
-    transition: color 0.15s;
-  }
-  .seams a:hover {
-    color: var(--text);
-  }
-  .seams a.past {
-    color: var(--muted);
-  }
-  .seams a.on {
-    color: var(--text);
-    background: var(--bg-raised);
-    box-shadow: inset 0 -2px 0 var(--accent);
   }
   .demo,
   .layer-stage {
@@ -189,11 +158,5 @@ const colsFor = (n: number) => (n === 2 || n === 4 ? 2 : 3);
   .caps a:hover {
     color: var(--text);
     border-color: var(--line-strong, rgb(32 21 21 / 0.18));
-  }
-  @media (max-width: 640px) {
-    .seams a {
-      flex-basis: calc(50% - 1px);
-      padding: 9px 12px;
-    }
   }
 </style>
