@@ -26,13 +26,14 @@ const closed = (s: TodoStatus) => s === "done" || s === "dropped";
 export default function TodoPanel(props: { lang: Lang; data: TodoData; compact?: boolean }) {
   const l = () => labels[props.lang].todo;
   const items = () => props.data.phases.flatMap((p) => p.items);
+  const closedCount = () => items().filter((i) => closed(i.status)).length;
   const pill = () => {
     const all = items();
     const label =
       all.find((i) => i.status === "active")?.title ??
       all.find((i) => i.status === "pending")?.title ??
       l().allDone;
-    return `${label} ${all.filter((i) => closed(i.status)).length}/${all.length}`;
+    return `${label} ${closedCount()}/${all.length}`;
   };
   return (
     <div class="sl-todo" classList={{ compact: !!props.compact }}>
@@ -87,7 +88,7 @@ export default function TodoPanel(props: { lang: Lang; data: TodoData; compact?:
         </Show>
       </div>
       <div class="sl-todo-pill">
-        <span class="sl-todo-ring" />
+        <span class="sl-todo-ring" style={{ "--done": `${Math.round((closedCount() / Math.max(1, items().length)) * 100)}%` }} />
         {pill()}
       </div>
     </div>

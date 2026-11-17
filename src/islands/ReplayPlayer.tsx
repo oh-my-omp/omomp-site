@@ -90,12 +90,22 @@ export default function ReplayPlayer(props: {
   const total = () => props.total ?? (props.firstNumber === undefined ? props.steps.length : undefined);
   const number = (i: number) => (props.firstNumber ?? 1) + i;
 
+  /** Progress through every beat on this page, and the span of the current step in it, as fractions. */
   const progress = createMemo(() => {
     const all = beats().reduce((n, b) => n + b.length, 0);
     const before = beats()
       .slice(0, state().step)
       .reduce((n, b) => n + b.length, 0);
-    return all === 0 ? 0 : (before + state().shown) / all;
+    const of = (n: number) => (all === 0 ? 0 : n / all);
+    return { done: of(before + state().shown), from: of(before), to: of(before + beatCount(state().step)) };
+  });
+  const pct = (f: number) => `${(f * 100).toFixed(2)}%`;
+  /** While playing, the pane the newest beat appeared in; stacked panes give it the room. */
+  const active = createMemo((): "front" | "back" | undefined => {
+    const s = state();
+    if (s.kind !== "playing") return undefined;
+    const beat = beats()[s.step]![s.shown - 1];
+    return beat?.kind === "hook" ? "back" : beat ? "front" : undefined;
   });
 
   /** Steps grouped by seam in order, for the step bar. */
@@ -339,13 +349,14 @@ export default function ReplayPlayer(props: {
         </Show>
       </div>
       <div class="rp-progress" aria-hidden="true">
-        <span style={{ width: `${(progress() * 100).toFixed(2)}%` }} />
+        <i style={{ left: pct(progress().from), width: pct(progress().to - progress().from) }} />
+        <span style={{ width: pct(progress().done) }} />
       </div>
       <p class="rp-caption" ref={caption}>
         {step().caption}
       </p>
 
-      <div class="rp-split" ref={split} style={splitStyle()}>
+      <div class="rp-split" ref={split} style={splitStyle()} data-active={active()}>
         <Panes step={step()} rev={rev()} labels={props.labels} lang={props.lang} compact={!!props.compact} tone={toneOf} onHover={setHover} keyed />
       </div>
       <div class="rp-measure" aria-hidden="true" inert>

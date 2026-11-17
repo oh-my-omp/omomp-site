@@ -662,8 +662,8 @@ function steps(lang: Lang): readonly Step[] {
       seam: "execution",
       title: en ? "One terminal, two typists" : "共用一个终端",
       caption: en
-        ? "The agent keeps a redis-cli session open with exec_command and types into it with write_stdin. You open the same session full-pane in the Terminals view, where your keys go to the same terminal. On the screen, the agent's input is purple and yours is blue."
-        : "代理用 exec_command 开着一个 redis-cli 会话，用 write_stdin 往里输入。你在终端视图里把同一个会话全屏打开，按键也发到这个终端。屏幕上紫色是代理的输入，蓝色是你的输入。",
+        ? "The agent keeps a redis-cli session open with exec_command and types into it with write_stdin. You open the same session full-pane in the Terminals view, where your keys go to the same terminal. On the screen, the agent's input is bold and yours is orange."
+        : "代理用 exec_command 开着一个 redis-cli 会话，用 write_stdin 往里输入。你在终端视图里把同一个会话全屏打开，按键也发到这个终端。屏幕上加粗的是代理的输入，橙色的是你的输入。",
       front: [
         {
           kind: "transcript",

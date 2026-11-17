@@ -577,10 +577,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* The pill's ring fills with the share of closed items (`--done`, set by the slice). */
 .sl-todo-pill .sl-todo-ring {
   margin-top: 0;
   border-color: var(--accent);
-  background: conic-gradient(var(--accent) 0 60%, transparent 60% 100%);
+  background: conic-gradient(var(--accent) 0 var(--done), transparent var(--done) 100%);
 }
 
 /* omp-unified-exec: Terminals view and full-pane page */
@@ -730,8 +731,10 @@
 .sl-term-screen .by-you {
   color: var(--human);
 }
+/* Agent input shares the ink of the output, so its weight sets it apart. */
 .sl-term-screen .by-agent {
   color: var(--agent);
+  font-weight: 700;
 }
 .sl-term-bar {
   display: flex;

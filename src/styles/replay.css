@@ -132,15 +132,24 @@
   line-height: 1.65;
 }
 
-/* Progress through every beat of the scenario on this page. */
+/* Progress through every beat of the scenario on this page; the orange band is the current step's share of it. */
 .rp-progress {
-  height: 2px;
+  position: relative;
+  height: 3px;
   margin-top: -8px;
   background: var(--line);
   border-radius: 2px;
   overflow: hidden;
 }
+.rp-progress i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--accent);
+  transition: left 0.4s ease, width 0.4s ease;
+}
 .rp-progress span {
+  position: relative;
   display: block;
   height: 100%;
   background: var(--text);
@@ -300,6 +309,7 @@
 @media (prefers-reduced-motion: reduce) {
   .rp-beat,
   .rp-split,
+  .rp-progress i,
   .rp-progress span {
     animation: none;
     transition: none;
@@ -348,6 +358,13 @@
     gap: 14px;
     height: min(var(--rp-fit, 100vh), var(--rp-room, clamp(360px, calc(100vh - 330px), 760px)));
     height: min(var(--rp-fit, 100svh), var(--rp-room, clamp(360px, calc(100svh - 330px), 760px)));
+  }
+  /* While playing, the pane the newest beat is in keeps the room; the other gets at most a third of it. */
+  .rp-split[data-active="front"] {
+    grid-template-rows: minmax(0, auto) fit-content(33%);
+  }
+  .rp-split[data-active="back"] {
+    grid-template-rows: fit-content(33%) minmax(0, auto);
   }
   .rp-measure .rp-split {
     grid-template-rows: auto auto;
