@@ -72,7 +72,7 @@
   width: 100%;
   height: auto;
   border: 1px solid var(--line-strong);
-  border-radius: 14px;
+  border-radius: var(--radius);
 }
 .rd-cap {
   grid-area: cap;

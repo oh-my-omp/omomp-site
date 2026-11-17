@@ -38,7 +38,7 @@
 /* The frame: a 28px window bar, then the panels stacked in one cell so the frame is as tall as the tallest. */
 .ri-frame {
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius);
   background: var(--line);
   overflow: hidden;
 }
