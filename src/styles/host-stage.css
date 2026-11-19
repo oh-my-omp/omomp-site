@@ -1,4 +1,3 @@
-/* Host and install stage on the home page (src/islands/HostStage.tsx). */
 .hs {
   display: grid;
   gap: 24px;
@@ -26,7 +25,6 @@
   gap: 22px;
   min-width: 0;
 }
-/* The interface you work in once this way is installed. */
 .hs-screen {
   display: grid;
   gap: 10px;
@@ -178,7 +176,6 @@
   }
 }
 @media (max-width: 560px) {
-  /* The two hosts stay side by side, each relation above its own host, as on wide screens. */
   .hs-links,
   .hs-hosts {
     gap: 10px;

@@ -4,13 +4,6 @@ import Window from "./Window";
 import { remoteBuildScene as s, remoteBuildStage } from "./remote-build-stage-data";
 import "../styles/stage-remote-build.css";
 
-/**
- * omp-remote-build as three linked zones inside one frame: this machine's checkouts with
- * the edits agents are making in each worktree → the one-way Mutagen replica per
- * environment carrying those files out → the environment's Komodo container on the build
- * host, where the agent's container tools run the build and the tests. Each zone keeps
- * its caption at the bottom, and the connector on each divider shows the direction.
- */
 export default function RemoteBuildStage(props: { lang: Lang }) {
   const copy = () => remoteBuildStage[props.lang].copy;
   const ui = () => remoteBuildStage[props.lang].ui;

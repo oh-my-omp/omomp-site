@@ -2,7 +2,6 @@ import { For, Show } from "solid-js";
 import type { Lang } from "../i18n";
 import { labels } from "./labels";
 
-/** omp-todo-more's checklist states (src/native.ts `checklistStatus`). */
 export type TodoStatus = "pending" | "active" | "done" | "dropped" | "blocked";
 
 export interface TodoItem {
@@ -22,7 +21,6 @@ export interface TodoData {
 
 const closed = (s: TodoStatus) => s === "done" || s === "dropped";
 
-/** The Tern HUD replacement: the progress pill and its open popover with goal and checklist (src/native.ts). */
 export default function TodoPanel(props: { lang: Lang; data: TodoData; compact?: boolean }) {
   const l = () => labels[props.lang].todo;
   const items = () => props.data.phases.flatMap((p) => p.items);

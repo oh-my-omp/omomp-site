@@ -5,7 +5,6 @@ import "../styles/home-slices.css";
 
 export type Layer = "human" | "agent" | "silent";
 
-/** One omp-config component placed on the lifeline; `hook` is how a silent hook acts on the model, null when it is not a hook. */
 export interface PipeItem {
   readonly name: string;
   readonly layer: Layer;
@@ -20,18 +19,12 @@ export interface PipeSeam {
 export interface PipeLabels {
   readonly layers: Readonly<Record<Layer, string>>;
   readonly kinds: Readonly<Record<HookKind, string>>;
-  /** One line per hook kind under the pipeline: what reaches the model. */
   readonly legend: Readonly<Record<HookKind, string>>;
 }
 
 const layers: readonly Layer[] = ["human", "agent", "silent"];
 const kinds: readonly HookKind[] = ["reminder", "block", "judge"];
 
-/**
- * omp-config along the six seams: a rail through the seams, and under each seam what omp-config puts on the
- * human surface, among the agent's primitives and in silent governance; silent hooks are marked by how they
- * reach the model (an appended `<system-reminder>`, a refused call, a verdict).
- */
 export default function ConfigPipeline(props: { seams: readonly PipeSeam[]; labels: PipeLabels; lang: Lang }) {
   return (
     <div class="cp" lang={props.lang}>

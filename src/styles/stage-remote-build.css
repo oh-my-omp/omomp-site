@@ -1,5 +1,3 @@
-/* omp-remote-build stage: one frame around three linked zones (this machine → one-way sync → remote build host). */
-
 .st-rb {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -21,7 +19,6 @@
 .st-rb-zone + .st-rb-zone {
   border-left: 1px solid var(--line);
 }
-/* The connector sits on the divider, in the direction the data moves. */
 .st-rb-zone + .st-rb-zone::before {
   content: "→";
   position: absolute;
@@ -56,7 +53,6 @@
   color: var(--muted);
 }
 
-/* Zone 1: checkouts and worktree environments */
 .st-rb-roots {
   display: grid;
 }
@@ -68,7 +64,6 @@
 .st-rb-root + .st-rb-root {
   border-top: 1px solid var(--line);
 }
-/* The role drops under the path when both do not fit, so the path is never cut. */
 .st-rb-root-head {
   display: flex;
   flex-wrap: wrap;
@@ -102,7 +97,6 @@
 .st-rb-live {
   box-shadow: inset 3px 0 0 var(--accent);
 }
-/* `git status --short` lines: what the agent changed in this worktree. */
 .st-rb-changes {
   list-style: none;
   margin: 3px 0 0;
@@ -157,7 +151,6 @@
   overflow-wrap: anywhere;
 }
 
-/* Zone 2: one Mutagen session per environment, the staged files streaming to beta */
 .st-rb-sess {
   display: grid;
   gap: 6px;
@@ -259,7 +252,6 @@
   color: var(--dim);
 }
 
-/* Zone 3: the container shell the agent types into */
 .st-rb-call {
   padding: 8px 12px 2px;
 }
@@ -274,7 +266,6 @@
   color: var(--agent);
 }
 
-/* Narrow: one column, the divider becomes horizontal and its connector points down. */
 @media (max-width: 880px) {
   .st-rb {
     grid-template-columns: minmax(0, 1fr);
@@ -296,7 +287,6 @@
   }
 }
 
-/* Paths and names inside the zones are plain monospace text, not inline-code chips. */
 .st-rb code {
   padding: 0;
   border: 0;

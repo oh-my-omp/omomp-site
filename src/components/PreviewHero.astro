@@ -2,7 +2,6 @@
 import { preview } from "../copy/preview";
 import { href, t, wholeNames, type Lang, type Text } from "../i18n";
 
-/** A button in the first screen; `to` is a site route, a `#fragment` on the same page, or an `https://` URL. */
 export interface HeroAction {
   readonly label: Text;
   readonly to: string;
@@ -10,7 +9,6 @@ export interface HeroAction {
 
 interface Props {
   lang: Lang;
-  /** Primary then secondary; by default the replay and the lifeline. */
   actions?: readonly [HeroAction, HeroAction];
 }
 const {
@@ -39,9 +37,6 @@ const target = (to: string) => (to.startsWith("#") || to.startsWith("https://") 
 </section>
 
 <style>
-  /* First screen as supabase.com: heading and buttons on the left, a plain lede on the right that starts on the
-     left edge of the second card below (the card grid has the same two halves and the same 12px gap). On a phone
-     the lede comes before the buttons, so the reader knows what the product is before being asked to act. */
   .hero {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -74,8 +69,6 @@ const target = (to: string) => (to.startsWith("#") || to.startsWith("https://") 
   .lede span {
     display: block;
   }
-  /* On a wide screen Chinese breaks only at punctuation and spaces, so no clause is cut in the middle of a word.
-     A phone's column is too narrow for whole clauses, so there it wraps as usual. */
   @media (min-width: 901px) {
     .lede:lang(zh) {
       word-break: keep-all;

@@ -1,14 +1,11 @@
 import type { Text } from "../i18n";
 
-/** Copy shared by the two candidate home pages, so they differ in how they show the product, not in what they say first. */
 export const preview = {
   hero: {
-    /** Two lines; the second is set in the accent colour. */
     title: [
       { en: "Your rules, enforced", zh: "规则不只写给代理看" },
       { en: "Wrong calls refused", zh: "错的调用当场拦下" },
     ],
-    /** Two sentences; on a wide screen the second starts its own line. */
     lede: [
       {
         en: "Plugins for the Oh My Pi (omp) coding agent and the Tern terminal.",
@@ -22,7 +19,6 @@ export const preview = {
     primary: { en: "See the demo", zh: "查看演示" },
     secondary: { en: "Walk the lifeline", zh: "浏览生命线" },
   },
-  /** One sentence after the card grid, leading into the install stage; `**…**` is set bright, the rest grey. */
   bridge: {
     en: "**Use one plugin or the whole set.** Each runs on stock omp; omp-config adds the shared checks.",
     zh: "**单装一个也行，整套接入也行。**插件直接装在原版 omp 上，omp-config 补上共用检查。",
@@ -32,26 +28,21 @@ export const preview = {
   bridge: Text;
 };
 
-/** The repaired page's own buttons in the first screen. */
 export const repairHero = {
   primary: { en: "Install", zh: "安装" },
   secondary: { en: "GitHub", zh: "GitHub" },
 } as const;
 
-/** The install stage under the bridge: a two-tone heading, then one tab per way of installing. */
 export const installStage = {
-  /** Two lines; the second is set grey. */
   title: [
     { en: "See it in a session", zh: "在会话里看它干活" },
     { en: "alone, with omp-config, or inside Tern", zh: "单装、整套，或放进 Tern" },
   ],
-  /** Comments on `omp` and `omp-light` in the second tab's commands; commands themselves are not localized. */
   fullComment: { en: "full mode", zh: "完整模式" },
   lightComment: {
     en: "light mode: skips the governance extensions",
     zh: "轻量模式：跳过治理扩展",
   },
-  /** The stage's tab labels, short enough to fit one row on a phone; commands and notes come from `home.hosts.tabs`. */
   tabs: {
     plugin: { en: "One plugin", zh: "单个插件" },
     config: { en: "Full set", zh: "整套" },
@@ -59,7 +50,6 @@ export const installStage = {
   },
 } as const;
 
-/** The four rules on the repaired page: its own heading, and the one summary it words differently from the rule page. */
 export const repairFigs = {
   title: { en: "Four rules every component follows", zh: "每个组件都遵守的四条规则" },
   lede: {
@@ -74,7 +64,6 @@ export const repairFigs = {
   } as Readonly<Record<string, Text>>,
 } as const;
 
-/** The page's close, as supabase.com ends: the hero's first line again, then one action, install one plugin. */
 export const repairClose = {
   command: "omp install https://github.com/oh-my-omp/omp-sessions",
   copy: { en: "Copy", zh: "复制" },
@@ -82,7 +71,6 @@ export const repairClose = {
   all: { en: "All plugins", zh: "全部插件" },
 } as const;
 
-/** Repository names that have a card on the repaired home page: two rows of four, omp-config taking two columns. */
 export type RepairCard =
   | "omp-config"
   | "omp-ask-more"
@@ -92,10 +80,8 @@ export type RepairCard =
   | "omp-dispatch"
   | "omp-remote-build";
 
-/** Repository names listed in one hairline row under the cards, name and one line each. */
 export type RepairListed = "omp-unified-exec" | "omp-peers" | "omp-codex-image-gen";
 
-/** One line per card, twelve English words at most; `**…**` marks the few words that carry it. */
 export const repairLines: Readonly<Record<RepairCard, Text>> = {
   "omp-config": {
     en: "**Adds rules to the prompt, blocks unsafe calls**, checks results before stopping.",
@@ -127,7 +113,6 @@ export const repairLines: Readonly<Record<RepairCard, Text>> = {
   },
 };
 
-/** One line per listed plugin. */
 export const repairListLines: Readonly<Record<RepairListed, Text>> = {
   "omp-unified-exec": {
     en: "Long commands run in a terminal you and the agent both type into.",
@@ -143,7 +128,6 @@ export const repairListLines: Readonly<Record<RepairListed, Text>> = {
   },
 };
 
-/** The few words inside each card's picture. */
 export const repairArt = {
   config: {
     appends: { en: "appends", zh: "追加" },
@@ -152,7 +136,6 @@ export const repairArt = {
   },
   ask: {
     recommended: { en: "Recommended", zh: "推荐" },
-    /** Each option with the tradeoff written on it. */
     options: [
       { label: { en: "Token bucket", zh: "令牌桶" }, tradeoff: { en: "Allows bursts · more state", zh: "允许突发 · 需存更多状态" } },
       { label: { en: "Fixed window", zh: "固定窗口" }, tradeoff: { en: "Simple · spikes at window edges", zh: "简单 · 窗口边界有尖峰" } },
@@ -160,7 +143,6 @@ export const repairArt = {
     ],
   },
   todo: {
-    /** Two items done and committed, one in progress, two still to do. */
     items: [
       { en: "Token bucket", zh: "令牌桶" },
       { en: "429 tests", zh: "429 测试" },

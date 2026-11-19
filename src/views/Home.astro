@@ -30,14 +30,12 @@ type FigId = (typeof figs)[number];
 const isFig = (id: string): id is FigId => (figs as readonly string[]).includes(id);
 const isComponent = (id: string): id is ComponentId => id in componentArt;
 
-/** How a silent omp-config component reaches the model, read from the hook its own art quotes. */
 const hookOf = (id: string): HookKind | null => {
   if (!isComponent(id)) return null;
   const art = componentArt[id].en;
   return art.kind === "hook" ? art.hook.kind : null;
 };
 
-/** omp-config's own components, seam by seam, for the pipeline on its card. */
 const pipeline: readonly PipeSeam[] = seams.map((s) => ({
   name: s.data.short[lang],
   items: components
@@ -58,7 +56,6 @@ const pipeLabels = {
   },
 };
 
-/** Art slices of a card drawn from component art or written for the card. */
 const artsOf = (r: Repo): readonly Art[] => {
   switch (r.art.from) {
     case "component":
@@ -78,7 +75,6 @@ const seamsOf = (r: Repo) =>
 const target = (r: Repo) => (r.page ? href(r.page, lang) : repoUrl(r.name));
 const routeHref = (route: string) => (route.startsWith("https://") ? route : href(route, lang));
 
-/** What each way of installing looks like at work. */
 const tabArts: Readonly<Record<string, readonly Art[]>> = {
   plugin: [{ kind: "panel", panel: sessionQuery(lang) }],
   config: [componentArt["isolation-nudge"][lang]],
@@ -201,8 +197,6 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
 </Base>
 
 <style>
-  /* First screen as supabase.com: a two-line heading and two buttons on the left, a plain three-line lede on
-     the right, and the repositories directly below. */
   .hero {
     display: grid;
     grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
@@ -234,7 +228,6 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     gap: 10px;
   }
 
-  /* Bento: a third or less text, the rest a slice of the repository at work. */
   .blocks {
     display: grid;
   }
@@ -264,7 +257,6 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
   .card:hover {
     background: var(--bg-raised);
   }
-  /* omp-config spans the row: what it is on the left, the pipeline on the right. */
   .card[data-repo="omp-config"] {
     grid-column: 1 / -1;
     grid-template-columns: minmax(0, 5fr) minmax(0, 19fr);
@@ -272,18 +264,15 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     gap: 28px;
     padding: 26px 26px 22px;
   }
-  /* Wide cards pair with a narrow one on each row: two products, the question page and the image tool. */
   .card[data-repo="omp-ask-more"],
   .card[data-repo="omp-playbooks"],
   .card[data-repo="omp-dispatch"],
   .card[data-repo="omp-codex-image-gen"] {
     grid-column: span 8;
   }
-  /* With no narrow card left to pair with it, the build product spans its row like the main card. */
   .card[data-repo="omp-remote-build"] {
     grid-column: 1 / -1;
   }
-  /* The question page at width: the brief's three blocks side by side, then the options and the tradeoff card. */
   .card[data-repo="omp-ask-more"] .ca :global(.sl-ask-brief) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1.4em;
@@ -325,14 +314,12 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     mask-image: linear-gradient(to bottom, #000 86%, transparent);
     pointer-events: none;
   }
-  /* Drawn whole: the pipeline, the image card and the terminal with its key legend end on what they are about. */
   .card[data-repo="omp-config"] .ca,
   .card[data-repo="omp-codex-image-gen"] .ca,
   .card[data-repo="omp-unified-exec"] .ca {
     height: auto;
     mask-image: none;
   }
-  /* The question page is drawn whole down to its tradeoff card; the plan beside it gets the same height. */
   .card[data-repo="omp-ask-more"] .ca {
     height: auto;
     mask-image: none;
@@ -358,8 +345,6 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
   .body {
     margin-top: clamp(40px, 5vw, 64px);
   }
-  /* Two figures a row, each drawn a quarter larger than its canvas so its smallest label reads at body-note size;
-     stretched further, the labels would grow past body text. */
   .figs :global(svg.fig) {
     max-width: 300px;
     margin-inline: auto;
@@ -367,7 +352,6 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
   .last {
     padding-bottom: clamp(72px, 10vw, 128px);
   }
-  /* Where to go next: question in grey, destination as the link, divided by hairlines. */
   .next {
     list-style: none;
     margin: 0;
@@ -445,7 +429,6 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
       grid-template-columns: minmax(0, 1fr);
       gap: 0.7em;
     }
-    /* Stacked on a phone, these slices need their full height to reach the element the caption names. */
     .card[data-repo="omp-dispatch"] .ca,
     .card[data-repo="omp-playbooks"] .ca,
     .card[data-repo="omp-sessions"] .ca,

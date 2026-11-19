@@ -9,11 +9,6 @@ interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
-
-/**
- * Two rows of four: the runtime (two columns) with the two plugins a person meets first, then sessions and the three
- * products. The other plugins follow as one hairline list, as linear.app lists its smaller features.
- */
 const order: readonly RepairCard[] = [
   "omp-config",
   "omp-ask-more",
@@ -31,7 +26,6 @@ const target = (name: string) => {
 };
 
 const seams = (await getCollection("seams")).sort((a, b) => a.data.order - b.data.order);
-/** The three things omp-config does to a call, each at one seam where it happens; later seams stand their tag higher. */
 const marks: Readonly<Record<string, { text: string; stem: number }>> = {
   prompt: { text: t(repairArt.config.appends, lang), stem: 40 },
   execution: { text: t(repairArt.config.blocks, lang), stem: 90 },
@@ -68,7 +62,6 @@ const rail: readonly RailStop[] = seams.map((s) => ({ label: s.data.short[lang],
 </ul>
 
 <style>
-  /* Cards as on supabase.com: a name, one line, and under them one drawing that runs off the card's edge. */
   .bento {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -109,7 +102,6 @@ const rail: readonly RailStop[] = seams.map((s) => ({ label: s.data.short[lang],
     color: var(--text);
     white-space: nowrap;
   }
-  /* The line wraps where the measure ends, never at a fixed point. */
   .ct p {
     margin-top: 10px;
     font-size: 14.5px;
@@ -125,7 +117,6 @@ const rail: readonly RailStop[] = seams.map((s) => ({ label: s.data.short[lang],
     font-weight: inherit;
     color: var(--text);
   }
-  /* The smaller plugins: one row each between hairlines, name, one line and a plus, as linear.app's feature list. */
   .listed {
     margin: 12px 0 0;
     padding: 0;

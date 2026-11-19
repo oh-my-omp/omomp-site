@@ -1,5 +1,3 @@
-/* Install stage on the repaired home page (src/islands/RepairInstall.tsx): one framed surface under the tab row,
-   a window bar on top, the interface on the left and the commands on the right, split by one hairline. */
 .ri {
   display: grid;
   gap: 18px;
@@ -35,7 +33,6 @@
   background: var(--text);
 }
 
-/* The frame: a 28px window bar, then the panels stacked in one cell so the frame is as tall as the tallest. */
 .ri-frame {
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -84,14 +81,12 @@
   padding: 48px clamp(24px, 3vw, 44px);
   background: var(--bg);
 }
-/* The slices are authored around 12px; on a wide pane they run about a sixth larger. */
 @media (min-width: 1024px) {
   .ri-view {
     zoom: 1.15;
   }
 }
 
-/* Install then start as one block: `$` at the shell, `>` for a line typed inside omp. */
 .ri-cmds {
   margin: 0;
   font-family: var(--mono);
@@ -122,8 +117,6 @@
 }
 
 @media (max-width: 640px) {
-  /* Phone: the commands first, then a 280px preview of the interface that fades out at its foot. Only the chosen
-     panel takes space, so the frame ends where its preview does. */
   .ri-surface {
     grid-template-columns: minmax(0, 1fr);
   }

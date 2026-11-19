@@ -1,11 +1,6 @@
 ---
 import type { Lang } from "../i18n";
 
-/**
- * The four engineering rules redrawn for page B as line drawings (the same ideas as Fig.astro), as linear.app draws
- * its figures: one stroke weight, grey lines, one accent colour for what omomp adds, and no words inside the drawing.
- * What each drawing shows is its accessible name.
- */
 interface Props {
   fig: "append" | "signals" | "roles" | "policy";
   lang: Lang;
@@ -36,7 +31,6 @@ const described = {
   {
     fig === "append" && (
       <g>
-        {/* Rewritten in place: the changed segment breaks the prefix. */}
         <rect class="b" x="20" y="55" width="64" height="30" rx="3" />
         <path class="hatch" d="M28 85 44 55M40 85 56 55M52 85 68 55M64 85 80 55" />
         <rect class="b" x="88" y="55" width="50" height="30" rx="3" />
@@ -45,7 +39,6 @@ const described = {
         <rect class="b" x="230" y="55" width="40" height="30" rx="3" />
         <path class="miss" d="M20 96H270" />
 
-        {/* Appended at the end: the prefix is byte-for-byte the same. */}
         <rect class="b" x="20" y="145" width="64" height="30" rx="3" />
         <rect class="b" x="88" y="145" width="50" height="30" rx="3" />
         <rect class="b" x="142" y="145" width="40" height="30" rx="3" />
@@ -70,7 +63,6 @@ const described = {
         ].map((p) => (
           <g>
             <circle class="node" cx="40" cy={p.y} r="4" />
-            {/* The answer to the signal, then its path back into the loop. */}
             {p.g === "block" && <rect class="new" x="284" y={p.y - 9} width="18" height="18" rx="4" />}
             {p.g === "note" && (
               <g>
@@ -100,12 +92,10 @@ const described = {
           <rect class="b" x="112" y={y} width="168" height="16" rx="3" />
         ))}
 
-        {/* Main agent consults the advisor across the zone's edge. */}
         <path class="l d" d="M296 46H312V206H300" />
         <path class="l" d="M305 201 299 206 305 211" />
         <rect class="b" x="96" y="192" width="200" height="28" rx="6" />
 
-        {/* Your own words reach the advisor directly. */}
         <path class="inject" d="M44 61V206H92" />
         <path class="inject" d="M87 201 93 206 87 211" />
       </g>
@@ -121,7 +111,6 @@ const described = {
           <g>
             <rect class="b" x={x} y="82" width="68" height="42" rx="4" />
             <path class="row" d={`M${x + 9} 94H${x + 59}M${x + 9} 105H${x + 53}M${x + 9} 116H${x + 59}`} />
-            {/* Upstream's new line, and your own edit, each kept distinct until the merge. */}
             {i === 0 && <path class="in" d={`M${x + 9} 116H${x + 59}`} />}
             {i === 2 && <path class="mark" d={`M${x + 9} 105H${x + 53}`} />}
           </g>
@@ -146,7 +135,6 @@ const described = {
     height: auto;
     overflow: visible;
   }
-  /* One stroke weight for every line in every drawing. */
   .rfig :is(path, rect, circle) {
     stroke-width: 1.25;
   }

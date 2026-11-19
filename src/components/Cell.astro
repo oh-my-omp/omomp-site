@@ -3,14 +3,10 @@ import { inlineCode } from "../i18n";
 interface Props {
   title: string;
   text: string;
-  /** Small line above the title, such as a component name or a figure number. */
   tag?: string;
   href?: string;
-  /** Title is a code name (a plugin, tool or extension) and is set in the monospace face. */
   mono?: boolean;
-  /** The only cell in a one-column grid: text in the left three tenths, art in the right seven. */
   wide?: boolean;
-  /** Anchor id, so links elsewhere on the page can jump to this cell. */
   id?: string;
 }
 const { title, text, tag, href, mono, wide, id } = Astro.props;
@@ -28,12 +24,6 @@ const hasArt = Astro.slots.has("default");
 </Tag>
 
 <style>
-  /*
-   * The Linear cell: the interface slice takes the upper seven tenths, one bold title and at most two grey lines the rest.
-   * The art region has a floor tall enough that a title plus two lines stays under three tenths of the cell; copy longer
-   * than two lines breaks the ratio and has to be shortened at its source, it is never clipped here.
-   * Each cell spans two rows of its grid and shares them, so art and text line up across a row.
-   */
   .cell {
     --art-floor: 340px;
     grid-row: span 2;
@@ -48,7 +38,6 @@ const hasArt = Astro.slots.has("default");
   .link:hover {
     background: var(--bg-raised);
   }
-  /* Cells in a row share the art row's height; each slice sits in the middle of it, as on Linear's feature grids. */
   .art {
     display: grid;
     align-items: center;
@@ -96,7 +85,6 @@ const hasArt = Astro.slots.has("default");
     max-width: 30em;
   }
   @media (min-width: 761px) {
-    /* A lone cell lies on its side: the art keeps seven tenths of the area, as the stacked cell does. */
     .wide {
       grid-template-columns: minmax(0, 3fr) minmax(0, 7fr);
     }

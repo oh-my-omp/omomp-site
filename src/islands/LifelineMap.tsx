@@ -5,7 +5,6 @@ export type Layer = "human" | "agent" | "silent";
 
 export interface MapSeam {
   readonly id: string;
-  /** Short seam name for the column head, e.g. "Intent". */
   readonly name: string;
   readonly href: string;
 }
@@ -15,28 +14,20 @@ export interface MapComponent {
   readonly name: string;
   readonly seam: string;
   readonly layer: Layer;
-  /** One sentence: when it acts, what it does, what results. */
   readonly line: string;
   readonly repo: string;
 }
 
 export interface MapLabels {
   readonly layers: Readonly<Record<Layer, string>>;
-  /** A few words under each row label saying what the layer is. */
   readonly layerNotes: Readonly<Record<Layer, string>>;
   readonly repo: string;
   readonly seamPage: string;
 }
 
 const LAYERS: readonly Layer[] = ["human", "agent", "silent"];
-/** Columns the opened sentence spans, starting under the selected component. */
 const DETAIL_SPAN = 3;
 
-/**
- * Every component on a grid of seams (columns) by layers (rows). Selecting a component opens its sentence
- * right under the row it sits in, starting below the selected component's column (or ending there near the right edge).
- * On narrow screens one seam shows at a time.
- */
 export default function LifelineMap(props: {
   seams: readonly MapSeam[];
   components: readonly MapComponent[];
@@ -48,7 +39,6 @@ export default function LifelineMap(props: {
   const focus = createMemo(() => props.components.find((c) => c.id === focusId())!);
   const [narrowSeam, setNarrowSeam] = createSignal(props.seams[0]!.id);
   const column = createMemo(() => props.seams.findIndex((s) => s.id === focus().seam));
-  /** Grid columns of the opened sentence: the first grid column holds the row labels. */
   const detailColumns = createMemo(() => {
     const span = Math.min(DETAIL_SPAN, props.seams.length);
     const start = Math.min(column(), props.seams.length - span) + 2;

@@ -1,21 +1,8 @@
 import type { Lang } from "../i18n";
 import type { Art } from "./Art";
 
-/**
- * Content for the omp-playbooks stage: the Tern Playbook pane on the left, the coordinator
- * session handling one Launch request on the right. Card anatomy and labels mirror
- * src/service/ui.ts; the notice, the eval helper and the YAML field order mirror
- * src/extension/index.ts, src/extension/topics/playbook_open.execution.md and
- * src/service/store.ts in the omp-playbooks repo.
- */
-/** Block progress; the status icon and YAML `status:` value derive from it. */
 export type PbStatus = "todo" | "running" | "done";
 
-/**
- * Execution/orchestration blocks also carry the launch-button state. `requested`
- * is a pending flag the pane shows while the coordinator has not created the
- * Launch yet; it never reaches the YAML, whose status stays `todo`.
- */
 export type PbRunState =
   | { readonly status: "todo"; readonly launch: "launch" | "requested" }
   | { readonly status: "running" }
@@ -24,7 +11,6 @@ export type PbRunState =
 interface PbBase {
   readonly id: string;
   readonly title: string;
-  /** Expanded card (body and footer shown) or folded to its header row, as a title click leaves it. */
   readonly open: boolean;
 }
 
@@ -38,9 +24,7 @@ export interface PbDesignBlock extends PbBase {
 export interface PbExecutionBlock extends PbBase {
   readonly kind: "execution";
   readonly state: PbRunState;
-  /** Body lines; a line that is exactly `((bN))` references block bN and compiles to its text. */
   readonly body: readonly string[];
-  /** Shown in the SUBAGENT column; absent renders the pane's Default/默认. */
   readonly agent?: string;
   readonly isolated?: boolean;
 }
@@ -48,23 +32,16 @@ export interface PbExecutionBlock extends PbBase {
 export interface PbOrchestrationBlock extends PbBase {
   readonly kind: "orchestration";
   readonly state: PbRunState;
-  /** Lines inside the single js code fence that makes a block an orchestration block. */
   readonly code: readonly string[];
 }
 
 export type PbBlock = PbDesignBlock | PbExecutionBlock | PbOrchestrationBlock;
 
-/** The coordinator's side of one Launch request, in the order it happens. */
 export interface PbCoordinator {
-  /** Notice header, verbatim (`tr` in src/extension/index.ts:308). */
   readonly header: string;
-  /** The request sentence with the block's preset, verbatim. */
   readonly request: string;
-  /** The lead-in to the two options, verbatim. */
   readonly choose: string;
-  /** Option ① up to its first clause, verbatim, ending in "…". */
   readonly first: string;
-  /** Site captions for each beat of the flow. */
   readonly beats: {
     readonly notice: string;
     readonly start: string;
@@ -72,22 +49,17 @@ export interface PbCoordinator {
     readonly subagent: string;
     readonly file: string;
   };
-  /** Label under the subagent row. */
   readonly running: string;
 }
 
 export interface PlaybooksStageData {
-  /** Playbook `title` value, rendered after the `##` doc hash. */
   readonly title: string;
   readonly blocks: readonly PbBlock[];
-  /** The block whose Launch request the coordinator column follows. */
   readonly requested: string;
   readonly coordinator: PbCoordinator;
-  /** Site label of the arrow from the pane to the coordinator. */
   readonly sends: string;
 }
 
-/** Language-invariant facts: file path, Launch id, preset agent, the eval call and the data line. */
 export const playbooksScene = {
   doc: "/work/rate-limit.yaml",
   file: "rate-limit.yaml",
@@ -95,12 +67,10 @@ export const playbooksScene = {
   launch: "l3",
   agent: "task:low",
   call: 'var worker = await playbook.agent({ doc: "/work/rate-limit.yaml", blocks: ["b4"] })',
-  /** What playbook.agent does before it returns, in order (src/extension/eval-prelude.ts:139-165). */
   steps: ['playbook_launch { op: "launch" } → l3', "agent(prompt)", 'playbook_launch { op: "bind", launch: "l3" }'],
   data: '{"doc":"/work/rate-limit.yaml","event":"launch_requested","data":{"blocks":["b4"]}}',
 } as const;
 
-/** Strings the stage cards and the section art both show, so the two cannot drift apart. */
 const shared = {
   en: {
     policy: "Rate-limit policy",
@@ -256,22 +226,12 @@ const zh: PlaybooksStageData = {
 
 export const playbooksStage: Record<Lang, PlaybooksStageData> = { en, zh };
 
-/** Capsule links beside the How it works heading: where each mechanism is documented. */
 export const playbooksLinks: readonly { readonly label: string; readonly href: string }[] = [
   { label: "README", href: "https://github.com/oh-my-omp/omp-playbooks#readme" },
   { label: "playbook_open", href: "https://github.com/oh-my-omp/omp-playbooks/blob/HEAD/src/extension/topics/playbook_open.execution.md" },
   { label: "playbook_launch", href: "https://github.com/oh-my-omp/omp-playbooks/blob/HEAD/src/extension/topics/playbook_launch.lifecycle.md" },
 ];
 
-/**
- * The slice above each cell of the page's How it works grid, in cell order:
- * a design block and the execution block that reaches it by `((b1))`, the launch
- * request notice the pane sends the coordinator, and the status and report a
- * subagent wrote into a run file. YAML layout follows serialize() in
- * src/service/store.ts; the notice is the extension's own text in the page language;
- * "…" marks an elision. Paths and titles come from the scenario.
- */
-/** The notice joins its sentences the way the extension's template does: a space in English, nothing in Chinese. */
 export const joinNotice = (lang: Lang, parts: readonly string[]): string => parts.join(lang === "en" ? " " : "");
 
 const sectionArt = (lang: Lang): readonly [Art, Art, Art] => {

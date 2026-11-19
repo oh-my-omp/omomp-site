@@ -22,7 +22,6 @@ const { lang } = Astro.props;
 const seams = (await getCollection("seams")).sort((a, b) => a.data.order - b.data.order);
 const components = await getCollection("components");
 
-/** The slice that shows what each seam looks like at work: the panel, call or message a reader meets there first. */
 const seamArt = {
   intent: "ask-more-panel",
   prompt: "tool-topics",
@@ -33,7 +32,6 @@ const seamArt = {
 } as const satisfies Record<keyof typeof lifelineSeamLines, ComponentId>;
 type SeamKey = keyof typeof seamArt;
 const isSeamKey = (id: string): id is SeamKey => id in seamArt;
-/** The demo's steps under each seam, numbered against the whole scenario as the replay counts them. */
 const demo = scenario[lang].map((step, i) => ({ step, number: i + 1 }));
 const stepsAt = (seamId: string) => demo.filter((d) => d.step.seam === seamId);
 const seamKey = (id: string): SeamKey => {
@@ -150,7 +148,6 @@ const seamKey = (id: string): SeamKey => {
   .gap {
     height: clamp(40px, 5vw, 64px);
   }
-  /* The demo laid along the seams: a line through one node per seam, each column holding its steps and messages. */
   .track {
     display: grid;
     grid-template-columns: repeat(var(--n), minmax(0, 1fr));

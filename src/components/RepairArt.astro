@@ -2,7 +2,6 @@
 import { repairArt, type RepairCard } from "../copy/preview";
 import { t, type Lang } from "../i18n";
 
-/** One seam on omp-config's rail; `mark` says what the runtime does there, `stem` how far its tag stands off. */
 export interface RailStop {
   readonly label: string;
   readonly mark: { readonly text: string; readonly stem: number } | null;
@@ -138,8 +137,6 @@ const a = repairArt;
 </div>
 
 <style>
-  /* One drawing per card, anchored to the card's foot and run off its edge. The drawing is shapes; any words in it
-     are small and no brighter than the description above, so the card's name stays the brightest thing on it. */
   .art {
     position: absolute;
     inset: auto 0 0 0;
@@ -166,7 +163,6 @@ const a = repairArt;
     list-style: none;
   }
 
-  /* omp-config: the six seams as one rail; on three of them a tag names what the runtime does there. */
   .rail {
     position: absolute;
     inset: 0 28px 24px 28px;
@@ -233,8 +229,6 @@ const a = repairArt;
     white-space: nowrap;
   }
 
-  /* omp-ask-more: the options of one question, each with its tradeoff; the stack runs off the card's right edge and
-     ends 18px above its foot, so no option is cut through its text. */
   .opts {
     position: absolute;
     left: 24px;
@@ -285,8 +279,6 @@ const a = repairArt;
     color: var(--accent);
   }
 
-  /* omp-todo-more: the plan's items on one line that runs on past the card's foot, which cuts the fourth item's
-     circle in half. */
   .todo {
     position: absolute;
     left: 24px;
@@ -332,8 +324,6 @@ const a = repairArt;
     font-size: 12px;
   }
 
-  /* omp-sessions: a session's address, and the kinds of event on its timeline; the card's foot cuts through the
-     fourth row. */
   .sess {
     position: absolute;
     inset: 24px 0 0 24px;
@@ -367,7 +357,6 @@ const a = repairArt;
     width: 40px;
   }
 
-  /* omp-playbooks: the YAML file, b3 done and b4 running in amber; the card's foot cuts through b5's rows. */
   .sheet {
     position: absolute;
     left: 24px;
@@ -395,7 +384,6 @@ const a = repairArt;
     color: var(--accent);
   }
 
-  /* omp-dispatch: a parent issue, its three child issues, and how far the first has come. */
   .tree .chip {
     position: absolute;
     display: grid;
@@ -430,7 +418,6 @@ const a = repairArt;
     left: 183px;
     top: 82px;
   }
-  /* The card's foot cuts through the third step. */
   .tree .steps {
     position: absolute;
     left: 47px;
@@ -438,7 +425,6 @@ const a = repairArt;
     display: grid;
     gap: 22px;
   }
-  /* The first issue's line runs on past the card's foot. */
   .tree .steps::before {
     content: "";
     position: absolute;
@@ -475,7 +461,6 @@ const a = repairArt;
     color: var(--accent);
   }
 
-  /* omp-remote-build: your machine syncs to the build host, whose terminal runs the tests. */
   .rb .local {
     position: absolute;
     left: 24px;
@@ -535,7 +520,6 @@ const a = repairArt;
     color: var(--silent);
   }
 
-  /* Under the desktop breakpoint a card is its name and its line, as on supabase.com. */
   @media (max-width: 680px) {
     .art {
       display: none;

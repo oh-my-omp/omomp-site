@@ -1,22 +1,16 @@
 import { For, Show } from "solid-js";
 
-/** One row of an omp session as the person sees it in the terminal or Tern. */
 export type TLine =
   | { readonly kind: "user"; readonly text: string; readonly by?: string }
   | { readonly kind: "say"; readonly text: string }
   | {
       readonly kind: "call";
-      /** Tool name, e.g. `exec_command`. */
       readonly tool: string;
-      /** Call signature text after the tool name. */
       readonly args: string;
       readonly status: "ok" | "blocked" | "error" | "running";
-      /** Result text shown under the call. */
       readonly result?: string;
-      /** A reading aid under a plugin's result when its language is not the page's: label and translated text. */
       readonly gloss?: { readonly label: string; readonly text: string };
     }
-  /** A card the host draws for an extension message: a reminder header, an incoming IRC message. */
   | { readonly kind: "card"; readonly tone: "warn" | "info"; readonly head: string; readonly text?: string };
 
 const statusMark = { ok: "✓", blocked: "⊘", error: "✕", running: "●" } as const;

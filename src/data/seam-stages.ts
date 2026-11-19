@@ -11,58 +11,43 @@ export type Layer = "human" | "agent" | "silent";
 
 const seamIds = ["intent", "prompt", "memory", "delegation", "execution", "delivery"] as const satisfies readonly SeamId[];
 
-/** Narrows a seams collection entry id to a seam the stages know. */
 export function parseSeamId(id: string): SeamId {
   const found = seamIds.find((s) => s === id);
   if (!found) throw new Error(`seam \`${id}\` has no stages in seam-stages.ts`);
   return found;
 }
 
-/** The window chrome a screen is drawn in: the session tab in the terminal, or a Tern view. */
 interface Frame {
   readonly tabs: readonly string[];
   readonly meta: string;
 }
 
-/** A file or tool text shown as it is written. */
 export interface StageFile {
   readonly title: string;
   readonly lines: readonly string[];
-  /** A reading aid under a plugin's text when its language is not the page's. */
   readonly gloss?: { readonly label: string; readonly text: string };
 }
 
-/** A run of terminal text and the colour role the plugin paints it with. */
 export interface TermSpan {
   readonly text: string;
   readonly tone?: "heading" | "strong" | "accent" | "muted" | "dim" | "success";
 }
 export type TermLine = readonly TermSpan[];
 
-/** A full-screen page a plugin draws in the terminal: framed, titled, with its status and key-hint rows. */
 export interface TermPage {
   readonly title: string;
-  /** The body is scrolled to its end; the page's scrollbar thumb sits at the bottom of its track. */
   readonly scrolled: boolean;
   readonly lines: readonly TermLine[];
   readonly status?: string;
   readonly hint: string;
 }
 
-/** One part of a model request in order, named by what puts it there and when it arrives. */
 export interface RequestPart {
   readonly kind: "system" | "tools" | "msg" | "delta" | "new";
   readonly label: string;
   readonly note: string;
 }
 
-/**
- * The primary stage under a layer's heading on a seam page: that layer's mechanism at work.
- * `screen` is what the person sees; `terminal` is a plugin's full-screen page in the terminal;
- * `exchange` puts what the person sees beside what reached the model; `files` shows the files or tool
- * texts the mechanism reads; `context` compares what the prompt cache keeps, then lays one request out
- * part by part.
- */
 export type SeamStage =
   | { readonly kind: "screen"; readonly frame: Frame; readonly panels: readonly Panel[] }
   | { readonly kind: "terminal"; readonly frame: Frame; readonly page: TermPage }
@@ -88,7 +73,6 @@ const fileOf = (id: ComponentId, lang: Lang): StageFile => {
   return { title: art.title, lines: art.lines };
 };
 
-/** The count the todo stop reminder names, so the card on screen matches the reminder the model receives. */
 const openTodos = (lang: Lang): number => {
   const body = todoStopReminder(lang).body;
   const m = /You stopped with (\d+) incomplete/.exec(body);
@@ -139,12 +123,6 @@ const askCall = {
 
 const askAnswer = { en: "Shared Redis, token bucket", zh: "共用的 Redis，令牌桶" } as const;
 
-/**
- * omp-ask-more's full-screen page as the terminal draws it (omp-ask-more src/component.ts `render`, `#questionLines`,
- * `#staticText`, `#hints`), scrolled down past the question and brief: the cursor on the second option with its
- * tradeoff, the evidence the agent attached, and the countdown line of the shipped timeout policy
- * (src/timeout.ts `idleNotice`, package.json defaults 1800 s idle and 1200 s to return).
- */
 const askTerminal = (lang: Lang): TermPage => {
   const en = lang === "en";
   const ask = askPanel(lang).data;
@@ -188,11 +166,6 @@ const askTerminal = (lang: Lang): TermPage => {
   };
 };
 
-/**
- * One request of the demo session, part by part, with what put each part there (omp-config
- * agent/extensions/_shared/context-delta.ts delivery points; system-prompt-replace loads from extensions-last;
- * repo-rules sends `<path-scoped-rules>` with the result of the call that touched a matching file).
- */
 const requestParts = {
   en: [
     { kind: "system", label: "system · SYSTEM_TEMPLATE.md", note: "Rendered once when the session starts" },
@@ -216,7 +189,6 @@ const requestParts = {
   ],
 } as const satisfies Record<Lang, readonly RequestPart[]>;
 
-/** agent/config.yml and agent/config-light.yml in omp-config, excerpted verbatim; `…` marks skipped lines. */
 const fullConfig: StageFile = {
   title: "omp · agent/config.yml",
   lines: [
@@ -256,7 +228,6 @@ const lightConfig: StageFile = {
   ],
 };
 
-/** The tail of the `task` tool description as tool-topics delivers it, and the topic the agent reads before an isolated dispatch. */
 const taskTopics: StageFile = {
   title: "task · description",
   lines: [
@@ -340,13 +311,11 @@ const prefixRows = {
 const workers = ["OrdersRoute", "SearchRoute", "WebhooksRoute"] as const;
 const branch = (name: string) => `wt/${name.replace("Route", "").toLowerCase()}-route`;
 
-/** Session titles in the shop-api scenario; a session is titled in the language its person writes. */
 const sessionTitles = {
   en: { current: "Rate limiting for the public API", login: "Login sessions moved to Redis", orders: "Pagination for the orders route", docs: "Docs sweep" },
   zh: { current: "给公开 API 加限流", login: "登录会话改存 Redis", orders: "orders 路由分页", docs: "文档整理" },
 } as const;
 
-/** One session query from a Python eval cell (omp-sessions `session_query`, action `sql`), with the rows it returned. */
 export const sessionQuery = (lang: Lang): Panel => {
   const t = sessionTitles[lang];
   return {
@@ -369,7 +338,6 @@ export const sessionQuery = (lang: Lang): Panel => {
   };
 };
 
-/** omp-peers' peer_list result (src/tools.ts): live omp processes and their main sessions. */
 const peerList = (lang: Lang): TLine => {
   const t = sessionTitles[lang];
   return {
@@ -387,11 +355,6 @@ const peerList = (lang: Lang): TLine => {
   };
 };
 
-/**
- * The plan panel as it looks once every item is done and committed: with `omomp-lang` set, its
- * goal fields and every label — objective, measure, done-when, estimate, commit — come out in
- * the language the person reads.
- */
 const deliveredTodo = (lang: Lang): Panel => {
   const en = lang === "en";
   const item = (title: string, explanation: string, estimate: number, commit?: { sha: string; message: string }) =>
@@ -465,20 +428,16 @@ const deliveredTodo = (lang: Lang): Panel => {
   };
 };
 
-/** delete-guard's non-literal refusal (guard.ts `reasonFor`, rule `nonLiteral`; posix.ts command-name detail). */
 const nonLiteralCommand = "$RM -rf coverage";
 const nonLiteralRefusal = `delete-guard: this call did not run. Non-literal command: \`${nonLiteralCommand}\` (the command name \`$RM\` comes from an expansion). Commands must be literal: no command name from a variable or substitution, no non-literal nested shell or eval script, no script fed to a shell through stdin; write the command out. To delete files, call the \`delete\` tool with literal paths and leave \`mode\` unset; the default moves them to the system trash.`;
 
-/** tool-policy-nag's pty routing refusal for a command that never ends on its own (rule `tailFollow`). */
 const ptyRefusal = "pty 路由：这次 `bash` 调用没有执行：`tail` 不会自己结束，或在等外部条件（open-ended，规则 `tailFollow`）。\nxd://exec_command";
 
-/** task-completion-judge's return when the work is done but the worker's todo is not (index.ts:816-825, items per index.ts:730-734). */
 const todoReturn = (lang: Lang): string => {
   const item = lang === "en" ? "Routes: Switch the search route — Same change as orders, with a higher limit" : "路由: 改 search 路由 — 改法同 orders，额度更高";
   return `完成度鉴定：这次任务已经完成，但你的 todo 里还有未完成的项，yield 被退回：\n- ${item}\n先维护 todo，让它反映真实进度，再调用 yield。`;
 };
 
-/** turn-judge's notification when a rule holds (index.ts `describeVerdict`): every question's probability, two decimals. */
 const turnJudgeVerdict = (lang: Lang): { head: string; text: string } => {
   const parts = "says_remaining 0.94 · announces_future 0.88 · admits_mistake 0.03 · asks_user 0.02 · user_forbids_work 0.01 · external_blocker 0.02";
   return lang === "en"
@@ -575,7 +534,6 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
                       ? 'DONE "Switch the orders route" "src/routes/orders.ts" "feat: orders route on the shared limiter"'
                       : 'DONE "改 orders 路由" "src/routes/orders.ts" "feat: orders 路由接入共用限流器"',
                     status: "ok",
-                    // omp-todo-more src/tool.ts:632-637 and the summary of src/tool.ts:399-465, English only.
                     result: `Committed 9f31b20 "${en ? "feat: orders route on the shared limiter" : "feat: orders 路由接入共用限流器"}" (src/routes/orders.ts) in /home/dev/shop-api.\nOverall: 3/6 done, 3 open.`,
                     ...(en ? {} : { gloss: { label: "译文", text: "已提交 9f31b20（src/routes/orders.ts），仓库 /home/dev/shop-api。总计完成 3/6，还剩 3 项。" } }),
                   },
@@ -614,8 +572,6 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
     case "delegation":
       switch (layer) {
         case "human":
-          // omp-config agent/extensions/subagent-usage/index.ts: `on` (249-255) starts calibrateInBackground (202-216),
-          // whose notices are 203-207 and 170-180; `status` (285-287) prints showStatus (220-243).
           return {
             kind: "screen",
             frame: session,
@@ -682,7 +638,6 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
             ],
           };
         case "silent":
-          // The dispatch as the person watches it: two refused calls, then the one that runs. The refusal texts are the cells below.
           return {
             kind: "screen",
             frame: session,
@@ -715,7 +670,6 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
     case "execution":
       switch (layer) {
         case "human": {
-          // The view the grid cell shows, opened full-pane on the other session: the person's keys go to that terminal.
           const view = panelOf("terminals-hud", lang);
           if (view.kind !== "terminals") throw new Error("terminals-hud art is not the Terminals view");
           return {
@@ -801,8 +755,6 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
     case "delivery":
       switch (layer) {
         case "human":
-          // omomp-lang at work: the finished plan's panel in the session, its goal fields and labels
-          // in the language the person reads.
           return { kind: "screen", frame: session, panels: [deliveredTodo(lang)] };
         case "agent":
           return {

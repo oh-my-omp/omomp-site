@@ -1,9 +1,5 @@
 import { For, Show, type JSX } from "solid-js";
 
-/**
- * Chrome around a rendered interface: a top bar with tabs and a right-hand meta line.
- * Slices are Solid components so Astro renders them as static HTML on pages and the replay island reuses them live.
- */
 export default function Window(props: {
   tabs?: readonly string[];
   active?: number;

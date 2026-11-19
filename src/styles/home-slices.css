@@ -1,6 +1,3 @@
-/* Slices drawn for home-page cards: the omp-config pipeline, the product cards and the terminal card. */
-
-/* omp-config along the six seams (src/slices/ConfigPipeline.tsx). */
 .cp {
   display: grid;
   gap: 14px;
@@ -28,7 +25,6 @@
   color: var(--text);
   letter-spacing: 0;
 }
-/* The rail runs through every seam's node, left to right. */
 .cp-seam .cp-head::after {
   content: "";
   position: absolute;
@@ -52,7 +48,6 @@
 .cp-head {
   padding-bottom: 14px;
 }
-/* The layer key leads the legend; each lane's left stripe carries the same colour. */
 .cp-legend .cp-key {
   align-items: center;
   gap: 6px;
@@ -138,7 +133,6 @@
 .cp-legend code {
   font-size: 10.5px;
 }
-/* Narrow screens read the pipeline top to bottom, one seam at a time; the layer is the stripe colour. */
 @media (max-width: 760px) {
   .cp-grid {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -155,7 +149,6 @@
   }
 }
 
-/* Product cards (src/slices/HomeProductArt.tsx). */
 .hp {
   font-size: 11.5px;
   line-height: 1.45;
@@ -423,7 +416,6 @@
   font-style: normal;
   color: var(--warn);
 }
-/* What the new head voided: the previous fingerprint and the approval given on it. */
 .hp-gate-row.old {
   color: var(--dim);
 }
@@ -467,7 +459,6 @@
   color: var(--text);
   overflow-wrap: anywhere;
 }
-/* A path wraps only after a slash: each segment is an unbreakable box. */
 .hp-rb-wt code .seg {
   display: inline-block;
   font-size: inherit;
@@ -528,7 +519,6 @@
   color: var(--agent);
 }
 
-/* The terminal card (src/slices/HomeExecArt.tsx): the Terminals view, one session opened over it. */
 .hx {
   position: relative;
   display: grid;
@@ -539,7 +529,6 @@
   overflow: hidden;
   opacity: 0.7;
 }
-/* Behind the opened session only the list matters; it takes the full width so commands read whole. */
 .hx-view .sl-term-split {
   grid-template-columns: minmax(0, 1fr);
 }
@@ -580,7 +569,6 @@
   .hp-dp {
     grid-template-columns: minmax(0, 1fr);
   }
-  /* Stacked, the Tern cards lead and the YAML they write follows. */
   .hp-pb .hp-pane {
     order: -1;
   }
@@ -588,7 +576,6 @@
     border-right: 0;
     border-top: 1px solid var(--line);
   }
-  /* The ticket machine folds into two columns so the drift note below it stays in view. */
   .hp-rail {
     grid-row: auto;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -603,7 +590,6 @@
   .hp-rb-row {
     grid-template-columns: minmax(0, 1.2fr) 34px minmax(0, 1fr);
   }
-  /* The middle column is only an arrow wide, so the sync mode heads the card on its own line. */
   .hp-rb-head span:nth-child(2) {
     grid-column: 1 / -1;
     order: -1;

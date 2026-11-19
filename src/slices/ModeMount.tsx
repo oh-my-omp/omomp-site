@@ -1,25 +1,18 @@
 import { For } from "solid-js";
 
-/** One launch mode of omp-config: what sits in the cached prefix, what is appended as messages, and which checks load. */
 export interface ModeRow {
-  /** The command that starts the mode, e.g. `omp-light`. */
   readonly command: string;
-  /** Already-localized mode name. */
   readonly name: string;
-  /** Spans of the request prefix, in order: system prompt, appended system file, tool list. */
   readonly prefix: readonly string[];
-  /** Messages the mode's extensions append after the prefix. */
   readonly appended: readonly string[];
   readonly checks: ReadonlyArray<{ readonly name: string; readonly loaded: boolean }>;
 }
 
 export interface ModeMountData {
   readonly rows: readonly ModeRow[];
-  /** Already-localized group and state words. */
   readonly labels: { readonly prefix: string; readonly appended: string; readonly loaded: string; readonly off: string };
 }
 
-/** omp (full mode) against omp-light (light mode): each keeps its own prefix fixed for the session; they differ in the appended system file, the appended messages and the loaded checks (agent/config-light.yml). */
 export default function ModeMount(props: { data: ModeMountData }) {
   const l = () => props.data.labels;
   return (

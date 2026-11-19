@@ -2,14 +2,6 @@ import type { Lang } from "../i18n";
 import type { Art } from "../slices/Art";
 import type { Hook } from "../slices/HookMessage";
 
-/**
- * The art for every component on the seam page: the small interface slice above its name.
- * Every model-facing body, tool name, tag, command line, label and setting is quoted verbatim
- * from the component's own source (see the seam page notes); only scenario values — paths,
- * names, numbers — are filled in. Content follows the same shop-api rate-limiting scenario as
- * scenario.ts: shared-Redis token bucket, orders/search/webhooks routes, workers
- * OrdersRoute/SearchRoute/WebhooksRoute.
- */
 export type ComponentId =
   | "ask-more-panel"
   | "input-polish"
@@ -148,10 +140,6 @@ const pathRules = (lang: Lang): string =>
     "</path-scoped-rules>",
   ].join("\n");
 
-/**
- * omp-todo-more src/reminders.ts:416-431: the stop reminder after the middleware phase closed, four items open.
- * Items past the first and the goal's last two lines are elided.
- */
 const todoReminder = (lang: Lang): string => {
   const i = items[lang];
   return [
@@ -173,7 +161,6 @@ const todoReminder = (lang: Lang): string => {
   ].join("\n");
 };
 
-/** The stop reminder as the model receives it at turn end; the seam page's memory stage shows it beside the card the person sees. */
 export const todoStopReminder = (lang: Lang): Hook =>
   lang === "en"
     ? { kind: "reminder", source: "omp-todo-more", at: "turn end", label: "appended", body: todoReminder("en") }
@@ -189,7 +176,6 @@ export const todoStopReminder = (lang: Lang): Hook =>
         },
       };
 
-/** omp-todo-more src/overtime.ts:38-45: the warning once an in-progress item runs past its estimate; the third line is elided. */
 const overtimeWarning = (lang: Lang): string =>
   [
     '<system-reminder source="todo-more" kind="overtime">',
@@ -200,7 +186,6 @@ const overtimeWarning = (lang: Lang): string =>
     "</system-reminder>",
   ].join("\n");
 
-/** omp-config agent/extensions/fork-task/index.ts:262-281: the notice appended to the copied transcript of a child forked `from` another agent. */
 const forkNotice = [
   '<system-notice cause="fork_task">',
   "Above: the conversation of agent `WebhooksRoute`, copied as background. You continue under its system prompt and tools, but `WebhooksRoute` is not your parent: the agent that spawned you receives your result. The parent keeps the conversation with the user. A <role> block opening the assignment defines how you work on it. Deliver your result with `yield` when available, otherwise finish with your final report.",
@@ -209,7 +194,6 @@ const forkNotice = [
   "</system-notice>",
 ].join("\n");
 
-/** omp-todo-more src/ctx/inventory.ts:1551-1568: `ctx show` for a finished worker; the handoff is the worker's own report. */
 const ctxShow = (handoff: string): string =>
   [
     "# Context OrdersRoute",
@@ -227,7 +211,6 @@ const ctxShow = (handoff: string): string =>
     "Transcript: history://OrdersRoute",
   ].join("\n");
 
-/** The OrdersRoute worker's report, in the language the session runs in. */
 const ordersHandoff = {
   en: "Done. src/routes/orders.ts now calls the limiter from src/middleware/rate-limit.ts; orders.test.ts passes (4 tests). Changed: src/routes/orders.ts.",
   zh: "已完成。src/routes/orders.ts 改用 src/middleware/rate-limit.ts 的限流器；orders.test.ts 通过（4 个测试）。改动文件：src/routes/orders.ts。",
@@ -236,7 +219,6 @@ const ordersHandoff = {
 const deleteGuard =
   "delete-guard: deletion commands are disabled; this call did not run. Deletion command: `rm -rf node_modules/.vite/vitest` (`rm` deletes files). To delete files, call the `delete` tool with literal paths and leave `mode` unset; the default moves them to the system trash.";
 
-/** tool-policy-nag's intent reminder (intent.ts `intentReminder`) for a shell call judged as editing an existing file. */
 const intentReminder = [
   "你这次 `bash` 调用属于「修改已有文件」，应该用 `edit`，而不是这样绕出去。",
   "",
@@ -246,7 +228,6 @@ const intentReminder = [
   "```",
 ].join("\n");
 
-/** omp-unified-exec's exec_command result for a command still running when the call returns. */
 const execCommandResult = [
   "[still running]",
   "session_id: 1",
@@ -257,10 +238,6 @@ const execCommandResult = [
   "…",
 ];
 
-/**
- * A watchdog that is off globally, switched on for this session (watchdog-agent runtime.ts:599-602),
- * then the line `/watchdog list` prints for it (runtime.ts:413-424).
- */
 const watchdogCommand = {
   en: [
     "/watchdog on RateLimitChecks",
@@ -305,7 +282,6 @@ const watchdogNote =
 const completionJudgeBody =
   "完成度鉴定：对照最初的任务和你最近的 tool call，这次任务还没有真正完成，yield 被退回。\nwebhooks.test.ts 里的 “signed callbacks skip the limiter” 仍然失败（期望 200，实际 429），改完之后也没有重新跑这个测试。\n补完缺失的部分并实际验证后再 yield。之后不会再因完成度退回。";
 
-/** The decision the agent asks for in the demo, as omp-ask-more's Tern sheet shows it; the intent stage draws the same question in the terminal. */
 export const askPanel = (lang: Lang) =>
   ({
     kind: "ask",
@@ -426,10 +402,6 @@ const terminalsPanel = (lang: Lang) =>
     },
 }) as const;
 
-/**
- * omp-sessions at work: an older shop-api session read through its URL (render.ts `renderTimeline`: header lines, then
- * a turn header and its events). The renderer writes English; the session's title and prompt are in the person's language.
- */
 const pastTimeline = (lang: Lang) => {
   const en = lang === "en";
   return [
@@ -445,7 +417,6 @@ const pastTimeline = (lang: Lang) => {
 };
 
 export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
-  // intent
   "ask-more-panel": {
     en: { kind: "panel", panel: askPanel("en") },
     zh: { kind: "panel", panel: askPanel("zh") },
@@ -512,7 +483,6 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
       },
     },
   },
-  // prompt
   "omp-modes": {
     en: {
       kind: "code",
@@ -650,7 +620,6 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
       },
     },
   },
-  // memory
   "todo-panel": {
     en: { kind: "panel", panel: todoPanel("en") },
     zh: { kind: "panel", panel: todoPanel("zh") },
@@ -726,7 +695,6 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
       lines: ["---", "provider: ^anthropic$", "model: opus", "thresholdTokens: 150000", "---"],
     },
   },
-  // delegation
   "subagent-usage-cmd": {
     en: {
       kind: "code",
@@ -892,7 +860,6 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
       hook: { kind: "block", source: "task-split-check", at: "task 调用前", label: "拦下", body: splitCheck },
     },
   },
-  // execution
   "terminals-hud": {
     en: { kind: "panel", panel: terminalsPanel("en") },
     zh: { kind: "panel", panel: terminalsPanel("zh") },
@@ -905,7 +872,6 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
     en: { kind: "code", title: "exec_command", lines: ['cmd: "pnpm test --watch"', 'title: "pnpm test --watch"', "", ...execCommandResult] },
     zh: { kind: "code", title: "exec_command", lines: ['cmd: "pnpm test --watch"', 'title: "pnpm test --watch"', "", ...execCommandResult] },
   },
-  /** A path the delete tool refuses before touching anything (delete-guard index.ts:242, targets.ts validateOne). */
   "delete-tool": {
     en: {
       kind: "code",
@@ -929,7 +895,6 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
       gloss: { label: "译文", text: "delete：什么都没删；被拒绝：\"~/code/shop-api/coverage\"：路径按字面处理，`~` 不会展开，请写完整路径。" },
     },
   },
-  /** harness_restart's queued result, then the message the restarted session opens with (harness-restart index.ts:209,167). */
   wt: {
     en: {
       kind: "code",
@@ -1014,7 +979,6 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
       },
     },
   },
-  // delivery
   "omomp-lang": {
     en: {
       kind: "code",
@@ -1045,7 +1009,6 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
     en: { kind: "code", title: "read session://3f61d0b7/timeline", lines: pastTimeline("en") },
     zh: { kind: "code", title: "read session://3f61d0b7/timeline", lines: pastTimeline("zh") },
   },
-  /** A side question to the docs session found by peer_list; the answer opens with omp-peers' own English line. */
   peers: {
     en: {
       kind: "code",

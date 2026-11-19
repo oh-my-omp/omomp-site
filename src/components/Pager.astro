@@ -9,7 +9,6 @@ interface Props {
   next: Link;
 }
 const { prev, next } = Astro.props;
-/** A link that leaves the site gets the outward arrow, so it is not mistaken for the next page. */
 const arrow = (l: Link) => (/^https?:\/\//.test(l.href) ? "↗" : "→");
 ---
 

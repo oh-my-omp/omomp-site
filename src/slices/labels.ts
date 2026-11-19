@@ -1,10 +1,5 @@
 import type { Lang } from "../i18n";
 
-/**
- * Interface labels exactly as each plugin renders them, per language.
- * Sources: omp-ask-more src/nodes.ts and src/component.ts; omp-todo-more src/native.ts and src/reminders.ts;
- * omp-unified-exec fork-features/tern-terminal-hud.ts; omp-playbooks src/service/ui.ts.
- */
 export const labels = {
   en: {
     ask: {

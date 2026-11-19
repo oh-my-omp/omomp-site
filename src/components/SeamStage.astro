@@ -10,9 +10,7 @@ import type { Lang } from "../i18n";
 interface Props {
   lang: Lang;
   stage: SeamStage;
-  /** Pane labels: what the person sees, and what reached the model. */
   sides: { screen: string; model: string };
-  /** The single component of a layer: the stage is that component and carries its anchor id, so the section's pill lands on it. */
   anchor?: string | undefined;
 }
 const { lang, stage, sides, anchor } = Astro.props;
@@ -195,11 +193,9 @@ const { lang, stage, sides, anchor } = Astro.props;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
   }
-  /* The translation sits inside the file's frame, under its text and on the same inset. */
   .ss-file .sl-hook-gloss {
     margin: 0 14px 14px;
   }
-  /* A plugin's full-screen terminal page: the rounded frame, title in its top edge, status and key hints at the foot. */
   .ss-term {
     padding: 18px 16px;
   }
@@ -223,7 +219,6 @@ const { lang, stage, sides, anchor } = Astro.props;
   .ss-term-body {
     color: var(--soft);
   }
-  /* The page's scroll track, with the thumb at the bottom: the question and brief sit above, scrolled off. */
   .ss-term-scroll {
     position: absolute;
     top: 16px;
@@ -278,7 +273,6 @@ const { lang, stage, sides, anchor } = Astro.props;
   .ss-term-hint {
     margin-top: 4px;
   }
-  /* One request, part by part: the parts omp-config adds carry the silent-layer colour. */
   .ss-parts {
     list-style: none;
     margin: 4px 0 0;

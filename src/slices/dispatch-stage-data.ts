@@ -1,65 +1,42 @@
 import type { Lang } from "../i18n";
 import type { Art } from "./Art";
 
-/** One node of the issue tree the coordinator convenes into tickets. */
 export interface DispatchIssue {
-  /** Issue number, e.g. 48 → shown as `#48`; the ticket id is the same number. */
   readonly n: number;
   readonly title: string;
-  /**
-   * What the coordinator keeps for this issue's ticket:
-   * a verbatim workflow state once a ticket is live, or `waiting` when it may not launch yet.
-   */
   readonly ticket: { readonly kind: "state"; readonly name: string } | { readonly kind: "waiting" };
-  /** Ticket ids this ticket waits for, the convene entry's `dependsOn`; empty for an independent ticket. */
   readonly dependsOn: readonly number[];
 }
 
-/** The four steps a reader knows from a pull-request flow, laid onto the workflow states that carry them. */
 export type DispatchStep = "pr" | "ci" | "review" | "merge";
 
-/** One state of the default ticket machine, in order (default-workflow.yml). */
 export interface DispatchState {
   readonly name: string;
-  /** Verbatim machine vocabulary: `work`, `action`, `decision`, `judge`, `final`. */
   readonly kind: "work" | "action" | "decision" | "judge" | "final";
-  /** Verbatim seat role, gate judges or action verb attached to the state; none for decision/final. */
   readonly meta?: string;
-  /** Times the ticket has entered this state; 2 marks a re-entry after drift routed it back. */
   readonly visits?: number;
   readonly mark: "done" | "current" | "pending";
-  /** The pull-request step this state carries, when it is one of them. */
   readonly step?: DispatchStep;
 }
 
-/** A gate verdict: judge role plus its gate status, verbatim (`pending` / `passed` / `failed`). */
 export interface DispatchVerdict {
   readonly role: string;
   readonly status: "pending" | "passed" | "failed";
 }
 
 export interface DispatchStageContent {
-  /** Column headings, localized. */
   readonly issues: string;
   readonly ticket: string;
   readonly drift: string;
-  /** Issue-tree column */
   readonly issuesCaption: string;
   readonly umbrellaTag: string;
   readonly waiting: string;
   readonly launcherOutcome: string;
-  /** Ticket column */
   readonly ticketCaption: string;
   readonly ticketTitle: string;
   readonly steps: Readonly<Record<DispatchStep, string>>;
-  /** Drift column */
   readonly driftCaption: string;
-  /** Verbatim engine note recorded when the open PR changes head. */
   readonly driftNote: string;
-  /**
-   * Reading aids for the two English plugin lines (driftNote, the judge checkout line) on a page in
-   * another language: label and translated text, both localized. Absent where the page is English.
-   */
   readonly gloss?: { readonly label: string; readonly drift: string; readonly checkout: string };
   readonly oldFingerprintLabel: string;
   readonly newFingerprintLabel: string;
@@ -70,7 +47,6 @@ export interface DispatchStageContent {
   readonly states: readonly DispatchState[];
 }
 
-/** Language-invariant facts of the scene: SHAs, roles, verbatim seat names and the judge checkout line. */
 export const dispatchScene = {
   repo: "omomp/shop-api",
   command: "omp --dispatch omomp/shop-api#47",
@@ -80,14 +56,11 @@ export const dispatchScene = {
   newSha: "e4f5a6b",
   target: "main",
   subject: "pullRequest",
-  /** The gate seated on the old head: review had passed, accept was still judging. */
   oldVerdicts: [
     { role: "review", status: "passed" },
     { role: "accept", status: "pending" },
   ] as readonly DispatchVerdict[],
-  /** Judge seats reopened on the new head: display names `<role>: <ticketId>` (host.ts:170). */
   seats: ["review: 48", "accept: 48"] as const,
-  /** Judge brief checkout description, verbatim (briefs.ts). */
   checkout: "a detached checkout of exactly the pull request head under judgment",
   newVerdicts: [
     { role: "review", status: "pending" },
@@ -106,7 +79,6 @@ const states = (): readonly DispatchState[] => [
   { name: "Done", kind: "final", mark: "pending" },
 ];
 
-/** Issue titles and captions in the shop-api rate-limit scenario, written natively per language. */
 export const dispatchStage: Record<Lang, DispatchStageContent> = {
   en: {
     issues: "Issue tree",
@@ -167,22 +139,12 @@ export const dispatchStage: Record<Lang, DispatchStageContent> = {
   },
 };
 
-/** Capsule links beside the How it works heading: the files that define each mechanism. */
 export const dispatchLinks: readonly { readonly label: string; readonly href: string }[] = [
   { label: "default-workflow.yml", href: "https://github.com/oh-my-omp/omp-dispatch/blob/HEAD/src/default-workflow.yml" },
   { label: "dispatch-owner", href: "https://github.com/oh-my-omp/omp-dispatch/blob/HEAD/agents/dispatch-owner.md" },
   { label: "dispatch-reviewer", href: "https://github.com/oh-my-omp/omp-dispatch/blob/HEAD/agents/dispatch-reviewer.md" },
 ];
 
-/**
- * The slice above each cell of the page's How it works grid, in cell order:
- * the default workflow from opening the PR to merging it, the brief a review seat
- * receives (src/domain/briefs.ts, with its English text glossed on other pages), and the
- * durable effect record a GitHub write leaves behind (effectSchema in src/domain/model.ts,
- * the merge action in src/domain/public-grammar.ts). Workflow lines, brief sentences, record
- * keys and the gh command are verbatim from the plugin; "…" marks an elision and `#` lines
- * are site comments in the page language.
- */
 const briefBody = [
   "You are the review seat for dispatch ticket 48. You own only this ticket, in its Reviewing state.",
   "Independently verify the complete current contract against this checkout, not just prior findings.",

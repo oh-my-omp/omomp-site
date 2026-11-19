@@ -1,7 +1,6 @@
 ---
 interface Props {
   cols?: 1 | 2 | 3 | 4;
-  /** Number of cells inside, so the last row is closed with blank cells instead of showing the line colour. */
   count?: number;
 }
 const { cols = 3, count } = Astro.props;
@@ -14,7 +13,6 @@ const blanks = count === undefined ? 0 : (cols - (count % cols)) % cols;
 </div>
 
 <style>
-  /* The cells sit on the line colour with a 1px gap, so every inner divider is one 1px hairline across the canvas. */
   .grid {
     display: grid;
     grid-template-columns: repeat(var(--cols), minmax(0, 1fr));

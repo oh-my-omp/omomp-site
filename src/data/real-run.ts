@@ -1,27 +1,15 @@
-/** What reached the model at one moment of a run, quoted from that run's session log. */
 export type Sent =
-  /** Messages omp-config sent with the prompt and kept off the screen. */
   | { readonly kind: "appended"; readonly messages: readonly { readonly source: string; readonly chars: number }[] }
-  /**
-   * A call refused before it ran. The screen shows the refusal, so this quotes the sentence of an appended message
-   * that already told the model not to make the call.
-   */
   | { readonly kind: "refused"; readonly quote: { readonly source: string; readonly text: string; readonly gloss: string } }
-  /**
-   * The `delete` call that moved its paths to the system trash. The screen shows only how many paths it sent, so this
-   * lists them; the call set no `mode`, so the tool used its default, the trash.
-   */
   | { readonly kind: "trashed"; readonly paths: readonly string[] };
 
 export type MomentId = "ask" | "refused" | "trash";
 
-/** Pixel size of one capture at 2× scale, so the page can reserve its box before the image loads. */
 export interface ShotSize {
   readonly desktop: readonly [number, number];
   readonly mobile: readonly [number, number];
 }
 
-/** One real session: when it ran, what the model was sent at each captured moment, and the size of each capture. */
 export interface RealRun {
   readonly date: string;
   readonly omp: string;
@@ -42,13 +30,8 @@ const quote = {
   gloss: "会话里有 `delete` 工具时，删文件一律用它，不要在 bash 里删：`rm`、`unlink`、`rmdir`、`shred`、`find -delete` 这类删除命令，以及命令名或内嵌脚本不是字面写死的命令，运行前就会被拒绝。",
 } as const;
 
-/** Captures of moment `n` live in `public/real/<n>-desktop.png` and `-mobile.png`. */
 export const moments: readonly MomentId[] = ["ask", "refused", "trash"];
 
-/**
- * The one recorded session, in English. Both language pages show it: the Chinese page translates the text around the
- * captures, not the captures.
- */
 export const realRun: RealRun = {
   date: "2026-11-10",
   omp: "18.18.6",

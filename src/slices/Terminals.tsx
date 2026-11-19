@@ -4,7 +4,6 @@ import { labels } from "./labels";
 
 export type TermState = "running" | "exit0" | "failed";
 
-/** A screen line; `by` marks input typed by the person or written by the agent, for the reader of the demo. */
 export interface ScreenLine {
   readonly text: string;
   readonly by?: "you" | "agent";
@@ -24,13 +23,11 @@ export interface TermSession {
 export interface TerminalsData {
   readonly sessions: readonly TermSession[];
   readonly selected: number;
-  /** `view`: the Terminals list with detail; `page`: the selected session full-pane, where keys go to the PTY. */
   readonly mode: "view" | "page";
 }
 
 const glyph: Record<TermState, string> = { running: "●", exit0: "✓", failed: "✕" };
 
-/** omp-unified-exec's Tern Terminals view and full-pane terminal page (fork-features/tern-terminal-hud.ts). */
 export default function Terminals(props: { lang: Lang; data: TerminalsData; compact?: boolean }) {
   const l = () => labels[props.lang].exec;
   const sel = () => props.data.sessions.find((s) => s.id === props.data.selected) ?? props.data.sessions[0]!;

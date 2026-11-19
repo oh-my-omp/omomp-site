@@ -1,10 +1,6 @@
 ---
 import type { Lang } from "../i18n";
 
-/**
- * Architecture drawings for the four engineering rules (FIG 0.1–0.4), drawn for a narrow column:
- * a 240×260 canvas shown at its own size on the principles page and scaled slightly down in the home grid.
- */
 interface Props {
   fig: "append" | "signals" | "roles" | "policy";
   lang: Lang;
@@ -223,7 +219,6 @@ const workers = ["wt/orders", "wt/search", "wt/webhooks"];
     stroke: color-mix(in srgb, var(--danger) 40%, transparent);
     stroke-width: 1;
   }
-  /* Prose labels in the page's face, code names in mono. */
   .t {
     font-family: var(--mono);
     font-size: 10.5px;

@@ -5,10 +5,8 @@ import "../styles/real-demo.css";
 
 export interface RealMoment {
   readonly id: MomentId;
-  /** Position in the run, from 1; names the capture files. */
   readonly n: number;
   readonly label: string;
-  /** One or two sentences on what happened, as HTML from `inlineCode`. */
   readonly caption: string;
   readonly alt: string;
   readonly sent: Sent;
@@ -19,18 +17,15 @@ type LabelKey = "sent" | "hidden" | "message" | "chars" | "total" | "quoted" | "
 
 export interface RealDemoData {
   readonly lang: Lang;
-  /** Site base path without a trailing slash. */
   readonly base: string;
   readonly moments: readonly RealMoment[];
   readonly labels: Readonly<Record<LabelKey, string>>;
-  /** HTML from `inlineCode`, so the code spans in the translation render as code. */
   readonly gloss: string;
   readonly provenance: string;
 }
 
 const count = (n: number) => n.toLocaleString("en-US");
 
-/** The model-side half of a moment: only what the capture beside it leaves out. */
 function SentView(props: { sent: Sent; data: RealDemoData }) {
   const s = props.sent;
   const l = props.data.labels;
@@ -122,7 +117,6 @@ function SentView(props: { sent: Sent; data: RealDemoData }) {
   );
 }
 
-/** One moment: the caption, the capture, and the model's side. */
 function Step(props: { moment: RealMoment; data: RealDemoData; on: boolean }) {
   const m = props.moment;
   const stem = `${props.data.base}/real/${m.n}`;
@@ -138,16 +132,9 @@ function Step(props: { moment: RealMoment; data: RealDemoData; on: boolean }) {
   );
 }
 
-/**
- * One real session, three moments: the screen as Tern drew it beside what reached the model at that moment, quoted
- * from the same session's log. On a phone the caption comes first, then the capture, then the model's side. All
- * three steps share one grid cell and only the selected one is visible, so the stage keeps the height of the tallest
- * step and nothing below it moves when the step changes.
- */
 export default function RealDemo(props: { data: RealDemoData }) {
   const [current, setCurrent] = createSignal(0);
   let stack!: HTMLDivElement;
-  // On a phone the tab bar sticks under the header; a step whose top has scrolled under it is brought back into view.
   const select = (i: number) => {
     setCurrent(i);
     const margin = Number.parseFloat(getComputedStyle(stack).scrollMarginTop);

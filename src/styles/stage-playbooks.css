@@ -1,5 +1,3 @@
-/* omp-playbooks stage: the Tern Playbooks pane and the coordinator session handling one Launch request. */
-
 .st-pb {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 104px minmax(0, 1fr);
@@ -15,7 +13,6 @@
   padding: 0;
 }
 
-/* --- connector: the request out of the pane, the status back into it --- */
 .st-pb-link {
   align-self: stretch;
   display: flex;
@@ -61,7 +58,6 @@
   border-right: 6px solid var(--silent);
 }
 
-/* --- left: the document pane (src/service/ui.ts card anatomy) --- */
 .st-pb-pane {
   min-width: 0;
   padding: 12px 14px 0;
@@ -102,7 +98,6 @@
   font-size: 11px;
   color: var(--dim);
 }
-/* A title too wide for a narrow card wraps rather than being cut; a long path breaks only when nothing else fits. */
 .st-pb-title {
   min-width: 0;
   color: var(--text);
@@ -118,7 +113,6 @@
   font-style: normal;
 }
 
-/* status icons: empty ring todo, spinner running, check ring done */
 .st-pb-ic {
   flex: none;
   width: 11px;
@@ -152,7 +146,6 @@
   }
 }
 
-/* design card: requirement, rendered design, change-request line */
 .st-pb-req {
   margin: 0;
   padding: 0 12px;
@@ -176,7 +169,6 @@
   font-size: 12px;
 }
 
-/* task/orchestration body; a `((bN))` line renders as a link to that block */
 .st-pb-body {
   display: grid;
   justify-items: start;
@@ -204,7 +196,6 @@ pre.st-pb-body {
   text-underline-offset: 3px;
 }
 
-/* task footer: SUBAGENT / ISOLATED WORKTREE columns and the launch button */
 .st-pb-foot {
   display: flex;
   flex-wrap: wrap;
@@ -240,7 +231,6 @@ pre.st-pb-body {
   border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
 }
 
-/* dock: coordinator left, progress right */
 .st-pb-dock {
   display: flex;
   align-items: center;
@@ -269,7 +259,6 @@ pre.st-pb-body {
   color: var(--dim);
 }
 
-/* --- right: the coordinator session, one beat per section along a rail --- */
 .st-pb-flow {
   display: grid;
   gap: 12px;
@@ -391,7 +380,6 @@ pre.st-pb-body {
   box-shadow: inset 3px 0 0 var(--silent);
 }
 
-/* Narrow: the panes stack and the connector turns into a row of downward and upward arrows. */
 @media (max-width: 900px) {
   .st-pb {
     grid-template-columns: minmax(0, 1fr);

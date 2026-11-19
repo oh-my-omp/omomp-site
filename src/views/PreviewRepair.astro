@@ -26,19 +26,16 @@ const figSummary = (p: (typeof principles)[number]) => {
   return own ? t(own, lang) : p.data.summary[lang];
 };
 
-/** What each way of installing looks like at work; the whole set is shown by the call it refuses outright. */
 const tabArts: Readonly<Record<string, readonly Art[]>> = {
   plugin: [{ kind: "panel", panel: sessionQuery(lang) }],
   config: [componentArt["delete-guard"][lang]],
   tern: [componentArt["todo-panel"][lang]],
 };
 
-/** Comments in the start lines, localized; the commands themselves stay as typed. */
 const localComments: Readonly<Record<string, string>> = {
   "omp          # full mode": `omp          # ${t(installStage.fullComment, lang)}`,
   "omp-light    # light mode": `omp-light    # ${t(installStage.lightComment, lang)}`,
 };
-/** Install and start as one command block; a line typed inside omp gets a `>` prompt instead of `$`. */
 const commandsOf = (install: readonly string[], start: readonly string[]): readonly CommandLine[] => [
   ...install.map((text) => ({ in: text.startsWith("/") ? ("omp" as const) : ("sh" as const), text })),
   { text: "" },
@@ -113,7 +110,6 @@ const installTabs: readonly InstallTab[] = home.hosts.tabs.map((tab) => ({
 </Base>
 
 <script>
-  // Copy button: put the command on the clipboard and say so on the button for a moment.
   for (const button of document.querySelectorAll<HTMLButtonElement>(".close button.copy")) {
     const label = button.textContent ?? "";
     button.addEventListener("click", async () => {
@@ -125,13 +121,11 @@ const installTabs: readonly InstallTab[] = home.hosts.tabs.map((tab) => ({
 </script>
 
 <style>
-  /* The install stage starts a new topic, so it stands well apart from the line under the cards. */
   .install {
     margin-top: clamp(72px, 9vw, 120px);
     display: grid;
     gap: clamp(28px, 3vw, 40px);
   }
-  /* Two-tone, 24px under the cards, as supabase.com's line under its grid: the claim bright, the rest grey. */
   .bridge {
     margin-top: 24px;
     font-size: clamp(19px, 1.9vw, 24px);
@@ -157,8 +151,6 @@ const installTabs: readonly InstallTab[] = home.hosts.tabs.map((tab) => ({
     margin-top: clamp(40px, 5vw, 64px);
   }
 
-  /* The four rules as on linear.app: one row, cells divided by 1px hairlines, the first cell's text on the heading's
-     left edge. */
   .figgrid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -182,7 +174,6 @@ const installTabs: readonly InstallTab[] = home.hosts.tabs.map((tab) => ({
   .figcell:hover {
     background: var(--bg-hover);
   }
-  /* Every drawing in the same 200px box, so the labels and titles under them share one line. */
   .fart {
     display: block;
     height: 200px;
@@ -211,7 +202,6 @@ const installTabs: readonly InstallTab[] = home.hosts.tabs.map((tab) => ({
     max-width: 30em;
   }
 
-  /* The close, centred as supabase.com ends: the hero's line again, the one command, and the way to the rest. */
   .close {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -235,7 +225,6 @@ const installTabs: readonly InstallTab[] = home.hosts.tabs.map((tab) => ({
     border-radius: 4px;
     background: var(--bg-raised);
   }
-  /* The command stays on one line and scrolls sideways on a narrow screen; Copy stays at the right. */
   .cmd code {
     display: block;
     min-width: 0;
@@ -304,7 +293,6 @@ const installTabs: readonly InstallTab[] = home.hosts.tabs.map((tab) => ({
       height: 160px;
     }
   }
-  /* Chinese headings break only at punctuation, so no word is cut in two. */
   :global(main:lang(zh) h2) {
     word-break: keep-all;
   }

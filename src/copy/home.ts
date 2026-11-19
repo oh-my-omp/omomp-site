@@ -9,7 +9,6 @@ export const home = {
     },
   },
   hero: {
-    /** Two lines; the second is set in the accent colour. */
     title: [
       { en: "Governance and panels", zh: "给 omp 编码代理" },
       { en: "for the omp agent", zh: "加上治理与面板" },

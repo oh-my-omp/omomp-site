@@ -4,10 +4,6 @@ import type { ComponentId } from "./component-art";
 import type { SeamId } from "./scenario";
 import type { ProductArtId } from "../slices/HomeProductArt";
 
-/**
- * The slice a home-page card shows: omp-config's pipeline, a component's own art, a compressed product stage,
- * the terminal card, or slices written for the card.
- */
 export type RepoArt =
   | { readonly from: "pipeline" }
   | { readonly from: "component"; readonly id: ComponentId }
@@ -15,14 +11,11 @@ export type RepoArt =
   | { readonly from: "exec" }
   | { readonly from: "own"; readonly arts: Readonly<Record<Lang, readonly Art[]>> };
 
-/** A repository shown as a card on the home page. */
 export interface Repo {
   readonly name: string;
   readonly kind: "runtime" | "plugin" | "product" | "tool";
   readonly line: Text;
-  /** Seams the repo acts on; empty for products and tools, which have their own pages. */
   readonly seams: readonly SeamId[];
-  /** Product page route, for products only. */
   readonly page?: string;
   readonly art: RepoArt;
 }

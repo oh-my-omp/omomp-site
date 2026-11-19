@@ -18,23 +18,18 @@ export interface AskEvidence {
 }
 
 export interface AskData {
-  /** Sheet title: the question's `header`. */
   readonly header: string;
   readonly question: string;
   readonly where: string;
   readonly what: string;
   readonly how: string;
   readonly options: readonly AskOption[];
-  /** Option under the cursor; its tradeoff card is shown. */
   readonly cursor: number;
-  /** Option the person picked, once answered. */
   readonly answered?: number;
   readonly evidence?: readonly AskEvidence[];
-  /** Countdown line left of the action bar, as `countdownStatus()` words it. */
   readonly countdown?: string;
 }
 
-/** omp-ask-more's full-screen question, as the Tern modal sheet lays it out (src/nodes.ts `sheetLayout`). */
 export default function AskPanel(props: { lang: Lang; data: AskData; compact?: boolean }) {
   const l = () => labels[props.lang].ask;
   return (

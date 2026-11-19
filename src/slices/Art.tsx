@@ -4,18 +4,10 @@ import HookMessage, { type Hook } from "./HookMessage";
 import PanelView, { type Panel } from "./Panel";
 import Transcript, { type TLine } from "./Transcript";
 
-/** The small interface slice above a component's name in a grid cell: what that component looks like at work. */
 export type Art =
-  /** A message a silent hook puts in front of the model. */
   | { readonly kind: "hook"; readonly hook: Hook }
-  /** Transcript rows: tool calls the agent makes and what comes back. */
   | { readonly kind: "lines"; readonly lines: readonly TLine[] }
-  /** A plugin panel the person sees. */
   | { readonly kind: "panel"; readonly panel: Panel }
-  /**
-   * A file, command or tool call as written, under its name: config, a prompt file, a slash command or a tool's arguments,
-   * and the output. Text the model reads in a language other than the page's carries a translation underneath.
-   */
   | {
       readonly kind: "code";
       readonly title: string;

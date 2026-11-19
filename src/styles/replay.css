@@ -1,11 +1,9 @@
-/* Replay player: the demo scenario as a split screen (src/islands/ReplayPlayer.tsx). */
 .rp {
   position: relative;
   display: grid;
   gap: 20px;
 }
 
-/* Step bar: one group per seam, a numbered tick per step. */
 .rp-bar {
   display: flex;
   gap: 1px;
@@ -132,7 +130,6 @@
   line-height: 1.65;
 }
 
-/* Progress through every beat of the scenario on this page; the orange band is the current step's share of it. */
 .rp-progress {
   position: relative;
   height: 3px;
@@ -156,12 +153,6 @@
   transition: width 0.4s ease;
 }
 
-/*
- * Split: the screen the person sees, and the messages that reached the model without showing there.
- * The split is as tall as the current step needs with every beat shown (`--rp-fit`), up to the room left on screen
- * under the controls and caption (`--rp-room`), both measured by the player; past that each pane scrolls inside it and
- * follows the newest beat, so a change never happens off screen. Before the player measures, an estimate applies.
- */
 .rp-split {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
@@ -170,15 +161,9 @@
   height: min(var(--rp-fit, 100svh), var(--rp-room, clamp(380px, calc(100svh - 380px), 700px)));
   transition: height 0.3s ease;
 }
-/*
- * While playing, the split's slot keeps the full room below the pinned controls even when a step needs less, so the
- * page never gets shorter under a short step; otherwise the browser scrolls it back and the next tall step runs past
- * the bottom of the screen.
- */
 .rp.playing .rp-split {
   margin-bottom: calc(var(--rp-room, 0px) - min(var(--rp-fit, 0px), var(--rp-room, 0px)));
 }
-/* The hidden copy of the current step, fully shown at its natural height, that `--rp-fit` is measured from. */
 .rp-measure {
   position: absolute;
   inset-inline: 0;
@@ -225,7 +210,6 @@
   scrollbar-width: thin;
   scrollbar-color: var(--line-strong) transparent;
 }
-/* A pane with more below fades at its bottom edge; the fade is gone once it is scrolled to the end or fits. */
 @property --rp-fade {
   syntax: "<length>";
   inherits: false;
@@ -256,7 +240,6 @@
   padding-right: 4px;
 }
 
-/* A transcript revealed line by line keeps the transcript's own spacing. */
 .rp-tx {
   display: grid;
   gap: 0.8em;
@@ -267,7 +250,6 @@
   padding: 0;
 }
 
-/* Each beat appears in place; a firing hook and the element it reacts to light up in the hook's colour. */
 .rp-beat {
   --tone: var(--silent);
   border-radius: 8px;
@@ -284,7 +266,6 @@
   box-shadow: 0 0 0 1px var(--tone);
   background-color: color-mix(in srgb, var(--tone) 6%, transparent);
 }
-/* A transcript line starts with its status glyph at its very edge; the ring stands 6px clear of it, tinted inside. */
 .rp-tx > .rp-beat.lit {
   --tint: color-mix(in srgb, var(--tone) 6%, var(--bg-panel));
   background-color: var(--tint);
@@ -346,10 +327,6 @@
   font-size: 14px;
 }
 
-/*
- * Narrow: the two panes stack, the screen above the messages. Each row is as tall as what is on screen in it so far;
- * when both outgrow the split they share it evenly, so the screen keeps its room until messages to the model arrive.
- */
 @media (max-width: 900px) {
   .rp-split {
     grid-template-columns: minmax(0, 1fr);
@@ -359,7 +336,6 @@
     height: min(var(--rp-fit, 100vh), var(--rp-room, clamp(360px, calc(100vh - 330px), 760px)));
     height: min(var(--rp-fit, 100svh), var(--rp-room, clamp(360px, calc(100svh - 330px), 760px)));
   }
-  /* While playing, the pane the newest beat is in keeps the room; the other gets at most a third of it. */
   .rp-split[data-active="front"] {
     grid-template-rows: minmax(0, auto) fit-content(33%);
   }
@@ -374,7 +350,6 @@
     gap: 8px;
   }
 }
-/* Two rows of three seams: every seam and step stays visible without horizontal scrolling. */
 @media (max-width: 768px) {
   .rp-bar {
     display: grid;

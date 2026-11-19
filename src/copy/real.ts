@@ -1,21 +1,18 @@
 import type { Text } from "../i18n";
 import type { MomentId } from "../data/real-run";
 
-/** One way to install: what it sets up, and the lines to type, in a shell (`$`) or inside omp (`>`). */
 export interface InstallWay {
   readonly title: Text;
   readonly note: Text;
   readonly lines: readonly { readonly at: "shell" | "omp"; readonly text: string; readonly comment?: Text }[];
 }
 
-/** Copy for the candidate home page that shows a real session instead of drawn interface art. */
 export const real = {
   hero: {
     primary: { en: "Install", zh: "安装" },
     secondary: { en: "Watch the full replay", zh: "看完整回放" },
   },
   demo: {
-    /** One line above the steps; the stage has no heading of its own, so the first screen has one headline. */
     intro: {
       en: "One real session in Tern: what you saw on screen, and what the model got.",
       zh: "一次真实的 Tern 会话：你在屏幕上看到的，和模型实际收到的。",
@@ -86,7 +83,6 @@ export const real = {
       },
     } as Readonly<Record<string, Text>>,
     plugins: { en: "Plugins, each usable on its own", zh: "插件，每个都能单独使用" },
-    /** Lines that replace a plugin's line from `src/data/repos.ts` on this page. */
     pluginLines: {
       "omp-config": {
         en: "The governance runtime: checks, guards and judges at every step of a task.",

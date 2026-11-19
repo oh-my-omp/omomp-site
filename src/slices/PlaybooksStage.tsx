@@ -5,18 +5,6 @@ import Window from "./Window";
 import { joinNotice, playbooksScene, playbooksStage, type PbBlock, type PbDesignBlock, type PbStatus } from "./playbooks-stage-data";
 import "../styles/stage-playbooks.css";
 
-/**
- * omp-playbooks: one Launch request from click to file.
- * Left, the Tern Playbooks pane (src/service/ui.ts card anatomy): a design block,
- * execution blocks whose bodies reach it through `((b1))`, and the block whose
- * Launch button was just clicked. Right, the coordinator session handling that
- * click: the service notice it receives, the eval call that starts the block,
- * the prompt the Launch froze with the reference expanded, the subagent, and
- * the status line the subagent writes back into the YAML. The connector column
- * carries the two crossings: the request out of the pane, the status back into it.
- */
-
-/** Default SUBAGENT value, verbatim from src/service/ui.ts:811 (labels.ts has no `default` key). */
 const defaultAgent = { en: "Default", zh: "默认" } as const;
 
 const seq = (n: number) => String(n + 1).padStart(2, "0");
@@ -28,7 +16,6 @@ const launchOf = (b: PbBlock): "launch" | "requested" | "stop" | null =>
 
 const REF = /^\(\((b\d+)\)\)$/;
 
-/** Text a design reference compiles to (selectDesign in src/service/references.ts:363). */
 const designText = (b: PbDesignBlock): string =>
   [...(b.requirement.trim() ? [`<requirement>\n${b.requirement}\n</requirement>`] : []), `<design>\n${b.design.join("\n")}\n</design>`].join("\n\n");
 
@@ -152,7 +139,6 @@ function Coordinator(props: { lang: Lang }) {
   const d = () => playbooksStage[props.lang];
   const c = () => d().coordinator;
   const asked = () => d().blocks.find((b) => b.id === d().requested);
-  /** The frozen Launch prompt: the requested body with each `((bN))` line replaced by what it compiles to. */
   const frozen = () => {
     const b = asked();
     if (!b || b.kind !== "execution") return "";

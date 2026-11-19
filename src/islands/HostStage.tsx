@@ -9,16 +9,12 @@ export type Part = "config" | "plugins" | "products" | "omp" | "tern";
 export interface HostTab {
   readonly id: string;
   readonly label: string;
-  /** Parts of the picture this way of installing uses; the rest are dimmed. */
   readonly uses: readonly Part[];
-  /** Title of the window the interface is drawn in. */
   readonly window: string;
-  /** What you work with once this way is installed. */
   readonly arts: readonly Art[];
   readonly install: readonly string[];
   readonly start: readonly string[];
   readonly text: string;
-  /** What this way of installing gives you, one short line each, as HTML from `inlineCode`. */
   readonly after: readonly string[];
 }
 
@@ -30,15 +26,10 @@ export interface HostStageData {
   readonly links: Readonly<Record<"omp" | "tern", string>>;
   readonly install: string;
   readonly start: string;
-  /** Heading over each tab's `after` list. */
   readonly after: string;
   readonly tabs: readonly HostTab[];
 }
 
-/**
- * The ways of installing omomp as a switchable stage: on the left the interface you work in once it is set up,
- * above how omomp mounts on its two hosts; on the right the install and start commands and what you get.
- */
 export default function HostStage(props: { data: HostStageData }) {
   const [current, setCurrent] = createSignal(0);
   const tab = createMemo(() => props.data.tabs[current()]!);

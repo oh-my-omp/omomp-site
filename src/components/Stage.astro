@@ -1,12 +1,7 @@
 ---
 interface Props {
-  /** Optional caption under the interface: one bold line and one or two grey lines. */
   title?: string;
   text?: string;
-  /**
-   * Where the `switch` slot sits when it is filled: a column of feature buttons on the left, or a row along the top
-   * (Linear's plan page, "Meeting notes"). Narrow screens always put it on top.
-   */
   switchAt?: "left" | "top";
   class?: string;
 }
@@ -36,7 +31,6 @@ const hasSwitch = Astro.slots.has("switch");
 </div>
 
 <style>
-  /* The full-width interface stage under a section head: a parchment panel inside one hairline frame. */
   .stage {
     position: relative;
     width: 100%;
@@ -70,7 +64,6 @@ const hasSwitch = Astro.slots.has("switch");
     border-bottom: 1px solid var(--line);
     overflow-x: auto;
   }
-  /* Feature buttons in the switcher: quiet until current (`aria-selected`/`aria-current` or class `on`). */
   .switch > :global(*) {
     display: flex;
     align-items: center;

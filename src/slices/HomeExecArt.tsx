@@ -2,7 +2,6 @@ import type { Lang } from "../i18n";
 import Terminals, { type TermSession } from "./Terminals";
 import "../styles/home-slices.css";
 
-/** Elapsed times as the plugin formats them per language (src/format-time.ts). */
 const elapsed: Readonly<Record<Lang, readonly [string, string]>> = { en: ["4m12s", "3m58s"], zh: ["4分12秒", "3分58秒"] };
 
 const sessions = (lang: Lang): readonly TermSession[] => [
@@ -37,10 +36,6 @@ const sessions = (lang: Lang): readonly TermSession[] => [
   },
 ];
 
-/**
- * The omp-unified-exec card: the Terminals view listing the running PTY sessions, and over it one session opened
- * full-pane, where keys go to the terminal — your keystrokes and the agent's `write_stdin` land in the same PTY.
- */
 export default function HomeExecArt(props: { lang: Lang; you: string; agent: string }) {
   return (
     <div class="hx">

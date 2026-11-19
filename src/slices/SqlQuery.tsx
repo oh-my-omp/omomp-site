@@ -1,12 +1,9 @@
 import { For } from "solid-js";
 
-/** An eval cell that queries session files through omp-sessions' `session_query` (action `sql`), and the rows it returned. */
 export interface SqlQueryData {
   readonly language: "js" | "py";
   readonly code: readonly string[];
-  /** `details.columns` of the result. */
   readonly columns: readonly string[];
-  /** `details.rows` of the result, drawn as a table by the site. */
   readonly rows: ReadonlyArray<readonly (string | number)[]>;
 }
 

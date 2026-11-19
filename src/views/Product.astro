@@ -118,7 +118,6 @@ const { hub, around } = product.data.roles;
 </Base>
 
 <style>
-  /* Page top: a split head whose title is the page's h1, with the product's stage below. */
   .lead {
     padding-block: clamp(72px, 11vw, 140px) clamp(32px, 4vw, 48px);
   }
@@ -129,7 +128,6 @@ const { hub, around } = product.data.roles;
     gap: 16px 24px;
     width: 100%;
   }
-  /* Product names stay in the monospace face the rest of the site gives package names. */
   .switch a {
     font-family: var(--mono);
     font-size: 13px;
@@ -140,7 +138,6 @@ const { hub, around } = product.data.roles;
     margin-top: clamp(40px, 5vw, 64px);
   }
 
-  /* The hub sits above the parties it connects; one labeled arrow drops to each. */
   .roles {
     display: grid;
   }
@@ -216,7 +213,6 @@ const { hub, around } = product.data.roles;
     border-bottom: 1px solid var(--arrow);
     transform: translate(-50%, -1px) rotate(45deg);
   }
-  /* An upward head sits a little below the bus, on its own drop, so it never reads as part of the hub's stem. */
   .edge .head {
     position: absolute;
     left: 50%;
@@ -271,7 +267,6 @@ const { hub, around } = product.data.roles;
       width: auto;
       text-align: left;
     }
-    /* One spine on the left, one labeled branch into each node. */
     .spokes {
       grid-template-columns: minmax(0, 1fr);
       margin-top: 20px;
@@ -314,7 +309,6 @@ const { hub, around } = product.data.roles;
       bottom: auto;
       transform: translate(-6px, -3.5px) rotate(-45deg);
     }
-    /* The chevron's tip touches the spine from the right, so nothing crosses into the margin. */
     .edge .head {
       left: 7px;
       top: 100%;
@@ -332,7 +326,6 @@ const { hub, around } = product.data.roles;
     .node {
       max-width: none;
     }
-    /* The spine ends at the last branch instead of running down beside the last node. */
     .spoke:last-child .node {
       position: relative;
     }

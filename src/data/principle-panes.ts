@@ -4,14 +4,8 @@ import type { ContextRow } from "../slices/ContextBar";
 import type { Hook } from "../slices/HookMessage";
 import { componentArt } from "./component-art";
 
-/**
- * What the principles page shows beside each practice of a rule: the interface or message that carries it out.
- * Every model-facing body is quoted from the source that sends it (paths in the comments); only scenario values —
- * paths, names, hashes — follow the shop-api rate-limiting demo.
- */
 export type PrincipleId = "append" | "signals" | "roles" | "policy";
 
-/** The footer of a tracked execution block in the Tern Playbook pane (omp-playbooks src/service/ui.ts:624-640). */
 export interface PlaybookFoot {
   readonly block: string;
   readonly title: string;
@@ -19,7 +13,6 @@ export interface PlaybookFoot {
   readonly subagent: string;
   readonly isolatedLabel: string;
   readonly isolated: string;
-  /** The Launch button after a click, before the coordinator creates the Launch. */
   readonly button: string;
 }
 
@@ -28,7 +21,6 @@ export type PaneSlice =
   | { readonly kind: "context"; readonly rows: readonly ContextRow[] }
   | { readonly kind: "playbook-foot"; readonly foot: PlaybookFoot };
 
-/** One pane per practice, in the order of the rule's `practice` list. */
 export type Panes = readonly [readonly PaneSlice[], readonly PaneSlice[], readonly PaneSlice[]];
 
 const art = (a: Art): PaneSlice => ({ kind: "art", art: a });
@@ -37,7 +29,6 @@ const component = (id: keyof typeof componentArt, lang: Lang): PaneSlice => art(
 
 const envelope = (source: string, body: string): string => `<system-reminder source="${source}">\n${body}\n</system-reminder>`;
 
-/** omp-config agent/extensions/repo-rules/index.ts:87-94: the repository's AGENTS.md, delivered in place of the system prompt's copy. */
 const contextFiles = envelope(
   "omp-config/repo-rules",
   [
@@ -50,17 +41,14 @@ const contextFiles = envelope(
   ].join("\n"),
 );
 
-/** omp-remote-build src/index.ts:410-427 inside the delta envelope of src/tool-delta.ts, after the session moved out of the project. */
 const toolsDelta = envelope(
   "omp-remote-build/tools",
   "These remote-build tools are listed but unavailable: container_exec, container_write_stdin, container_list_sessions, container_kill_session, remote_env_init. Reason: the current directory /home/dev/notes is not inside a project whose worktree root has a valid .omp/remote-build.json. Calls to them are refused until the session is in a remote-build project again.",
 );
 
-/** omp-config agent/extensions/tool-policy-nag/intent.ts:166-174 with the `edit` option of INTENT-policy.md. */
 const sedCommand = "sed -i 's/countRequests(req)/rateLimit(req)/' src/routes/search.ts";
 const intentReminder = ["你这次 `bash` 调用属于「修改已有文件」，应该用 `edit`，而不是这样绕出去。", "", "这次调用：", "```sh", sedCommand, "```"].join("\n");
 
-/** omp-playbooks src/extension/index.ts:308-338: the notice the coordinator session receives after a Launch click. */
 const launchCall = '{ doc: "/work/rate-limit.yaml", blocks: ["b4"] }';
 const launchData = '{"doc":"/work/rate-limit.yaml","event":"launch_requested","data":{"blocks":["b4"]}}';
 const launchNotice: Record<Lang, string> = {
@@ -76,7 +64,6 @@ const launchNotice: Record<Lang, string> = {
   ].join("\n"),
 };
 
-/** omp-config agent/extensions/append-system-model/APPEND-SYSTEM-decision-support.md:1-8, verbatim. */
 const decisionSupport = [
   "---",
   "target: main",
@@ -89,7 +76,6 @@ const decisionSupport = [
   "…",
 ];
 
-/** Example policy files that ship in omp-config's agent directory. */
 const shippedDefaults = [
   "extensions-last/system-prompt-replace/REPLACE-SYSTEM-default.yml",
   "extensions/append-system-model/APPEND-SYSTEM-decision-support.md",
@@ -101,7 +87,6 @@ const shippedDefaults = [
   "agents/task-mid.md",
 ];
 
-/** omp-config agent/extensions/omp-config-autoupdate/index.ts:199-224, 316-355: the report after an update that kept a conflicting local edit. */
 const updateReport: Record<Lang, readonly string[]> = {
   en: [
     "# omp-config update",

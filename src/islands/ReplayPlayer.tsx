@@ -8,51 +8,29 @@ import Window from "../slices/Window";
 import { anchorKey, beatsOf, dwell, keyOf, reveal, type Beat, type Reveal } from "./replay-beats";
 import "../styles/replay.css";
 
-/** Pause after a step's last beat before the next step starts. */
 const STEP_GAP_MS = 1400;
-/** Under reduced motion a step appears whole and stays this long at least. */
 const REDUCED_STEP_MS = 6000;
 
-/**
- * Where playback is. `shown` counts the beats of `step` on screen: a jump while paused shows the whole step,
- * playing reveals them one by one, a pause keeps whatever is on screen. `ended` is the whole last step after
- * playback ran through it; Play starts over from the first step only from there.
- */
 type Playback =
   | { readonly kind: "paused"; readonly step: number; readonly shown: number }
   | { readonly kind: "playing"; readonly step: number; readonly shown: number }
   | { readonly kind: "ended"; readonly step: number; readonly shown: number };
 
-/**
- * `split`: the natural height of the panes with every beat of the current step shown, measured from a hidden copy.
- * `room`: the height left for them when the controls sit just below the site header, so controls, caption and panes
- * share one screen.
- */
 interface Fit {
   readonly split: number;
   readonly room: number;
 }
 
-/** The split never gets less room than this, however short the viewport; the panes scroll instead. */
 const MIN_ROOM = 360;
 
 const reducedMotion = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/**
- * The demo scenario as a split screen: what the person sees, and what reached the model.
- * Opens on step `start` (the first by default), fully shown. Play reveals each step beat by beat; when a hook fires, the hook and
- * the front element it reacts to light up together. The split is as tall as the current step needs with every beat shown,
- * up to a height that fits the viewport, so a step never jumps while it plays and a short step leaves no empty pane.
- */
 export default function ReplayPlayer(props: {
   lang: Lang;
   steps: readonly Step[];
   labels: PlayerLabels;
-  /** Number of the first step among the whole scenario, when `steps` is a slice of it. */
   firstNumber?: number;
-  /** Total number of steps in the whole scenario; defaults to the length of `steps` when they are the whole scenario. */
   total?: number;
-  /** Index in `steps` of the step the player opens on. */
   start?: number;
   compact?: boolean;
 }) {
@@ -68,11 +46,6 @@ export default function ReplayPlayer(props: {
   const step = createMemo(() => props.steps[state().step]!);
   const rev = createMemo(() => reveal(step(), beats()[state().step]!, state().shown));
   const whole = createMemo(() => reveal(step(), beats()[state().step]!, beatCount(state().step)));
-  /**
-   * The hook lit up with its anchor: while playing, the one that just fired; otherwise the one being pointed at, else
-   * the one that fired last. Playback ignores the pointer: after Play scrolls the page, a resting cursor lands on the
-   * back pane and would otherwise hold one hook lit over every later one.
-   */
   const paired = createMemo((): { hook: number; anchor: string; tone: HookKind } | undefined => {
     if (state().kind === "playing") return rev().firing;
     const h = hover();
@@ -80,17 +53,14 @@ export default function ReplayPlayer(props: {
     if (h !== undefined && timed && rev().hooks.has(h)) return { hook: h, anchor: anchorKey(timed.anchor), tone: timed.hook.kind };
     return rev().firing;
   });
-  /** Tone of the element with this beat key while it is lit: a hook (`h<i>`) or the front element it reacts to. */
   const toneOf = (key: string): HookKind | undefined => {
     const p = paired();
     return p && (key === p.anchor || key === `h${p.hook}`) ? p.tone : undefined;
   };
 
-  /** A slice cannot report its own length as the scenario total, so the total stays blank until the caller passes it. */
   const total = () => props.total ?? (props.firstNumber === undefined ? props.steps.length : undefined);
   const number = (i: number) => (props.firstNumber ?? 1) + i;
 
-  /** Progress through every beat on this page, and the span of the current step in it, as fractions. */
   const progress = createMemo(() => {
     const all = beats().reduce((n, b) => n + b.length, 0);
     const before = beats()
@@ -100,7 +70,6 @@ export default function ReplayPlayer(props: {
     return { done: of(before + state().shown), from: of(before), to: of(before + beatCount(state().step)) };
   });
   const pct = (f: number) => `${(f * 100).toFixed(2)}%`;
-  /** While playing, the pane the newest beat appeared in; stacked panes give it the room. */
   const active = createMemo((): "front" | "back" | undefined => {
     const s = state();
     if (s.kind !== "playing") return undefined;
@@ -108,7 +77,6 @@ export default function ReplayPlayer(props: {
     return beat?.kind === "hook" ? "back" : beat ? "front" : undefined;
   });
 
-  /** Steps grouped by seam in order, for the step bar. */
   const groups = createMemo(() => {
     const out: { seam: Step["seam"]; steps: { step: Step; i: number }[] }[] = [];
     props.steps.forEach((s, i) => {
@@ -124,7 +92,6 @@ export default function ReplayPlayer(props: {
   let measure: HTMLDivElement | undefined;
   let caption: HTMLParagraphElement | undefined;
 
-  /** Whole steps under reduced motion, otherwise one beat. */
   const firstShown = (s: number) => (reducedMotion() ? beatCount(s) : 1);
 
   const play = () => {
@@ -160,7 +127,6 @@ export default function ReplayPlayer(props: {
     );
   };
 
-  /** One tick of playback: the next beat, else the next step, else end on the last step. */
   const advance = () => {
     const s = state();
     if (s.kind !== "playing") return;
@@ -175,7 +141,6 @@ export default function ReplayPlayer(props: {
     const stepBeats = beats()[s.step]!;
     const done = s.shown >= stepBeats.length;
     const current = stepBeats[s.shown - 1];
-    /** What a beat put on screen, read back from the live split, which already shows it when this effect runs. */
     const el = (b: Beat) => split?.querySelector<HTMLElement>(`[data-beat-key="${keyOf(b)}"]`) ?? null;
     const text = (b: Beat) => el(b)?.textContent ?? "";
     if (reducedMotion()) {
@@ -193,7 +158,6 @@ export default function ReplayPlayer(props: {
     });
   });
 
-  /** Keep the newest beat in view inside its pane; a new step starts both panes at the top. */
   createEffect(
     on(state, (s, prev) => {
       if (!split) return;
@@ -214,10 +178,6 @@ export default function ReplayPlayer(props: {
     }),
   );
 
-  /**
-   * The hidden copy holds the current step with every beat shown; its size is the size the split needs. The room left
-   * under the controls changes with the viewport and with the head and caption of each step.
-   */
   onMount(() => {
     const el = measure;
     const h = head;
@@ -240,10 +200,6 @@ export default function ReplayPlayer(props: {
     return f ? { "--rp-fit": `${f.split}px`, "--rp-room": `${f.room}px` } : undefined;
   };
 
-  /**
-   * Scrolls the page so the controls sit just below the site header. The split's height is capped at the room left
-   * under them (`Fit.room`), so from there every step of the playback, however tall, stays on screen.
-   */
   const bringIntoView = () => {
     if (!head) return;
     const offset = head.getBoundingClientRect().top - headerBottom();
@@ -265,7 +221,6 @@ export default function ReplayPlayer(props: {
     }
   };
 
-  /** One numbered tick per step; the current one is filled. */
   const tick = ({ step: s, i }: { step: Step; i: number }) => (
     <button
       type="button"
@@ -368,10 +323,6 @@ export default function ReplayPlayer(props: {
   );
 }
 
-/**
- * The two panes of one step as far as `rev` reveals it. `keyed` marks each beat with its `data-beat-key` and makes hooks
- * focusable, for the live split that playback scrolls and lights; the hidden measuring copy leaves both out.
- */
 function Panes(props: {
   step: Step;
   rev: Reveal;
@@ -448,14 +399,9 @@ function Panes(props: {
   );
 }
 
-/** How long a beat taller than its pane holds still before gliding, and how long its end shows before the next beat. */
 const GLIDE_HOLD_MS = 1500;
 const GLIDE_TAIL_MS = 1200;
 
-/**
- * Scrolls a beat that is taller than its pane down through the pane while it is the newest one, so its end has shown
- * by the time the next beat appears. Stops as soon as someone else scrolls the pane. Returns the cancel function.
- */
 function glide(el: HTMLElement | null, stay: number): () => void {
   const pane = el?.closest<HTMLElement>(".rp-scroll");
   const run = stay - GLIDE_HOLD_MS - GLIDE_TAIL_MS;
@@ -483,12 +429,10 @@ function glide(el: HTMLElement | null, stay: number): () => void {
   };
 }
 
-/** Where content may start below the sticky site header, with a small margin. */
 function headerBottom(): number {
   return (document.querySelector<HTMLElement>(".site-header")?.getBoundingClientRect().bottom ?? 0) + 12;
 }
 
-/** Scrolls an element's pane (not the page) so the element shows: its top for `start`, its bottom for `end`. */
 function follow(el: HTMLElement | null, align: "start" | "end" | "nearest") {
   const pane = el?.closest<HTMLElement>(".rp-scroll");
   if (!el || !pane) return;
@@ -503,7 +447,6 @@ function follow(el: HTMLElement | null, align: "start" | "end" | "nearest") {
       delta = toStart;
       break;
     case "end":
-      // An element taller than the pane shows from its top.
       delta = er.height > pr.height - 2 * pad ? toStart : Math.max(0, toEnd);
       break;
     case "nearest":

@@ -23,11 +23,9 @@ const groups = seams
     rows: components.flatMap((c) => (c.data.seam === s.id && c.data.defaults ? [{ c, d: c.data.defaults }] : [])),
   }))
   .filter((g) => g.rows.length > 0);
-/** The component the page-top example belongs to; its chip links to the seam where it acts. */
 const exampleComponent = components.find((c) => c.id === "turn-judge");
 if (!exampleComponent?.data.defaults) throw new Error("components.yaml has no turn-judge entry with defaults");
 const groupId = (seam: string) => `defaults-${seam}`;
-/** The shipped turn check whose prompt the demo sends back to the agent, as its file starts (omp-config agent/extensions/turn-judge). */
 const example = {
   kind: "code",
   title: "agent/extensions/turn-judge/TURN-JUDGE-gpt-talk-only.md",
@@ -297,12 +295,10 @@ const example = {
       justify-content: start;
     }
   }
-  /* Chips that carry words rather than a component name. */
   .text-chip {
     font-family: var(--sans);
     font-size: 13px;
   }
-  /* The index reads as one panel: a title bar with the layer key, a column header, then one block per seam. */
   .index {
     border: 1px solid var(--line-strong);
     border-radius: var(--radius);
@@ -352,7 +348,6 @@ const example = {
     color: var(--dim);
     border-bottom: 1px solid var(--line);
   }
-  /* Lines the label up with the component names: dot width plus the gap after it. */
   .c-name {
     padding-left: 17px;
   }
@@ -402,7 +397,6 @@ const example = {
   .mech {
     grid-area: mech;
   }
-  /* The replaceable half carries a thin rule that sets it apart from the fixed mechanism. */
   .policy {
     grid-area: policy;
     padding-left: 12px;
@@ -460,7 +454,6 @@ const example = {
       margin-bottom: 2px;
     }
   }
-  /* A long component name and the link do not fit on one line here: the link closes the row instead. */
   @media (max-width: 480px) {
     .row {
       grid-template-columns: minmax(0, 1fr);

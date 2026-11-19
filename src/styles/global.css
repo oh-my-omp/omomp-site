@@ -3,7 +3,6 @@
 @import "@fontsource-variable/bricolage-grotesque";
 @import "@fontsource-variable/newsreader";
 
-/* Palette and type follow DESIGN.md. */
 :root {
   color-scheme: light;
   --color-ember-orange: #ff4f00;
@@ -31,7 +30,6 @@
   --accent: var(--color-ember-orange);
   --accent-hover: #e64700;
   --accent-soft: rgb(255 79 0 / 0.08);
-  /* Layers and hook outcomes use the DESIGN.md palette only. */
   --human: var(--color-ember-orange);
   --agent: var(--color-ink-brown);
   --silent: var(--color-stone-gray);
@@ -128,7 +126,6 @@ h4 {
   text-wrap: balance;
 }
 
-/* Display headings keep the display face's open, positive tracking. */
 h1,
 h2 {
   font-family: var(--display);
@@ -159,7 +156,6 @@ h3 {
   line-height: 1.2;
 }
 
-/* The one editorial serif heading a page may carry. */
 .editorial {
   font-family: var(--serif);
   font-weight: 250;
@@ -185,7 +181,6 @@ p {
   padding-inline: var(--gutter);
 }
 
-/* Eyebrow label above a section title. */
 .kicker {
   font-size: 12px;
   font-weight: 600;
@@ -202,7 +197,6 @@ p {
   text-transform: none;
 }
 
-/* Major sections flow on with no visible divider; the space between two of them is 64–96px. */
 .section {
   padding-block: clamp(32px, 4vw, 48px);
 }
@@ -237,7 +231,6 @@ p {
   background: var(--accent-hover);
 }
 
-/* One-of-N selection: a pill track whose current item fills with ink. */
 .seg {
   display: inline-flex;
   flex-wrap: wrap;
@@ -284,7 +277,6 @@ p {
   background: var(--text);
 }
 
-/* On a phone the items wrap, so each is its own pill rather than a shared track split over two rows. */
 @media (max-width: 560px) {
   .seg {
     gap: 8px;
@@ -306,7 +298,6 @@ p {
   }
 }
 
-/* A quiet text link that ends in an arrow, as under a section lede. */
 .more {
   display: inline-flex;
   align-items: center;
@@ -343,14 +334,12 @@ p {
   flex: none;
 }
 
-/* Monospace text inside a rendered interface slice. */
 .mono {
   font-family: var(--mono);
   font-size: 12.5px;
   line-height: 1.6;
 }
 
-/* Component links: layer dot plus the component's name. */
 .chips {
   display: flex;
   flex-wrap: wrap;

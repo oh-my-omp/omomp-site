@@ -3,7 +3,6 @@ import type { Lang } from "../i18n";
 import { dispatchScene as s, dispatchStage, type DispatchVerdict } from "./dispatch-stage-data";
 import "../styles/stage-dispatch.css";
 
-/** The launcher badge an issue carries; label verbatim from the plugin's GitHub badge. */
 function Badge() {
   return (
     <span class="st-dispatch-badge">
@@ -20,7 +19,6 @@ function Badge() {
   );
 }
 
-/** Reading aid under an English plugin line on a page in another language. */
 function Gloss(props: { label: string; text: string }) {
   return (
     <p class="st-dispatch-gloss">
@@ -45,13 +43,6 @@ function Verdicts(props: { verdicts: readonly DispatchVerdict[] }) {
   );
 }
 
-/**
- * The omp-dispatch coordinator read left to right: the issue tree it convenes into tickets,
- * one ticket on the default workflow's state track, and what a new push does to that ticket's
- * judges. State names, kinds, roles, action verbs, seat names, the drift note, the judge checkout
- * line and the badge label are verbatim from the plugin (`local://ui-omp-dispatch.md`); headings
- * and captions localize.
- */
 export default function DispatchStage(props: { lang: Lang }) {
   const d = () => dispatchStage[props.lang];
   return (

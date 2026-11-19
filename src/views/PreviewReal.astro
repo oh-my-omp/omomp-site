@@ -143,7 +143,6 @@ const prompt = { shell: "$", omp: ">" } as const;
 </Base>
 
 <script>
-  // Copy buttons: put the block's shell lines on the clipboard and say so on the button for a moment.
   for (const button of document.querySelectorAll<HTMLButtonElement>("button.copy")) {
     const label = button.textContent ?? "";
     button.addEventListener("click", async () => {
@@ -155,7 +154,6 @@ const prompt = { shell: "$", omp: ">" } as const;
 </script>
 
 <style>
-  /* The stage follows the first screen directly, under one plain line, as supabase.com puts its product under the hero. */
   .demo {
     display: grid;
     gap: 16px;
@@ -167,7 +165,6 @@ const prompt = { shell: "$", omp: ">" } as const;
     line-height: 1.6;
     color: var(--muted);
   }
-  /* Chinese headings on this page, the split heads included, break only at punctuation, so no word is cut in two. */
   :global(main:lang(zh) h2),
   :global(main:lang(zh) h3) {
     word-break: keep-all;
@@ -175,7 +172,6 @@ const prompt = { shell: "$", omp: ">" } as const;
   .body {
     margin-top: clamp(36px, 4.5vw, 56px);
   }
-  /* Products as rows: name, one line, and the way in. */
   .rows,
   .plugins,
   .ways {
@@ -220,13 +216,11 @@ const prompt = { shell: "$", omp: ">" } as const;
     font-style: normal;
     color: var(--muted);
   }
-  /* Plugins as a grid of name and one line, each a link to its repository. */
   .plugins-head {
     margin-top: 44px;
     font-size: 14px;
     color: var(--muted);
   }
-  /* Plugins as a two-column list of name and one line, without boxes, as linear.app lists features. */
   .plugins {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -261,7 +255,6 @@ const prompt = { shell: "$", omp: ">" } as const;
   .what p {
     text-wrap: pretty;
   }
-  /* Three ways to install, one row each: what it sets up on the left, the lines to type on the right. */
   .ways {
     border-top: 1px solid var(--line);
   }
@@ -342,7 +335,6 @@ const prompt = { shell: "$", omp: ">" } as const;
       grid-template-columns: minmax(0, 1fr);
       gap: 16px;
     }
-    /* The copy button moves to its own row above the lines, so it never covers a command. */
     .code {
       display: grid;
       gap: 8px;
@@ -352,7 +344,6 @@ const prompt = { shell: "$", omp: ">" } as const;
       justify-self: end;
       grid-row: 1;
     }
-    /* Long commands wrap instead of running off the edge; the continuation hangs under the command, past the prompt. */
     .code .pre {
       padding-right: 18px;
     }

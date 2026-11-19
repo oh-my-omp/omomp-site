@@ -1,6 +1,3 @@
-// Screenshots site routes at desktop and mobile width, and reports broken internal links.
-// Usage: node scripts/shoot.mjs <origin> <outDir> <route>...
-// Routes are site-relative and include the base path, e.g. /omomp-site/ /omomp-site/zh/.
 import { chromium } from "playwright";
 import { mkdirSync } from "node:fs";
 
@@ -40,9 +37,6 @@ for (const vp of widths) {
     if (!res || res.status() >= 400) failed = true;
     const file = `${outDir}/${vp.name}${route.replaceAll("/", "_")}`;
     await page.screenshot({ path: `${file}.png`, fullPage: true });
-    // Full-page shots of long pages shrink past legibility when opened, and a full-page capture stretches the viewport
-    // to the whole page, which leaves scrolling panes blank. Tiles are real viewport shots scrolled down the page; each
-    // overlaps the one before by the sticky header's height plus a margin, so nothing sits hidden under the header.
     await page.setViewportSize({ width: vp.width, height: TILE });
     const height = await page.evaluate(() => document.documentElement.scrollHeight);
     let tiles = 0;

@@ -8,7 +8,6 @@ import Terminals, { type TerminalsData } from "./Terminals";
 import TodoPanel, { type TodoData } from "./TodoPanel";
 import Transcript, { type TLine } from "./Transcript";
 
-/** One piece of what the person sees on screen: the session transcript or a plugin's panel. */
 export type Panel =
   | { readonly kind: "transcript"; readonly lines: readonly TLine[] }
   | { readonly kind: "ask"; readonly data: AskData }

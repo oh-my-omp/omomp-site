@@ -5,22 +5,15 @@ import type { ScreenLine } from "../slices/Terminals";
 
 export type SeamId = "intent" | "prompt" | "memory" | "delegation" | "execution" | "delivery";
 
-/** The front element a hook reacts to: a whole panel, or one line of a transcript panel. Indexes are positions in `Step.front` and its `lines`. */
 export type Anchor =
   | { readonly kind: "panel"; readonly panel: number }
   | { readonly kind: "line"; readonly panel: number; readonly line: number };
 
-/** A hook and the moment it fires: right after its anchor appears on the front. The player highlights the anchor and the hook together. */
 export interface TimedHook {
   readonly anchor: Anchor;
   readonly hook: Hook;
 }
 
-/**
- * One step of the demo scenario: what the person sees on screen, and what reached the model without showing there.
- * Playback reveals the front beat by beat (each transcript line, each other panel), and each hook right after its anchor.
- * The scenario is simulated; every hook body follows the source template of the extension that sends it.
- */
 export interface Step {
   readonly seam: SeamId;
   readonly title: string;
@@ -36,7 +29,7 @@ const userRequest = {
   zh: "给公开 API 加限流：计数放 Redis，按 API key 算，额度用完返回 429 并带上 Retry-After。然后把 orders、search、webhooks 三个路由改成走这个中间件。",
 } as const;
 
-/** The part of the request the advisor quotes; it must stay a verbatim substring of `userRequest`. */
+/** it must stay a verbatim substring of `userRequest`. */
 const retryAfterAsk = {
   en: "answer 429 with Retry-After once a key runs out",
   zh: "额度用完返回 429 并带上 Retry-After",
@@ -82,7 +75,6 @@ const middlewareCommit = { sha: "a41c9e2", message: "feat: Redis token-bucket ra
 
 const workers = ["OrdersRoute", "SearchRoute", "WebhooksRoute"] as const;
 
-/** Model-facing templates written in one language only; the other page shows them verbatim with a translation. */
 const turnJudgePrompt =
   "你停下了，但交代的工作还没做完。不要只宣布下一步或认错：现在就用工具继续做，直到有可验证的结果。确实被阻塞时，先做完所有能做的部分，再说明试过什么、缺的具体前置条件是什么。";
 
@@ -100,7 +92,6 @@ function askRejection(lang: Lang): string {
   ].join("\n");
 }
 
-/** omp-config tool-topics: the delta appended when the session starts, cut to the task tool's isolation topic. */
 const toolTopics = [
   '<system-reminder source="omp-config/tool-topics">',
   "Descriptions of OMP's own tools from omp-config. Each <tool> element names one tool; its parameters stay as the system prompt declares them. With description=\"replaced\", the element's text replaces that tool's description in the system prompt. With description=\"kept\", the system prompt's description stands and the element's Topics list is appended to it. A Topics list names call instructions kept out of the prompt, read on demand.",
@@ -116,7 +107,6 @@ const toolTopics = [
   "</system-reminder>",
 ].join("\n");
 
-/** The opening of omp-config's TOPIC-task-isolation.md, as `read tool://task/isolation` returns it. */
 const isolationTopic = [
   "# Isolated workers",
   "",
@@ -155,7 +145,6 @@ const isolationNudge = [
   "Each prompt is reminded once: re-dispatching these same prompts unchanged runs them as written.",
 ].join("\n");
 
-/** omp-config user-prompt-inject, PROMPT-INJECT-user-goal.md, rendered for this session. */
 function userGoalInject(lang: Lang): string {
   return [
     '<user-prompt-inject name="user-goal">',
@@ -184,7 +173,6 @@ const deleteGuard = `delete-guard: deletion commands are disabled; this call did
 const perlEdit =
   "perl -pi -e 's/Math\\.round\\(wait\\)/Math.ceil(wait)/' src/middleware/rate-limit.ts && perl -pi -e 's/toBe\\(1\\)/toBe(2)/' src/middleware/rate-limit.test.ts";
 
-/** tool-policy-nag's intent reminder (intent.ts `intentReminder`) for a shell call judged as editing an existing file. */
 const intentReminder = ["你这次 `bash` 调用属于「修改已有文件」，应该用 `edit`，而不是这样绕出去。", "", "这次调用：", "```sh", perlEdit, "```"].join("\n");
 
 const completionJudge = {
@@ -204,7 +192,6 @@ const testScreen: readonly ScreenLine[] = [
   { text: " Waiting for file changes..." },
 ];
 
-/** A redis-cli prompt the agent and the person type into; `by` marks whose input each command line was. */
 const redisScreen: readonly ScreenLine[] = [
   { text: "127.0.0.1:6379> KEYS rl:*", by: "agent" },
   { text: '1) "rl:key_live_7Q"' },
@@ -915,7 +902,6 @@ function steps(lang: Lang): readonly Step[] {
   ];
 }
 
-/** Extensions omp-light turns off (agent/config-light.yml), plus the host's bash interceptor it disables. */
 function modeChecks(full: boolean): ReadonlyArray<{ name: string; loaded: boolean }> {
   return [
     "fork-task",
@@ -933,7 +919,7 @@ function modeChecks(full: boolean): ReadonlyArray<{ name: string; loaded: boolea
 
 export const scenario: Record<Lang, readonly Step[]> = { en: steps("en"), zh: steps("zh") };
 
-/** Labels the replay player needs; island props must be plain data. */
+/** Island props must be plain data. */
 export interface PlayerLabels {
   readonly play: string;
   readonly pause: string;

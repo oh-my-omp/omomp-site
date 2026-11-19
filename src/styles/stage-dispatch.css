@@ -1,5 +1,3 @@
-/* omp-dispatch stage, read left to right: issue tree → one ticket's state track → what a new push does to its judges. */
-
 .st-dispatch {
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
@@ -33,7 +31,6 @@
   white-space: nowrap;
 }
 
-/* Three columns joined by arrows on the dividers. */
 .st-dispatch-cols {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) 0 minmax(0, 1fr) 0 minmax(0, 1fr);
@@ -90,7 +87,6 @@
   color: var(--dim);
 }
 
-/* The parent issue carries the launcher badge; the launch outcome sits under it. */
 .st-dispatch-issue {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -139,7 +135,6 @@
   color: var(--silent);
 }
 
-/* Issue tree rows */
 .st-dispatch-row {
   display: flex;
   align-items: baseline;
@@ -149,7 +144,6 @@
   margin-left: auto;
   flex-shrink: 0;
 }
-/* Sub-issues hang off the parent on one tree line. */
 .st-dispatch-children {
   margin: 10px 0 0 10px;
   padding: 0 0 0 14px;
@@ -196,7 +190,6 @@
   color: var(--muted);
 }
 
-/* State rail */
 .st-dispatch-ticket-head {
   margin: 0 0 8px;
   display: flex;
@@ -231,7 +224,6 @@
   align-items: baseline;
   gap: 8px;
 }
-/* The pull-request step a state carries, as a quiet tag on the right edge. */
 .st-dispatch-step {
   margin-left: auto;
   flex-shrink: 0;
@@ -298,7 +290,6 @@
   background: color-mix(in srgb, var(--accent) 7%, transparent);
 }
 
-/* Drift: the verbatim note, the retired fingerprint, the gate on the new head. */
 .st-dispatch-note {
   margin: 0 0 12px;
   padding: 8px 10px;
@@ -424,7 +415,6 @@
   color: var(--danger);
 }
 
-/* Narrow: the columns stack and the arrows turn downward on the dividers. */
 @media (max-width: 960px) {
   .st-dispatch-cols {
     grid-template-columns: minmax(0, 1fr);

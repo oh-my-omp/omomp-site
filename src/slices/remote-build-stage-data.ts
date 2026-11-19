@@ -1,48 +1,29 @@
 import type { Lang, Text } from "../i18n";
 import type { Art } from "./Art";
 
-/**
- * Demo data for the omp-remote-build stage: this machine's worktrees, the one-way
- * Mutagen sync, and the remote Komodo container where commands run.
- *
- * `remoteBuildScene` is language-invariant: file paths, config contents, command
- * lines and tool output — plugin tool reports are always English by design.
- * `remoteBuildStage.ui` holds strings the plugin renders for a human, verbatim per
- * language; `.copy` is authored site text (zone titles, captions) free to differ.
- */
-
-/** One `git status --short` line in a checkout: the edits an agent has made there. */
 export interface Change {
   readonly mark: "M" | "A";
   readonly path: string;
 }
 
-/** A checkout on this machine. `env`/`container` exist only for worktrees. */
 export interface EnvRoot {
   readonly path: string;
-  /** What this checkout is, shown in grey next to the path. */
   readonly role: Text;
-  /** Environment id `<slug>-<sha256-10>`; absent on the main checkout. */
   readonly env?: string;
-  /** Container/Mutagen name `rb-<id>` derived from the env id. */
   readonly container?: string;
   readonly changes: readonly Change[];
 }
 
 export interface ScreenLine {
   readonly text: string;
-  /** `agent`: typed by the agent into the container PTY. */
   readonly by?: "agent";
 }
 
-/** One Mutagen session as the stream column shows it: its name, endpoints and current status. */
 export interface SyncSession {
   readonly name: string;
   readonly alpha: string;
   readonly beta: string;
-  /** Mutagen's own status text for the session. */
   readonly status: string;
-  /** Files staged to the replica in this flush, from the worktree's changes. */
   readonly staged: readonly Change[];
 }
 
@@ -59,7 +40,6 @@ export const remoteBuildScene: {
   resultHead: readonly string[];
   screen: readonly ScreenLine[];
 } = {
-  /** The demo env whose whole chain is shown across the three zones. */
   id: "rate-limit-a3f9c1b7e2",
   container: "rb-rate-limit-a3f9c1b7e2",
   roots: [
@@ -87,7 +67,6 @@ export const remoteBuildScene: {
       changes: [{ mark: "A", path: "test/orders.spec.ts" }],
     },
   ],
-  /** Plugin message when a worktree command runs in the main checkout (verbatim, English-only). */
   envNote: "remote-build environments exist only in git worktrees; ~/work/shop-api is the main checkout",
   sessions: [
     {
@@ -109,18 +88,14 @@ export const remoteBuildScene: {
       staged: [],
     },
   ],
-  /** What `--ignore-vcs --ignore=".env*"` keeps on this machine. */
   ignored: [".git", ".env*"],
   syncFlush: "mutagen sync flush rb-rate-limit-a3f9c1b7e2",
-  /** remote_env_init report lines (key: value, English-only). */
   report: [
     "status: ready",
     "container: rb-rate-limit-a3f9c1b7e2 on server builder; workdir /workspace; shell bash",
     "image_source: built from worktree Dockerfile .devcontainer/Dockerfile",
   ],
-  /** container_exec call, `input` is C-escape decoded. */
   execArgs: '"pnpm build && pnpm test\\n"',
-  /** Tool result text head, then `---` and the PTY output. */
   resultHead: [
     "[running] session_id: 3",
     "log_path: ~/.omp/agent/logs/container-rb-rate-limit-a3f9c1b7e2-3.log",
@@ -142,17 +117,14 @@ export const remoteBuildScene: {
 };
 
 export interface RemoteBuildStageData {
-  /** Authored site copy — free to differ between languages. */
   readonly copy: {
     readonly zones: readonly [string, string, string];
     readonly captions: readonly [string, string, string];
     readonly flushNote: string;
     readonly clean: string;
     readonly ignored: string;
-    /** Reading aid under the English envNote on a page in another language; absent where the page is English. */
     readonly gloss?: { readonly label: string; readonly envNote: string };
   };
-  /** Human-facing plugin strings, verbatim in each language. */
   readonly ui: {
     readonly ptyTitle: string;
     readonly notify: string;
@@ -197,15 +169,6 @@ export const remoteBuildStage: Record<Lang, RemoteBuildStageData> = {
   },
 } as const satisfies Record<Lang, RemoteBuildStageData>;
 
-/**
- * The slice above each cell of the page's How it works grid, in cell order:
- * the Mutagen session remote_env_init creates for a worktree and the flush that
- * follows each write-type tool call (src/mutagen.ts); the remote_env_init reports of
- * two worktrees with the same Dockerfile, the second reusing the first one's image
- * (src/init.ts, tag shape src/project.ts); and a container_exec call with its result
- * head. Flags, report keys and values, tool names and result lines are verbatim;
- * `#` lines are site comments in the page language.
- */
 const image = "rb-project-shop-api-5c1e8d0b2a:7c2e91d04b5fa318";
 
 const sectionArt = (lang: Lang): readonly [Art, Art, Art] => [
@@ -261,7 +224,6 @@ const sectionArt = (lang: Lang): readonly [Art, Art, Art] => [
 
 export const remoteBuildSectionArt: Record<Lang, readonly [Art, Art, Art]> = { en: sectionArt("en"), zh: sectionArt("zh") };
 
-/** Capsule links beside the How it works heading: the files that define each mechanism. */
 export const remoteBuildLinks: readonly { readonly label: string; readonly href: string }[] = [
   { label: "README", href: "https://github.com/oh-my-omp/omp-remote-build#readme" },
   { label: "mutagen.ts", href: "https://github.com/oh-my-omp/omp-remote-build/blob/HEAD/src/mutagen.ts" },

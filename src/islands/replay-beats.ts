@@ -1,10 +1,6 @@
 import type { HookKind } from "../slices/HookMessage";
 import type { Anchor, Step } from "../data/scenario";
 
-/**
- * One unit of playback inside a step. The front is revealed a transcript line or a whole panel at a time;
- * a hook beat follows the beat of its anchor.
- */
 export type Beat =
   | { readonly kind: "line"; readonly panel: number; readonly line: number }
   | { readonly kind: "panel"; readonly panel: number }
@@ -19,10 +15,6 @@ const sameAnchor = (a: Anchor, panel: number, line: number | undefined): boolean
   }
 };
 
-/**
- * Beats of a step in playback order. A hook anchored to a transcript panel as a whole fires after its last line.
- * Throws when a hook's anchor names no element of the step, so a broken scenario fails the build.
- */
 export function beatsOf(step: Step): readonly Beat[] {
   const out: Beat[] = [];
   const placed = new Set<number>();
@@ -50,26 +42,18 @@ export function beatsOf(step: Step): readonly Beat[] {
   return out;
 }
 
-/** Milliseconds per Latin character at a skimming pace; a CJK character counts as 2.5 of them. */
 const MS_PER_CHAR = 30;
 const CJK = /[\u3000-\u9fff\uff00-\uffef]/;
-/** Shortest and longest time a beat stays the newest one; past the cap a reader pauses to finish it. */
 const MIN_DWELL = { line: 1200, panel: 2000, hook: 2500 } as const;
 const MAX_DWELL = 12000;
 
-/**
- * How long a beat stays the newest one before the next appears, in milliseconds, from `text`: what the beat put on
- * screen, as rendered (a hook's translation included).
- */
 export function dwell(beat: Beat, next: Beat | undefined, text: string): number {
-  // A hook reacts to the element just revealed, so it lands right after it; reading time comes after the hook.
   if (beat.kind !== "hook" && next?.kind === "hook") return 600;
   let units = 0;
   for (const ch of text.replace(/\s+/g, " ").trim()) units += CJK.test(ch) ? 2.5 : 1;
   return Math.min(MAX_DWELL, Math.max(MIN_DWELL[beat.kind], 900 + Math.round(units * MS_PER_CHAR)));
 }
 
-/** The element a beat reveals, as a key the rendered DOM carries in `data-beat-key`. */
 export function keyOf(beat: Beat): string {
   switch (beat.kind) {
     case "line":
@@ -81,7 +65,6 @@ export function keyOf(beat: Beat): string {
   }
 }
 
-/** Key of the front element a hook reacts to; a panel anchor on a transcript points at the whole transcript. */
 export function anchorKey(anchor: Anchor): string {
   switch (anchor.kind) {
     case "panel":
@@ -91,12 +74,9 @@ export function anchorKey(anchor: Anchor): string {
   }
 }
 
-/** What the front and back panes show after the first `shown` beats of a step. */
 export interface Reveal {
-  /** Panels visible so far; for a transcript, how many of its lines. */
   readonly panels: ReadonlyMap<number, number>;
   readonly hooks: ReadonlySet<number>;
-  /** Hook paired with its anchor right now: the newest beat when it is a hook beat. */
   readonly firing: { readonly hook: number; readonly anchor: string; readonly tone: HookKind } | undefined;
 }
 

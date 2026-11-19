@@ -6,13 +6,10 @@ export const principlesPage: {
   kicker: Text;
   title: Text;
   lede: Text;
-  /** The section with the four figures: its heading and the right-hand lede. */
   figsTitle: Text;
   figsLede: Text;
   seen: Text;
-  /** Accessible name of the practice switcher inside a rule's stage. */
   practices: Text;
-  /** Titles of a rule's practices in the stage switcher, in the order of its `practice` list. */
   practiceTitles: Readonly<Record<PrincipleFig, readonly Text[]>>;
 } = {
   kicker: { en: "Principles", zh: "设计原则" },
@@ -80,7 +77,6 @@ export const lifelinePage = {
   },
 } satisfies Record<string, Text>
 
-/** One line per seam for the overview cells: what you see happen there. */
 export const lifelineSeamLines = {
   intent: { en: "Your decisions open as a full page, with a tradeoff per option.", zh: "需要你拍板的事单独成页，每个选项写明取舍。" },
   prompt: { en: "Manuals and rules arrive as appended messages when needed.", zh: "工具说明和规则在调用需要时作为追加消息送达。" },
@@ -90,7 +86,6 @@ export const lifelineSeamLines = {
   delivery: { en: "A claim of done is checked before the result goes back.", zh: "说做完了，要先过检查，结果才交回去。" },
 } satisfies Record<string, Text>
 
-/** Row labels of the component map: what each layer is, in a few words. */
 export const lifelineLayerNotes = {
   human: { en: "What you see and answer", zh: "你看到并作答的界面" },
   agent: { en: "What the model calls", zh: "模型调用的工具与角色" },

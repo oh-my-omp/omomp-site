@@ -4,7 +4,6 @@ import { labels } from "./labels";
 import { dispatchScene, dispatchStage, type DispatchIssue } from "./dispatch-stage-data";
 import "../styles/home-slices.css";
 
-/** Which product a large home card draws; each is a compressed view of that product's page stage. */
 export type ProductArtId = "playbooks" | "dispatch" | "remote-build";
 
 type PbState = "done" | "running" | "todo";
@@ -31,7 +30,6 @@ const pbCards: Readonly<Record<Lang, readonly PbCard[]>> = {
   ],
 };
 
-/** The YAML the cards are drawn from, serialized as the plugin's store writes it; `mark` is the coordinator's write-back. */
 const pbYaml = (lang: Lang): readonly { readonly text: string; readonly mark?: boolean }[] => {
   const [b3, b4, b5] = pbCards[lang];
   return [
@@ -96,10 +94,6 @@ function Playbooks(props: { lang: Lang }) {
   );
 }
 
-/**
- * The product page's stage compressed: the issue tree, the default ticket machine with ticket #48 in Reviewing,
- * and the drift that restarts its gates on a new head.
- */
 function Dispatch(props: { lang: Lang }) {
   const d = () => dispatchStage[props.lang];
   const ticketOf = (i: DispatchIssue) => (i.ticket.kind === "state" ? i.ticket.name : null);
@@ -154,7 +148,6 @@ function Dispatch(props: { lang: Lang }) {
   );
 }
 
-/** Card headings and roles in the page's language; `sync` is Mutagen's own mode name and stays as written. */
 const rbCopy: Readonly<
   Record<Lang, { readonly here: string; readonly sync: string; readonly host: string; readonly main: string; readonly agent: string; readonly none: string }>
 > = {
@@ -162,7 +155,6 @@ const rbCopy: Readonly<
   zh: { here: "本机", sync: "one-way-replica", host: "构建主机", main: "主检出", agent: "代理", none: "仅限 worktree" },
 };
 
-/** A checkout on this machine: the main one has no environment; each agent's worktree has its own container. */
 type RbRole = { readonly kind: "main" } | { readonly kind: "agent"; readonly branch: string };
 
 const rbRows: readonly { readonly path: string; readonly role: RbRole; readonly container: string | null; readonly live: boolean }[] = [

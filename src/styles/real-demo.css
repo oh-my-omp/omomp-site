@@ -1,4 +1,3 @@
-/* The real-session stage (src/islands/RealDemo.tsx): a screen capture beside the text the model was sent. */
 .rd {
   display: grid;
   gap: 20px;
@@ -37,12 +36,10 @@
   font-size: 12px;
   opacity: 0.6;
 }
-/* The selected step is outlined, so it does not compete with the filled button in the first screen. */
 .rd-tabs button.on {
   border-color: var(--line-strong);
   color: var(--text);
 }
-/* The steps overlap in one cell; the hidden ones still take space, so the stage is as tall as the tallest step. */
 .rd-stack {
   display: grid;
 }
@@ -53,7 +50,6 @@
 .rd-body:not(.on) {
   visibility: hidden;
 }
-/* Wide: the capture on the left; the caption and the model's side stacked on the right. */
 .rd-body {
   display: grid;
   grid-template-columns: minmax(0, 720px) minmax(0, 1fr);
@@ -162,7 +158,6 @@
   font-size: 12px;
   color: var(--dim);
 }
-/* Arguments of a call, one per row. */
 .rd-kv {
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr);
@@ -199,8 +194,6 @@
   }
 }
 @media (max-width: 760px) {
-  /* The steps stay reachable while the capture scrolls under the site header. The bar is opaque and spans the
-     column, so text scrolling under it does not show between the buttons. */
   .rd-tabs {
     position: sticky;
     top: 64px;
@@ -215,7 +208,6 @@
   .rd-gloss {
     text-wrap: pretty;
   }
-  /* Site header (64px) plus the sticky tab bar (51px) plus a gap: where a step starts after a tab is chosen. */
   .rd-stack {
     scroll-margin-top: 128px;
   }
