@@ -104,8 +104,8 @@ system-prompt-replace:
     zh: 匹配到与配置冲突的原句时，追加一条消息写明它应当怎么读。
   defaults:
     mechanism:
-      en: Conditional matching by session, model or mode, declared as an added message; after a compaction, sent as the edited system prompt itself.
-      zh: 按会话、模型或模式条件匹配，以追加消息声明替换；compaction 之后直接发送修改好的 system prompt。
+      en: Conditional matching by session, model or mode, sent as the edited system prompt itself.
+      zh: 按会话、模型或模式条件匹配，直接发送修改好的 system prompt。
     policy:
       en: The shipped rules remove a sentence that conflicts with subagent todos and forbid file lookup inside eval.
       zh: 默认规则删掉与子代理待办冲突的句子，并禁止在 eval 里检索文件。
