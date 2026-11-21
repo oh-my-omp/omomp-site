@@ -547,9 +547,6 @@
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3 6.2 5 8l4-4.2' fill='none' stroke='%2308090a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
     center / 80% no-repeat;
 }
-.s-blocked .sl-todo-ring {
-  border-color: var(--warn);
-}
 .sl-todo-pill {
   display: inline-flex;
   align-items: center;
