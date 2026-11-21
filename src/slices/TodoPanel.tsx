@@ -2,7 +2,7 @@ import { For, Show } from "solid-js";
 import type { Lang } from "../i18n";
 import { labels } from "./labels";
 
-export type TodoStatus = "pending" | "active" | "done" | "dropped" | "blocked";
+export type TodoStatus = "pending" | "active" | "done" | "dropped";
 
 export interface TodoItem {
   readonly title: string;
