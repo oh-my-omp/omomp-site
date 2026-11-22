@@ -431,7 +431,7 @@ const deliveredTodo = (lang: Lang): Panel => {
 const nonLiteralCommand = "$RM -rf coverage";
 const nonLiteralRefusal = `delete-guard: this call did not run. Non-literal command: \`${nonLiteralCommand}\` (the command name \`$RM\` comes from an expansion). Commands must be literal: no command name from a variable or substitution, no non-literal nested shell or eval script, no script fed to a shell through stdin; write the command out. To delete files, call the \`delete\` tool with literal paths and leave \`mode\` unset; the default moves them to the system trash.`;
 
-const ptyRefusal = "pty 路由：这次 `bash` 调用没有执行：`tail` 不会自己结束，或在等外部条件（open-ended，规则 `tailFollow`）。\nxd://exec_command";
+const ptyRefusal = "pty 路由：这次 `bash` 调用没有执行：`tail` 不会自己结束，或在等外部条件（open-ended，规则 `tailFollow`）。\n请改用 `exec_command` 执行，或先 `read tool://exec_command/pty-io` 查看 PTY 会话用法。";
 
 const todoReturn = (lang: Lang): string => {
   const item = lang === "en" ? "Routes: Switch the search route — Same change as orders, with a higher limit" : "路由: 改 search 路由 — 改法同 orders，额度更高";

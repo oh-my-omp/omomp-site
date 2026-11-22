@@ -56,7 +56,7 @@ flowchart TB
 | 区块 | 内容 | Supabase 首页的对应做法 |
 |---|---|---|
 | 定位 | 首屏矮而不对称：左列两行实色标题，下面两个入口；右列三行平实导语，说清 omomp 叠在 Oh My Pi 与 Tern 之上、加了什么 | 左列双色标语与按钮，右列平实的平台说明 |
-| 积木卡片 | 紧接首屏、在第一屏内开始的 Bento 网格：omp-config、各插件、独立产品和工具各一张卡，约三成面积写名字、类别、所在接缝和一句话，其余是这个仓库工作时的界面切片。omp-config 是占满一行的主卡，左边写职责，右边是六道接缝 × 三层的钩子管道，标出追加、拦下和裁决；其余每行一张宽卡配一张窄卡，宽卡给 omp-playbooks、omp-dispatch 两个独立产品、omp-ask-more 的整页决策面板和 omp-codex-image-gen 的生成与改图，omp-remote-build 占满一整行 | 产品 Bento 网格，主卡跨列，每张卡大半面积是该产品的微缩界面 |
+| 积木卡片 | 紧接首屏、在第一屏内开始的 Bento 网格：omp-config、各插件和独立产品各一张卡，约三成面积写名字、类别、所在接缝和一句话，其余是这个仓库工作时的界面切片。omp-config 是占满一行的主卡，左边写职责，右边是六道接缝 × 三层的钩子管道，标出追加、拦下和裁决；其余每行一张宽卡配一张窄卡，宽卡给 omp-playbooks、omp-dispatch 两个独立产品和 omp-ask-more 的整页决策面板，omp-remote-build 占满一整行 | 产品 Bento 网格，主卡跨列，每张卡大半面积是该产品的微缩界面 |
 | 按需取用 | Bento 正下方一句桥接语：单装一个插件，或整套接入 | “Use one or all.” 一行 |
 | 宿主与安装 | 一个可切换的舞台：单装插件、接入 omp-config 完整治理、搭配 Tern 图形终端三种方式各一页，左边是这种方式下实际看到的工作界面和三者的挂载关系，右边是安装和启动命令、说明和装好之后得到什么；见[宿主边界](#宿主边界) | 胶囊切换的交互舞台，配可切换的代码框 |
 | 核心差异 | 四条工程信条排成两行两列，每格配原则页的同一张架构图，画得比原则页更大，链接到设计原则页 | Key Differentiators |
@@ -115,8 +115,8 @@ flowchart TB
 | 接缝 | 人机交互面 | 代理原语层 | 静默治理层 |
 |---|---|---|---|
 | ① 意图进入会话 | `omp-ask-more` 全屏决策面板（现状、决定、后果，代码证据、示意图、演示动画）；`input-polish` 改写输入 | 结构化 `ask`：每个选项写明取舍 | `ask-more` 的可读性检查退回含糊的提问；路由规则要求所有问题走面板 |
-| ② 提示词加载与防漂移 | `omp` 完整模式与 `omp-light` 轻量模式两个入口 | `tool://` 与 `xd://` 按需读取工具专题 | `SYSTEM_TEMPLATE.md` 去重、`tool-topics` 压缩工具说明、`system-prompt-replace` 修补冲突措辞、`repo-rules` 按路径投递规则 |
-| ③ 长任务规划与记忆 | `omp-todo-more` 的 Tern 待办面板 | 结构化 `todo`（目标、阶段、时间预算、完成即提交）、`ctx` 回顾、`fork_task` 复制完整对话前缀 | 未完成项的停止提醒；`model-compaction` 按模型推迟有损压缩 |
+| ② 提示词加载与防漂移 | `omp` 完整模式与 `omp-light` 轻量模式两个入口 | 统一 `tool://` 总线按需读取工具专题，恢复类专题出错自动注入 | `SYSTEM_TEMPLATE.md` 去重、`tool-topics` 压缩工具说明、`system-prompt-replace` 修补冲突措辞、`repo-rules` 按路径投递规则 |
+| ③ 长任务规划与记忆 | `omp-todo-more` 的 Tern 待办面板 | 结构化 `todo`（目标、阶段、时间预算、完成即提交、`todo://` 只读状态）、`fork_task` 复制完整对话前缀 | 未完成项的停止提醒；`model-compaction` 按模型推迟有损压缩 |
 | ④ 子代理派发与顾问 | `/subagent-usage` 授权本机用量校准 | 按成本与可信度分档的 `task:*`、保守的 `discuss:steady`、发散的 `discuss:divergent`、无工具的 `mentor:default`、剩余派发次数估算 | `user-prompt-inject` 把用户原话注入顾问；`isolation-nudge` 退回会让多个改文件的子代理共用工作区、又没写明是否隔离的派发；`task-split-check` 拦截多主题混派和限制报告长度 |
 | ⑤ 命令执行与过程监督 | `omp-unified-exec` 的 Tern 终端视图，人可旁观并向同一终端输入；`/watchdog` 管理命令 | 长驻 PTY 会话（`exec_command`、`write_stdin`、`monitor`）、只收字面路径并默认进回收站的 `delete`、`wt` 会话工作树、`harness_restart` | `delete-guard` 拦截 shell 与 eval 中的删除和非字面执行；`tool-policy-nag` 阻断交互和长驻命令走 `bash`，其他误用照常执行并在结果末尾追加提醒；`watchdog-agent` 按动作数定期审查用户定义的会话 |
 | ⑥ 交付验收与跨会话协作 | `omomp-lang` 统一界面语言 | `omp-sessions`（`session://` 与 `session_query` SQL）、`omp-peers`（跨进程发现、旁路询问、IRC 消息） | `task-completion-judge` 在子代理交付时核对范围、验证和 Todo；`turn-judge` 在主代理只说不做就收工时要求继续；`lang-nag` 在下一轮纠正用错的回复语言 |
@@ -164,7 +164,7 @@ Playbook、Dispatch、Remote Build 自成体系，各有完整的使用流程和
 
 主舞台之下，“运作方式”用一张细线网格写产品的几条关键机制，每格上部是该机制产出的文件、消息或状态，下部是标题和两句说明；“谁负责什么”在一个舞台框里画出一方居中、其余各方围绕它的关系，每条连线标明经过它的内容，箭头按实际方向画，不画成单向链条。两节都用左右分栏的节头。页首标题是一句短标题，不带句号；三个产品页的页头用一组分段切换器并列全部产品，可直接互相切换，仓库链接与它分开。
 
-`omp-codex-image-gen` 等单一功能插件作为工具，在首页积木区占一张卡片。
+其余单一功能插件在首页积木区以列表行呈现。
 
 ## 四、机制与默认策略索引
 

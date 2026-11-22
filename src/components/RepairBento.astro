@@ -18,7 +18,7 @@ const order: readonly RepairCard[] = [
   "omp-dispatch",
   "omp-remote-build",
 ];
-const listed: readonly RepairListed[] = ["omp-unified-exec", "omp-peers", "omp-codex-image-gen"];
+const listed: readonly RepairListed[] = ["omp-unified-exec", "omp-peers"];
 const target = (name: string) => {
   const repo = repos.find((r) => r.name === name);
   if (!repo) throw new Error(`\`${name}\` has no entry in src/data/repos.ts`);

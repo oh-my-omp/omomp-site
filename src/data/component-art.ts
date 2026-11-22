@@ -194,21 +194,16 @@ const forkNotice = [
   "</system-notice>",
 ].join("\n");
 
-const ctxShow = (handoff: string): string =>
+const todoSnapshot = (handoff: string): string =>
   [
-    "# Context OrdersRoute",
+    "# todo://",
     "",
-    "Breadcrumb: Main > OrdersRoute",
+    "Goal: Add Redis rate-limit middleware to shop-api",
     "",
-    "## Handoff",
+    "## Routes",
     "",
-    handoff,
-    "",
-    "## Tasks",
-    "",
-    "(none)",
-    "",
-    "Transcript: history://OrdersRoute",
+    `- [x] Switch the orders route — ${handoff}`,
+    "- [ ] Switch the search route (15m)",
   ].join("\n");
 
 const ordersHandoff = {
@@ -627,18 +622,18 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
   "todo-tool": {
     en: {
       kind: "lines",
-      lines: [{ kind: "call", tool: "ctx", args: "op: show · id: OrdersRoute", status: "ok", result: ctxShow(ordersHandoff.en) }],
+      lines: [{ kind: "call", tool: "read", args: "path: todo://", status: "ok", result: todoSnapshot(ordersHandoff.en) }],
     },
     zh: {
       kind: "lines",
       lines: [
         {
           kind: "call",
-          tool: "ctx",
-          args: "op: show · id: OrdersRoute",
+          tool: "read",
+          args: "path: todo://",
           status: "ok",
-          result: ctxShow(ordersHandoff.zh),
-          gloss: { label: "译文", text: `上下文 OrdersRoute。层级：Main > OrdersRoute。交接：${ordersHandoff.zh}任务：无。完整记录：history://OrdersRoute。` },
+          result: todoSnapshot(ordersHandoff.zh),
+          gloss: { label: "译文", text: `实时计划状态 todo://。已完成 orders 路由（${ordersHandoff.zh}），剩余 search 路由（15 分钟）。` },
         },
       ],
     },

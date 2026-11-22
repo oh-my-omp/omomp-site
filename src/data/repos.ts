@@ -116,40 +116,4 @@ export const repos: readonly Repo[] = [
       zh: "在本机改代码，在每个 worktree 对应的远程容器里构建测试。",
     },
   },
-  {
-    name: "omp-codex-image-gen",
-    kind: "tool",
-    seams: [],
-    art: {
-      from: "own",
-      arts: {
-        en: [
-          {
-            kind: "lines",
-            lines: [
-              { kind: "user", text: "Draw the rate-limit flow for the README: request, token bucket in Redis, 429 with Retry-After. Landscape, save it to docs/rate-limit.png." },
-              { kind: "call", tool: "codex_generate_image", args: 'size: "1536x1024" · outputPath: "docs/rate-limit.png"', status: "ok", result: "model: gpt-image-2\nsize: 1536x1024\nsavedPath: docs/rate-limit.png" },
-              { kind: "user", text: "Keep the layout; label the 429 arrow \"Retry-After: 30\". Save it as docs/rate-limit-v2.png." },
-              { kind: "call", tool: "codex_generate_image", args: 'referencedImagePaths: ["docs/rate-limit.png"] · outputPath: "docs/rate-limit-v2.png"', status: "ok", result: "model: gpt-image-2\nsavedPath: docs/rate-limit-v2.png" },
-            ],
-          },
-        ],
-        zh: [
-          {
-            kind: "lines",
-            lines: [
-              { kind: "user", text: "给 README 画一张限流流程图：请求、Redis 里的令牌桶、带 Retry-After 的 429。横版，存到 docs/rate-limit.png。" },
-              { kind: "call", tool: "codex_generate_image", args: 'size: "1536x1024" · outputPath: "docs/rate-limit.png"', status: "ok", result: "model: gpt-image-2\nsize: 1536x1024\nsavedPath: docs/rate-limit.png" },
-              { kind: "user", text: "版式不变，在 429 那条箭头上标出“Retry-After: 30”，另存为 docs/rate-limit-v2.png。" },
-              { kind: "call", tool: "codex_generate_image", args: 'referencedImagePaths: ["docs/rate-limit.png"] · outputPath: "docs/rate-limit-v2.png"', status: "ok", result: "model: gpt-image-2\nsavedPath: docs/rate-limit-v2.png" },
-            ],
-          },
-        ],
-      },
-    },
-    line: {
-      en: "Generate and edit images through the Codex login omp already has.",
-      zh: "借用 omp 已有的 Codex 登录生成和编辑图片。",
-    },
-  },
 ];

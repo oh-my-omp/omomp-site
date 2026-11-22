@@ -39,7 +39,7 @@
 ### 3.1 生命线 8 个回放镜头的逐帧问题（`src/data/replay-sessions.json`）
 
 1. **镜头 01（`id: "1"`，接缝 ① 意图，`omp-ask-more`，`replay-sessions.json:4-38`）**
-   - **内部维护黑话，毫无外部可读性**：第 1 条事件直接贴 `PR #188 已达成重启保留缓存（行 #1 通过），但 polish_doc 激活后成了顶层工具而不是 xd://polish_doc 设备… OMP 18.17.0 session-tools.ts 的 #applyToolPresentation 把经 setActiveTools 传入…`。任何不了解当天内部 PR 上下文的读者根本无法理解。
+   - **内部维护黑话，毫无外部可读性**：第 1 条事件直接贴 `PR #188 已达成重启保留缓存（行 #1 通过），但 polish_doc 激活后成了顶层工具而不是旧协议设备… OMP 18.17.0 session-tools.ts 的 #applyToolPresentation 把经 setActiveTools 传入…`。任何不了解当天内部 PR 上下文的读者根本无法理解。
    - **展示形态错误**：`omp-ask-more` 的核心价值是“全屏决策面板（现状、取舍、代码证据、演示动画）”，但这里展示的只是 `ask` 工具的原始 JSON 参数文本（`question: "..." \n brief.where: "..."`），完全没画出面板本身。
    - **“你看到的”视图失真**：切到 `你看到的（What you saw）` 时，`ReplayPlayer.tsx:40` 只过滤 `actor === "hook" || kind === "reminder"`，屏幕上依然裸露着 `AGENT ask` 原始参数字符串和 `ask rejected` 报错——人在真实终端或 Tern 里看到的绝不是这段参数文本，且被可读性检查退回的那次提问根本不会出现在人的屏幕上。
 
@@ -69,7 +69,7 @@
 ### 3.2 三个独立产品页回放镜头的偷懒问题（`replay-sessions.json:246-382`）
 
 - **`omp-playbooks`（第 246–292 行）与 `omp-remote-build`（第 336–382 行）直接搬运了 CI 冒烟测试指令**：
-  - `playbooks` 第一条用户消息是：`This is a bounded plugin runtime check. Read xd://playbook_edit and all of its topics... Stop and reply READY once done.`，随后是 `write(path="xd://playbook_open", content="{\"doc\":\"/tmp/omp-playbooks-e2e-en/book.yaml\"}")` 等 4 条 JSON RPC 探针，最后代理回复 `READY — checks performed: ...`。
+  - `playbooks` 第一条用户消息是：`This is a bounded plugin runtime check. Read playbook_edit topics... Stop and reply READY once done.`，随后是 4 条 JSON RPC 探针，最后代理回复 `READY — checks performed: ...`。
   - `remote-build` 第一条用户消息是：`Call remote_env_init once. Then call container_exec once with input "cat hello.txt; echo EXIT=$?\n" and yield_time_ms 10000...`。
   - 把单测脚本验证接口存活的生硬 JSON 往返当成旗舰产品的核心演示，把“人机共创的可执行设计文档”和“多 Worktree 远端容器同步构建”降格成了无聊的字符串回显。
 

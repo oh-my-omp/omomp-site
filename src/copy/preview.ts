@@ -80,7 +80,7 @@ export type RepairCard =
   | "omp-dispatch"
   | "omp-remote-build";
 
-export type RepairListed = "omp-unified-exec" | "omp-peers" | "omp-codex-image-gen";
+export type RepairListed = "omp-unified-exec" | "omp-peers";
 
 export const repairLines: Readonly<Record<RepairCard, Text>> = {
   "omp-config": {
@@ -121,10 +121,6 @@ export const repairListLines: Readonly<Record<RepairListed, Text>> = {
   "omp-peers": {
     en: "Ask a session in another omp process a question without interrupting it.",
     zh: "找到其他 omp 进程里的会话，向它提问，不打断它手上的对话。",
-  },
-  "omp-codex-image-gen": {
-    en: "Generate and edit images through the Codex login omp already has.",
-    zh: "复用 omp 已有的 Codex 登录，生成和编辑图片。",
   },
 };
 

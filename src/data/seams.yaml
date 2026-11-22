@@ -93,8 +93,8 @@ memory:
         en: The plan survives compaction
         zh: 计划在压缩后保留
       lede:
-        en: The todo tool keeps the plan outside the context window and commits as each item closes. ctx looks back at earlier contexts; fork_task copies the conversation into a child.
-        zh: todo 工具把计划存在上下文之外，完成一项就提交一次。ctx 回看先前的上下文，fork_task 把整段对话复制给子代理。
+        en: The todo tool keeps the plan outside the context window, readable via todo://, and commits as each item closes; fork_task copies the conversation into a child.
+        zh: todo 工具把计划存在上下文之外，可通过 todo:// 读取，完成一项就提交一次；fork_task 把整段对话复制给子代理。
     silent:
       title:
         en: Stopping with open items brings a reminder
