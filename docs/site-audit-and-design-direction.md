@@ -44,7 +44,7 @@
    - **“你看到的”视图失真**：切到 `你看到的（What you saw）` 时，`ReplayPlayer.tsx:40` 只过滤 `actor === "hook" || kind === "reminder"`，屏幕上依然裸露着 `AGENT ask` 原始参数字符串和 `ask rejected` 报错——人在真实终端或 Tern 里看到的绝不是这段参数文本，且被可读性检查退回的那次提问根本不会出现在人的屏幕上。
 
 2. **镜头 02（`id: "prompt"`，接缝 ② 提示词，`tool-topics`，`replay-sessions.json:432-458`）**
-   - **因果链条断裂**：第 1 条用户消息是中文 `每一个伞issue，派一个task high去处理，不需要告诉他们怎么处理…`；第 2 条代理调 `read(path="tool://task/limits")` 等三个 `task` 专题；第 3 条突然弹出 `tool://read/runtime` 的 `<tool-topic-injection>`（第 454 行）。前面读的是 `task` 专题，后面注入的却是 `read/runtime` 专题（因为中间调 `read(agent://...)` 的步骤被删掉了），整段演示在逻辑上完全接不上。
+   - **因果链条断裂**：第 1 条用户消息是中文 `每一个伞issue，派一个task high去处理，不需要告诉他们怎么处理…`；第 2 条代理调 `read(path="help://task/limits")` 等三个 `task` 专题；第 3 条突然弹出 `help://read/runtime` 的 `<tool-topic-injection>`（第 454 行）。前面读的是 `task` 专题，后面注入的却是 `read/runtime` 专题（因为中间调 `read(agent://...)` 的步骤被删掉了），整段演示在逻辑上完全接不上。
 
 3. **镜头 03（`id: "memory"`，接缝 ③ 记忆，`omp-todo-more`，`replay-sessions.json:384-430`）**
    - **拿插件自身的改写调试日志充数**：内容是 `todo-more rewritten on branch with native todo as base (topology B)`、等待 `session 9` 构建沙箱。第 1 条代理说中文（第 392 行），第 5 条代理突然改说英文（第 419 行）。
@@ -201,7 +201,7 @@
 1. **用同一条干净的工程场景贯穿 6 道接缝**
    - 选用任何开发者都能在 3 秒内读懂的真实开发任务（例如：**“为 API 网关增加 Redis 速率限制中间件，并同步更新三个下游调用模块”**），中英文站点各自提供地道、完整的对应语言版本（严禁中英混杂、严禁内部 PR 编号和 `/tmp/...` 探针路径）：
      - **接缝 ① 意图**：展示代理初次提问因含混缩写被 `readability` 退回，随即在右侧直接渲染出 **`omp-ask-more` 全屏决策面板的完整 HTML/CSS 界面**（含现状、取舍、代码行证据与推荐项）。
-     - **接缝 ② 提示词**：用可视化上下文条展示完整模式 vs 轻量模式的挂载差异，以及代理调用 `task` 前按需拉取 `tool://task/isolation`、以增量消息注入而不改动 System Prompt 前缀的过程。
+     - **接缝 ② 提示词**：用可视化上下文条展示完整模式 vs 轻量模式的挂载差异，以及代理调用 `task` 前按需拉取 `help://task/isolation`、以增量消息注入而不改动 System Prompt 前缀的过程。
      - **接缝 ③ 记忆**：左侧渲染 **Tern 的 `omp-todo-more` 待办面板实体界面**，右侧同步展示代理在剩 1 项未完时试图停下、被停止提醒拉回继续完成并自动触发 `git commit` 的闭环。
      - **接缝 ④ 派发**：左侧展示 3 个写文件任务混入同一工作区且混装多主题时被 `isolation-nudge` 与 `task-split-check` 拦截的红框对比；右侧展示拆分为 3 个 `isolated: true` 独立 Worktree 后的并行状态，以及顾问直接引用用户原话指出方案偏差的画面。
      - **接缝 ⑤ 执行**：渲染 **Tern 的 `omp-unified-exec` 终端 HUD 界面**（展示代理 `write_stdin` 与人工按键同屏操作同一长驻终端），并列展示 `delete-guard` 拦下 `shutil.rmtree` 改走回收站 `delete` 工具、`tool-policy-nag` 纠偏长串 shell 改文件的界面切片。

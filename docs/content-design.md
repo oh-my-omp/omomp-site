@@ -115,8 +115,8 @@ flowchart TB
 | 接缝 | 人机交互面 | 代理原语层 | 静默治理层 |
 |---|---|---|---|
 | ① 意图进入会话 | `omp-ask-more` 全屏决策面板（现状、决定、后果，代码证据、示意图、演示动画）；`input-polish` 改写输入 | 结构化 `ask`：每个选项写明取舍 | `ask-more` 的可读性检查退回含糊的提问；路由规则要求所有问题走面板 |
-| ② 提示词加载与防漂移 | `omp` 完整模式与 `omp-light` 轻量模式两个入口 | 统一 `tool://` 总线按需读取工具专题，恢复类专题出错自动注入 | `SYSTEM_TEMPLATE.md` 去重、`tool-topics` 压缩工具说明、`system-prompt-replace` 修补冲突措辞、`repo-rules` 按路径投递规则 |
-| ③ 长任务规划与记忆 | `omp-todo-more` 的 Tern 待办面板 | 结构化 `todo`（目标、阶段、时间预算、完成即提交、`todo://` 只读状态）、`fork_task` 复制完整对话前缀 | 未完成项的停止提醒；`model-compaction` 按模型推迟有损压缩 |
+| ② 提示词加载与防漂移 | `omp` 完整模式与 `omp-light` 轻量模式两个入口 | 统一原生 `help://` 按需读取工具专题，恢复类专题出错自动注入 | `SYSTEM_TEMPLATE.md` 去重、`tool-topics` 压缩工具说明、`system-prompt-replace` 修补冲突措辞、`repo-rules` 按路径投递规则 |
+| ③ 长任务规划与记忆 | `omp-todo-more` 的 Tern 待办面板 | 结构化 `todo`（目标、阶段、时间预算、完成即提交、`todo({})` 读取实时状态）、`fork_task` 复制完整对话前缀 | 未完成项的停止提醒；`model-compaction` 按模型推迟有损压缩 |
 | ④ 子代理派发与顾问 | `/subagent-usage` 授权本机用量校准 | 按成本与可信度分档的 `task:*`、保守的 `discuss:steady`、发散的 `discuss:divergent`、无工具的 `mentor:default`、剩余派发次数估算 | `user-prompt-inject` 把用户原话注入顾问；`isolation-nudge` 退回会让多个改文件的子代理共用工作区、又没写明是否隔离的派发；`task-split-check` 拦截多主题混派和限制报告长度 |
 | ⑤ 命令执行与过程监督 | `omp-unified-exec` 的 Tern 终端视图，人可旁观并向同一终端输入；`/watchdog` 管理命令 | 长驻 PTY 会话（`exec_command`、`write_stdin`、`monitor`）、只收字面路径并默认进回收站的 `delete`、`wt` 会话工作树、`harness_restart` | `delete-guard` 拦截 shell 与 eval 中的删除和非字面执行；`tool-policy-nag` 阻断交互和长驻命令走 `bash`，其他误用照常执行并在结果末尾追加提醒；`watchdog-agent` 按动作数定期审查用户定义的会话 |
 | ⑥ 交付验收与跨会话协作 | `omomp-lang` 统一界面语言 | `omp-sessions`（`session://` 与 `session_query` SQL）、`omp-peers`（跨进程发现、旁路询问、IRC 消息） | `task-completion-judge` 在子代理交付时核对范围、验证和 Todo；`turn-judge` 在主代理只说不做就收工时要求继续；`lang-nag` 在下一轮纠正用错的回复语言 |
@@ -134,7 +134,7 @@ flowchart TB
 | ① | 提出需求 | 需求和一次被退回的提问调用 | `omp-ask-more` 可读性检查退回带着未解释缩写的草稿 |
 | ① | 你来决定 | 全屏决策面板：现状、决定、后果、带取舍的选项、代码证据、推荐项 | 无 |
 | ② | 完整与轻量模式 | 上下文条对比 `omp` 完整模式与 `omp-light` 轻量模式各挂载了什么 | 无 |
-| ② | 按需读取说明 | 派发前读取 `tool://task/isolation`；上下文条显示前缀不变、说明作为新消息追加在末尾 | `tool-topics` 追加的专题说明 |
+| ② | 按需读取说明 | 派发前读取 `help://task/isolation`；上下文条显示前缀不变、说明作为新消息追加在末尾 | `tool-topics` 追加的专题说明 |
 | ③ | 计划 | 待办面板：目标、阶段、估时 | 无 |
 | ③ | 剩一项时停下 | 未完成提醒卡片，代理接着做完，`todo` 完成时自动提交，面板上该项带提交号 | `omp-todo-more` 的停止提醒 |
 | ④ | 一项塞了两个主题 | 被拦下的派发调用 | `task-split-check` 的退回 |

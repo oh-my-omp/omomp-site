@@ -233,15 +233,15 @@ const taskTopics: StageFile = {
   lines: [
     "…",
     "Topics — read the one a call needs before making it:",
-    "- `tool://task/batch` — before dispatching many items built from a template, or in waves",
-    "- `tool://task/follow-up` — before giving more work to, messaging, or reading back an agent that already exists",
-    "- `tool://task/isolation` — before setting `isolated: true`, or after an isolated item failed to start or merge",
-    "- `tool://task/judge` — before reading many short texts (titles, rows, findings, summaries) only to answer a fixed question about each, or to sort them into classes",
-    "- `tool://task/limits` — before planning a large fan-out, nested delegation, or a long-running child",
+    "- `help://task/batch` — before dispatching many items built from a template, or in waves",
+    "- `help://task/follow-up` — before giving more work to, messaging, or reading back an agent that already exists",
+    "- `help://task/isolation` — before setting `isolated: true`, or after an isolated item failed to start or merge",
+    "- `help://task/judge` — before reading many short texts (titles, rows, findings, summaries) only to answer a fixed question about each, or to sort them into classes",
+    "- `help://task/limits` — before planning a large fan-out, nested delegation, or a long-running child",
   ],
 };
 const isolationTopic: StageFile = {
-  title: "read tool://task/isolation",
+  title: "read help://task/isolation",
   lines: [
     "# Isolated workers",
     "",
@@ -431,7 +431,7 @@ const deliveredTodo = (lang: Lang): Panel => {
 const nonLiteralCommand = "$RM -rf coverage";
 const nonLiteralRefusal = `delete-guard: this call did not run. Non-literal command: \`${nonLiteralCommand}\` (the command name \`$RM\` comes from an expansion). Commands must be literal: no command name from a variable or substitution, no non-literal nested shell or eval script, no script fed to a shell through stdin; write the command out. To delete files, call the \`delete\` tool with literal paths and leave \`mode\` unset; the default moves them to the system trash.`;
 
-const ptyRefusal = "pty 路由：这次 `bash` 调用没有执行：`tail` 不会自己结束，或在等外部条件（open-ended，规则 `tailFollow`）。\n请改用 `exec_command` 执行，或先 `read tool://exec_command/pty-io` 查看 PTY 会话用法。";
+const ptyRefusal = "pty 路由：这次 `bash` 调用没有执行：`tail` 不会自己结束，或在等外部条件（open-ended，规则 `tailFollow`）。\n请改用 `exec_command` 执行，或先 `read help://exec_command/pty-io` 查看 PTY 会话用法。";
 
 const todoReturn = (lang: Lang): string => {
   const item = lang === "en" ? "Routes: Switch the search route — Same change as orders, with a higher limit" : "路由: 改 search 路由 — 改法同 orders，额度更高";
@@ -495,7 +495,7 @@ export function seamStage(seam: SeamId, layer: Layer, lang: Lang): SeamStage {
                     ...taskTopics,
                     gloss: {
                       label: "译文",
-                      text: "……Topics——调用前只读这次需要的那一篇：`tool://task/batch`，按模板派发多项或分波次派发之前；`tool://task/follow-up`，给已有的代理追加工作、发消息或读回结果之前；`tool://task/isolation`，设置 `isolated: true` 之前，或隔离项启动、合并失败之后；`tool://task/judge`，读一批短文本（标题、行、发现、摘要）只为对每条回答同一个固定问题或归类之前；`tool://task/limits`，规划大范围并发、嵌套委派或长时间运行的子代理之前。",
+                      text: "……Topics——调用前只读这次需要的那一篇：`help://task/batch`，按模板派发多项或分波次派发之前；`help://task/follow-up`，给已有的代理追加工作、发消息或读回结果之前；`help://task/isolation`，设置 `isolated: true` 之前，或隔离项启动、合并失败之后；`help://task/judge`，读一批短文本（标题、行、发现、摘要）只为对每条回答同一个固定问题或归类之前；`help://task/limits`，规划大范围并发、嵌套委派或长时间运行的子代理之前。",
                     },
                   },
                   {

@@ -100,7 +100,7 @@ const toolTopics = [
   "…",
   "Topics — read the one a call needs before making it:",
   "…",
-  "- `tool://task/isolation` — before setting `isolated: true`, or after an isolated item failed to start or merge",
+  "- `help://task/isolation` — before setting `isolated: true`, or after an isolated item failed to start or merge",
   "…",
   "</tool>",
   "…",
@@ -405,7 +405,7 @@ function steps(lang: Lang): readonly Step[] {
             {
               kind: "call",
               tool: "read",
-              args: "tool://task/isolation",
+              args: "help://task/isolation",
               status: "ok",
               result: isolationTopic,
               ...(en ? {} : { gloss: gloss("# 隔离执行：`isolated: true` 让这一项有自己的检出；不写或写 `false`，就在你的检出里运行。每一项各自设置。……") }),
@@ -451,7 +451,7 @@ function steps(lang: Lang): readonly Step[] {
           gloss: en
             ? undefined
             : gloss(
-                "omp-config 提供的 OMP 自带工具说明。每个 <tool> 元素对应一个工具，参数仍以 system prompt 的声明为准。description=\"replaced\" 时，元素正文替换 system prompt 里该工具的说明；description=\"kept\" 时保留原说明，只在后面追加元素的 Topics 列表。Topics 列表列出没放进 prompt、需要时再读的调用说明。task 工具：……Topics——调用前只读这次需要的那一篇：……`tool://task/isolation`，设置 `isolated: true` 之前，或隔离项启动、合并失败之后。……",
+                "omp-config 提供的 OMP 自带工具说明。每个 <tool> 元素对应一个工具，参数仍以 system prompt 的声明为准。description=\"replaced\" 时，元素正文替换 system prompt 里该工具的说明；description=\"kept\" 时保留原说明，只在后面追加元素的 Topics 列表。Topics 列表列出没放进 prompt、需要时再读的调用说明。task 工具：……Topics——调用前只读这次需要的那一篇：……`help://task/isolation`，设置 `isolated: true` 之前，或隔离项启动、合并失败之后。……",
               ),
         }),
       ],

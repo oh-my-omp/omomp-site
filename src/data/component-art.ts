@@ -196,7 +196,7 @@ const forkNotice = [
 
 const todoSnapshot = (handoff: string): string =>
   [
-    "# todo://",
+    "# Todo",
     "",
     "Goal: Add Redis rate-limit middleware to shop-api",
     "",
@@ -497,7 +497,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
         {
           kind: "call",
           tool: "read",
-          args: "tool://ast_grep/patterns",
+          args: "help://ast_grep/patterns",
           status: "ok",
           result:
             "# Writing a pattern\n\n- `pat` is ONE AST pattern and must parse as a single node of the target language; unrelated patterns go in separate calls. Wrap a fragment that is not standalone: `class $_ { … }`.\n- Metavariables: `$NAME` one node, bound; `$_` one node, unbound; `$$$NAME` zero or more, bound; `$$$` zero or more, unbound. `$$NAME` is invalid. Names are UPPERCASE and stand for a whole node: `prefix$VAR` fails.\n- The same metavariable twice must match identical code: `$A == $A` matches `x == x`, not `x == y`.\n…",
@@ -510,7 +510,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
         {
           kind: "call",
           tool: "read",
-          args: "tool://ast_grep/patterns",
+          args: "help://ast_grep/patterns",
           status: "ok",
           result:
             "# Writing a pattern\n\n- `pat` is ONE AST pattern and must parse as a single node of the target language; unrelated patterns go in separate calls. Wrap a fragment that is not standalone: `class $_ { … }`.\n- Metavariables: `$NAME` one node, bound; `$_` one node, unbound; `$$$NAME` zero or more, bound; `$$$` zero or more, unbound. `$$NAME` is invalid. Names are UPPERCASE and stand for a whole node: `prefix$VAR` fails.\n- The same metavariable twice must match identical code: `$A == $A` matches `x == x`, not `x == y`.\n…",
@@ -622,18 +622,18 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
   "todo-tool": {
     en: {
       kind: "lines",
-      lines: [{ kind: "call", tool: "read", args: "path: todo://", status: "ok", result: todoSnapshot(ordersHandoff.en) }],
+      lines: [{ kind: "call", tool: "todo", args: "{}", status: "ok", result: todoSnapshot(ordersHandoff.en) }],
     },
     zh: {
       kind: "lines",
       lines: [
         {
           kind: "call",
-          tool: "read",
-          args: "path: todo://",
+          tool: "todo",
+          args: "{}",
           status: "ok",
           result: todoSnapshot(ordersHandoff.zh),
-          gloss: { label: "译文", text: `实时计划状态 todo://。已完成 orders 路由（${ordersHandoff.zh}），剩余 search 路由（15 分钟）。` },
+          gloss: { label: "译文", text: `实时计划状态。已完成 orders 路由（${ordersHandoff.zh}），剩余 search 路由（15 分钟）。` },
         },
       ],
     },

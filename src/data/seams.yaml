@@ -58,8 +58,8 @@ prompt:
         en: Tool manuals are read one topic at a time
         zh: 工具说明按专题读取
       lede:
-        en: Each host tool description ends in a list of topics. Before a call that needs one, the agent reads it, such as tool://task/isolation before an isolated dispatch.
-        zh: 每个宿主工具的说明末尾附一份专题目录。需要时代理在调用前读对应专题，例如隔离派发之前先读 tool://task/isolation。
+        en: Each host tool description ends in a list of topics. Before a call that needs one, the agent reads it, such as help://task/isolation before an isolated dispatch.
+        zh: 每个宿主工具的说明末尾附一份专题目录。需要时代理在调用前读对应专题，例如隔离派发之前先读 help://task/isolation。
     silent:
       title:
         en: Changes go after the prefix
@@ -93,8 +93,8 @@ memory:
         en: The plan survives compaction
         zh: 计划在压缩后保留
       lede:
-        en: The todo tool keeps the plan outside the context window, readable via todo://, and commits as each item closes; fork_task copies the conversation into a child.
-        zh: todo 工具把计划存在上下文之外，可通过 todo:// 读取，完成一项就提交一次；fork_task 把整段对话复制给子代理。
+        en: The todo tool keeps the plan outside the context window, readable on demand via todo({}), and commits as each item closes; fork_task copies the conversation into a child.
+        zh: todo 工具把计划存在上下文之外，可随时经 todo({}) 查看，完成一项就提交一次；fork_task 把整段对话复制给子代理。
     silent:
       title:
         en: Stopping with open items brings a reminder

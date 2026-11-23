@@ -155,13 +155,13 @@ todo-panel:
     customize: https://github.com/oh-my-omp/omp-todo-more#readme
 
 todo-tool:
-  name: todo · todo://
+  name: todo
   repo: https://github.com/oh-my-omp/omp-todo-more
   layer: agent
   seam: memory
   line:
-    en: Items commit as they close; todo:// reads live plan state on demand.
-    zh: 条目完成即提交；todo:// 按需只读查看实时计划状态。
+    en: Items commit as they close; calling todo({}) reads live plan state on demand.
+    zh: 条目完成即提交；调用 todo({}) 可随时查看实时计划状态。
 
 fork-task:
   name: fork_task
