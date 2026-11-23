@@ -264,7 +264,7 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     gap: 28px;
     padding: 26px 26px 22px;
   }
-  .card[data-repo="omp-ask-more"],
+  .card[data-repo="omp-ask-ng"],
   .card[data-repo="omp-playbooks"],
   .card[data-repo="omp-dispatch"] {
     grid-column: span 8;
@@ -272,7 +272,7 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
   .card[data-repo="omp-remote-build"] {
     grid-column: 1 / -1;
   }
-  .card[data-repo="omp-ask-more"] .ca :global(.sl-ask-brief) {
+  .card[data-repo="omp-ask-ng"] .ca :global(.sl-ask-brief) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1.4em;
   }
@@ -318,11 +318,11 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     height: auto;
     mask-image: none;
   }
-  .card[data-repo="omp-ask-more"] .ca {
+  .card[data-repo="omp-ask-ng"] .ca {
     height: auto;
     mask-image: none;
   }
-  .card[data-repo="omp-todo-more"] {
+  .card[data-repo="omp-todo-ng"] {
     --art-h: 400px;
   }
   .bridge {
@@ -388,7 +388,7 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     .card {
       grid-column: span 6;
     }
-    .card[data-repo="omp-ask-more"],
+    .card[data-repo="omp-ask-ng"],
     .card[data-repo="omp-playbooks"],
     .card[data-repo="omp-dispatch"],
     .card[data-repo="omp-remote-build"] {
@@ -422,14 +422,14 @@ const tabArts: Readonly<Record<string, readonly Art[]>> = {
     .ca {
       height: var(--art-h, 300px);
     }
-    .card[data-repo="omp-ask-more"] .ca :global(.sl-ask-brief) {
+    .card[data-repo="omp-ask-ng"] .ca :global(.sl-ask-brief) {
       grid-template-columns: minmax(0, 1fr);
       gap: 0.7em;
     }
     .card[data-repo="omp-dispatch"] .ca,
     .card[data-repo="omp-playbooks"] .ca,
     .card[data-repo="omp-sessions"] .ca,
-    .card[data-repo="omp-todo-more"] .ca,
+    .card[data-repo="omp-todo-ng"] .ca,
     .card[data-repo="omp-remote-build"] .ca {
       height: auto;
       mask-image: none;

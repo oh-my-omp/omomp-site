@@ -131,11 +131,11 @@ export const real = {
       {
         title: { en: "Panels in Tern", zh: "在 Tern 里显示面板" },
         note: {
-          en: "Run omp in a Tern tab and the plugins draw their panels there. omp-todo-more installs its Tern stylesheet itself once it finds Tern.",
-          zh: "在 Tern 的标签页里运行 omp，插件就在其中绘制面板。omp-todo-more 发现本机装有 Tern 时，会自己装好它的 Tern 样式。",
+          en: "Run omp in a Tern tab and the plugins draw their panels there. omp-todo-ng installs its Tern stylesheet itself once it finds Tern.",
+          zh: "在 Tern 的标签页里运行 omp，插件就在其中绘制面板。omp-todo-ng 发现本机装有 Tern 时，会自己装好它的 Tern 样式。",
         },
         lines: [
-          { at: "shell", text: "omp install https://github.com/oh-my-omp/omp-todo-more" },
+          { at: "shell", text: "omp install https://github.com/oh-my-omp/omp-todo-ng" },
           { at: "shell", text: "tern -e omp" },
         ],
       },

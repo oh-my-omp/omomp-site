@@ -273,7 +273,7 @@ function steps(lang: Lang): readonly Step[] {
       hooks: [
         onLine(0, 2, {
           kind: "block",
-          source: "omp-ask-more · readability",
+          source: "omp-ask-ng · readability",
           at: en ? "ask result" : "ask 返回",
           label: label.sentBack,
           body: askRejection(lang),
@@ -501,7 +501,7 @@ function steps(lang: Lang): readonly Step[] {
       hooks: [
         onLine(0, 1, {
           kind: "reminder",
-          source: "omp-todo-more",
+          source: "omp-todo-ng",
           at: en ? "turn end" : "回合结束",
           label: label.appended,
           body: stopReminder(lang),

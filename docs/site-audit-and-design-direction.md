@@ -5,7 +5,7 @@
 当前线上版本（`https://oh-my-omp.github.io/omomp-site/` 及其 `/zh/` 中文站）以及 `src/` 实现存在系统性质量问题。页面呈现出强烈的“大模型一键生成暗色落地页”廉价感，核心原因归结为以下五点：
 
 1. **视觉模板套路化**：全站机械套用 `#0b0c0e` 黑底 + 脏黄紫双色径向光斑（`.glow`）+ 半透明灰渐变大字（`.gradient-text`）+ 橙色等宽大写 `.eyebrow` + 泛滥的 `01`–`06` 编号 + `#111216` 圆角灰框（Card Soup）。
-2. **真实界面切片数量为零**：`docs/content-design.md:66, 203` 明确要求“每节下有几条要点，配一块真实界面切片”、“不做脱离真实运行结果的示意动画”。但全站除了纯文本会话框 `ReplayPlayer` 外，没有任何一块真实 UI 界面切片（`omp-ask-more` 全屏决策页、`omp-todo-more` 的 Tern 待办面板、`omp-unified-exec` 的 Tern 终端 HUD、`omp-playbooks` 的 Tern 卡片面板全部缺席），反而用 `src/components/RepoFigure.astro` 画了 4 张十来行代码的火柴盒 SVG 充数。
+2. **真实界面切片数量为零**：`docs/content-design.md:66, 203` 明确要求“每节下有几条要点，配一块真实界面切片”、“不做脱离真实运行结果的示意动画”。但全站除了纯文本会话框 `ReplayPlayer` 外，没有任何一块真实 UI 界面切片（`omp-ask-ng` 全屏决策页、`omp-todo-ng` 的 Tern 待办面板、`omp-unified-exec` 的 Tern 终端 HUD、`omp-playbooks` 的 Tern 卡片面板全部缺席），反而用 `src/components/RepoFigure.astro` 画了 4 张十来行代码的火柴盒 SVG 充数。
 3. **生搬硬套内部测试/调试日志充当演示**：没有设计面向读者的可理解模拟演示，而是直接从本机历史里抠出修 bug 和跑 CI 冒烟探针的原始 JSON/文本日志（如 `PR #188`、`#applyToolPresentation`、`topology B`、`PROBE-RC-1`、`This is a bounded plugin runtime check... Stop and reply READY`），导致演示内容虚假、上下文断裂、中英混杂、极难阅读。
 4. **全站文案陷入“AI 对偶口号腔”与翻译腔**：从 `h1`、`h2` 到卡片描述，几十处标题全部套用“不是 A，而是 B”、“每 X 一个 Y”的工整格言句式，中文版直接从英文隐喻硬翻并由 `src/middleware.ts` 强行注入 `<wbr>` 分词断行，读感生硬拗口。
 5. **前期设计文档缺失视觉与交互的执行规范**：`docs/content-design.md` 只列出了信息目录（哪些页面、哪些名词）并点名了 `supabase.com` 与 `linear.app` 两个网址，却没有拆解两者的版式解剖学、图文面积比、网格形态与控件切片规范，还错误规定了“用 `omp-sessions` 从本机会话记录中检索、不改写不编造”，直接诱导实现者把表格填成灰框、把单测日志当成产品演示。
@@ -19,7 +19,7 @@
 | 维度 | 真实 `supabase.com` 首页 | 当前 `omomp-site` 首页（`src/views/Home.astro`） |
 | :--- | :--- | :--- |
 | **首屏结构与纵深** | 首屏顶部是不对称左右分栏（左列两行双色实色标题 `Build in a weekend / Scale to millions` + 两个按钮；右列 3 行平实说明交代包含哪些产品，总高仅约 `320px`）。**在首屏 `y ≈ 380px` 处直接进入 7 张产品的 Bento 网格**，不滚动就能看到全部核心模块与界面缩略图。 | `Home.astro:43-100`：首屏用 `padding-top: clamp(80px, 14vw, 160px)` 居中堆放脏黄紫 `.glow` 光斑、半透明灰渐变标题和 6 格带 `›` 圆圈的 `.seam-strip`；紧接着塞入两个各占一屏的巨型分栏区（`Where it sits` 和 `Take what you need`），把真正核心的积木卡片区挤到 `y > 1500px` 的第 4 屏。 |
-| **Bento 卡片内部构成** | 每张卡片遵循 **“30% 文字 + 70% 具象微缩界面”**：左上角仅放小图标、产品名和 2 行短句，卡片下半部或右半部 65%–70% 的面积是具象的 UI 控件切片（Postgres 卡内是特性勾选与结构图、Authentication 卡内是真实邮箱用户行 `alex16019@gmail.com`、Edge Functions 卡内是 `$ supabase functions deploy` 胶囊与地球网格、Data APIs 卡内是 `countries -> .../v1/countries` 映射组件）。 | `Home.astro:119-131`：5 张插件卡（`omp-ask-more` 到 `omp-peers`）是 **100% 纯文字黑灰框**（左上角 `<code>` 仓库名 + 中间两行灰字 + 底部 `Acts at 06 Delivery` 胶囊），连一个像素的界面切片或结构图都没有。3 张产品卡只放了简陋的 `320×88` 抽象灰条 SVG。 |
+| **Bento 卡片内部构成** | 每张卡片遵循 **“30% 文字 + 70% 具象微缩界面”**：左上角仅放小图标、产品名和 2 行短句，卡片下半部或右半部 65%–70% 的面积是具象的 UI 控件切片（Postgres 卡内是特性勾选与结构图、Authentication 卡内是真实邮箱用户行 `alex16019@gmail.com`、Edge Functions 卡内是 `$ supabase functions deploy` 胶囊与地球网格、Data APIs 卡内是 `countries -> .../v1/countries` 映射组件）。 | `Home.astro:119-131`：5 张插件卡（`omp-ask-ng` 到 `omp-peers`）是 **100% 纯文字黑灰框**（左上角 `<code>` 仓库名 + 中间两行灰字 + 底部 `Acts at 06 Delivery` 胶囊），连一个像素的界面切片或结构图都没有。3 张产品卡只放了简陋的 `320×88` 抽象灰条 SVG。 |
 | **“按需取用”的表达方式** | Bento 网格正下方仅用一行高对比度的短句 `Use one or all. Best of breed products. Integrated as a platform.` 点题；第 2 屏（`desktop_supabase.com_.02.png`）用 `Table Editor / SQL Editor / RLS Policies` 胶囊切换器展示完整交互表单，旁配可切换 React/Next.js/Vue 图标的真实代码框。 | 把“按需取用”拆成一个占半屏高的独立双栏文字块（`Home.astro:80-100`），右边画一个顶栏带三个灰圆点的假终端框（`.term`），里面只放 4 行静态 `git clone` 文本，毫无信息量。 |
 
 ### 2.2 内页对照 Linear（`desktop_linear.app_*.png` vs `src/views/*.astro`）
@@ -38,17 +38,17 @@
 
 ### 3.1 生命线 8 个回放镜头的逐帧问题（`src/data/replay-sessions.json`）
 
-1. **镜头 01（`id: "1"`，接缝 ① 意图，`omp-ask-more`，`replay-sessions.json:4-38`）**
+1. **镜头 01（`id: "1"`，接缝 ① 意图，`omp-ask-ng`，`replay-sessions.json:4-38`）**
    - **内部维护黑话，毫无外部可读性**：第 1 条事件直接贴 `PR #188 已达成重启保留缓存（行 #1 通过），但 polish_doc 激活后成了顶层工具而不是旧协议设备… OMP 18.17.0 session-tools.ts 的 #applyToolPresentation 把经 setActiveTools 传入…`。任何不了解当天内部 PR 上下文的读者根本无法理解。
-   - **展示形态错误**：`omp-ask-more` 的核心价值是“全屏决策面板（现状、取舍、代码证据、演示动画）”，但这里展示的只是 `ask` 工具的原始 JSON 参数文本（`question: "..." \n brief.where: "..."`），完全没画出面板本身。
+   - **展示形态错误**：`omp-ask-ng` 的核心价值是“全屏决策面板（现状、取舍、代码证据、演示动画）”，但这里展示的只是 `ask` 工具的原始 JSON 参数文本（`question: "..." \n brief.where: "..."`），完全没画出面板本身。
    - **“你看到的”视图失真**：切到 `你看到的（What you saw）` 时，`ReplayPlayer.tsx:40` 只过滤 `actor === "hook" || kind === "reminder"`，屏幕上依然裸露着 `AGENT ask` 原始参数字符串和 `ask rejected` 报错——人在真实终端或 Tern 里看到的绝不是这段参数文本，且被可读性检查退回的那次提问根本不会出现在人的屏幕上。
 
 2. **镜头 02（`id: "prompt"`，接缝 ② 提示词，`tool-topics`，`replay-sessions.json:432-458`）**
    - **因果链条断裂**：第 1 条用户消息是中文 `每一个伞issue，派一个task high去处理，不需要告诉他们怎么处理…`；第 2 条代理调 `read(path="help://task/limits")` 等三个 `task` 专题；第 3 条突然弹出 `help://read/runtime` 的 `<tool-topic-injection>`（第 454 行）。前面读的是 `task` 专题，后面注入的却是 `read/runtime` 专题（因为中间调 `read(agent://...)` 的步骤被删掉了），整段演示在逻辑上完全接不上。
 
-3. **镜头 03（`id: "memory"`，接缝 ③ 记忆，`omp-todo-more`，`replay-sessions.json:384-430`）**
-   - **拿插件自身的改写调试日志充数**：内容是 `todo-more rewritten on branch with native todo as base (topology B)`、等待 `session 9` 构建沙箱。第 1 条代理说中文（第 392 行），第 5 条代理突然改说英文（第 419 行）。
-   - **不见面板，只见协议字符串**：完全没有展示 `omp-todo-more` 在 Tern 里的待办面板（阶段分组、时间预算、进度条、自动提交），只给读者看大段 `<system-reminder>` 原文和 `todo(input="*** Begin Todo\nDONE ...")` 的原始命令。
+3. **镜头 03（`id: "memory"`，接缝 ③ 记忆，`omp-todo-ng`，`replay-sessions.json:384-430`）**
+   - **拿插件自身的改写调试日志充数**：内容是 `todo-ng rewritten on branch with native todo as base (topology B)`、等待 `session 9` 构建沙箱。第 1 条代理说中文（第 392 行），第 5 条代理突然改说英文（第 419 行）。
+   - **不见面板，只见协议字符串**：完全没有展示 `omp-todo-ng` 在 Tern 里的待办面板（阶段分组、时间预算、进度条、自动提交），只给读者看大段 `<system-reminder>` 原文和 `todo(input="*** Begin Todo\nDONE ...")` 的原始命令。
 
 4. **镜头 04（`id: "2"`，接缝 ④ 派发，`user-prompt-inject` / `discuss:steady`，`replay-sessions.json:40-66`）**
    - **半截话 + 中英混杂**：第 1 条用户消息是前后带省略号的半截话 `…后者的每任务cost要作为预先写死的数据直接存在插件中，而不是每次全量计算。…`；第 2 条主代理 brief 是英文 `Fallback: per-dispatch cost 'unit price' computed ONCE now...`；第 3 条顾问回复又是中文讨论 `方案 C 硬编码 input/output/cache token profile` 与 `mu0`。读者既不知道“后者”指什么，也不知道“方案 C”从何而来。
@@ -159,8 +159,8 @@
    - 严禁出现纯文字卡片或 `RepoFigure.astro` 那种抽象灰条 SVG。
    - 每张卡片左上角仅放组件名 + 两行以内说明（中文不超过 35 字，英文不超过 22 词）；**卡片下半部或右半部 65%–70% 的面积必须内嵌高辨识度的真实 UI 控件微缩切片**：
      - `omp-config`（跨列主卡）：左侧写治理运行时职责，右侧画一条带 6 个接缝拦截点与三层色彩标记的实时工具链管道切片（显示 `<system-reminder>` 追加与 `block / judge` 触发点），不重复罗列两次 `01`–`06`。
-     - `omp-ask-more`：内嵌全屏决策面板微缩切片（含 `Where / What / How` 栏、两个带 `Tradeoff` 对比的选项卡片及推荐高亮）。
-     - `omp-todo-more`：内嵌 Tern 待办面板微缩切片（含 `PHASE` 分组、`15m` 预算标签、已完成项旁绑定的 git commit SHA）。
+     - `omp-ask-ng`：内嵌全屏决策面板微缩切片（含 `Where / What / How` 栏、两个带 `Tradeoff` 对比的选项卡片及推荐高亮）。
+     - `omp-todo-ng`：内嵌 Tern 待办面板微缩切片（含 `PHASE` 分组、`15m` 预算标签、已完成项旁绑定的 git commit SHA）。
      - `omp-unified-exec`：内嵌 Tern 终端 HUD 微缩切片（含运行中 PTY 会话标签、`Agent` 与 `You` 共用输入指示）。
      - `omp-sessions`：内嵌 `session://` 路径与 DuckDB SQL 查询结果表微缩切片。
      - `omp-peers`：内嵌多进程会话在线列表与 `peer_ask` 旁路问答气泡切片。
@@ -200,9 +200,9 @@
 
 1. **用同一条干净的工程场景贯穿 6 道接缝**
    - 选用任何开发者都能在 3 秒内读懂的真实开发任务（例如：**“为 API 网关增加 Redis 速率限制中间件，并同步更新三个下游调用模块”**），中英文站点各自提供地道、完整的对应语言版本（严禁中英混杂、严禁内部 PR 编号和 `/tmp/...` 探针路径）：
-     - **接缝 ① 意图**：展示代理初次提问因含混缩写被 `readability` 退回，随即在右侧直接渲染出 **`omp-ask-more` 全屏决策面板的完整 HTML/CSS 界面**（含现状、取舍、代码行证据与推荐项）。
+     - **接缝 ① 意图**：展示代理初次提问因含混缩写被 `readability` 退回，随即在右侧直接渲染出 **`omp-ask-ng` 全屏决策面板的完整 HTML/CSS 界面**（含现状、取舍、代码行证据与推荐项）。
      - **接缝 ② 提示词**：用可视化上下文条展示完整模式 vs 轻量模式的挂载差异，以及代理调用 `task` 前按需拉取 `help://task/isolation`、以增量消息注入而不改动 System Prompt 前缀的过程。
-     - **接缝 ③ 记忆**：左侧渲染 **Tern 的 `omp-todo-more` 待办面板实体界面**，右侧同步展示代理在剩 1 项未完时试图停下、被停止提醒拉回继续完成并自动触发 `git commit` 的闭环。
+     - **接缝 ③ 记忆**：左侧渲染 **Tern 的 `omp-todo-ng` 待办面板实体界面**，右侧同步展示代理在剩 1 项未完时试图停下、被停止提醒拉回继续完成并自动触发 `git commit` 的闭环。
      - **接缝 ④ 派发**：左侧展示 3 个写文件任务混入同一工作区且混装多主题时被 `isolation-nudge` 与 `task-split-check` 拦截的红框对比；右侧展示拆分为 3 个 `isolated: true` 独立 Worktree 后的并行状态，以及顾问直接引用用户原话指出方案偏差的画面。
      - **接缝 ⑤ 执行**：渲染 **Tern 的 `omp-unified-exec` 终端 HUD 界面**（展示代理 `write_stdin` 与人工按键同屏操作同一长驻终端），并列展示 `delete-guard` 拦下 `shutil.rmtree` 改走回收站 `delete` 工具、`tool-policy-nag` 纠偏长串 shell 改文件的界面切片。
      - **接缝 ⑥ 交付**：渲染 `omomp-lang` 生效后的界面文字（如以页面语言呈现的计划面板）、`task-completion-judge` 退回未跑验证的子代理交付卡片，以及 `omp-sessions` 用 DuckDB SQL 检索历史会话的查询表格。

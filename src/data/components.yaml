@@ -1,7 +1,7 @@
 # One entry per component placement on the lifeline. Keys are stable ids.
-ask-more-panel:
-  name: omp-ask-more
-  repo: https://github.com/oh-my-omp/omp-ask-more
+ask-ng-panel:
+  name: omp-ask-ng
+  repo: https://github.com/oh-my-omp/omp-ask-ng
   layer: human
   seam: intent
   line:
@@ -14,7 +14,7 @@ ask-more-panel:
     policy:
       en: "Timeout, notification and expiry handling, and the readability check. Shipped: a terminal notification when a question waits too long, the model decides if it still goes unanswered, and the readability check is on."
       zh: 超时、通知与到期处理，以及可读性检查。默认配置：问题等太久时发终端通知，仍无人回答则交给模型决定，可读性检查开启。
-    customize: https://github.com/oh-my-omp/omp-ask-more#readme
+    customize: https://github.com/oh-my-omp/omp-ask-ng#readme
 
 input-polish:
   name: input-polish
@@ -35,7 +35,7 @@ input-polish:
 
 ask-tool:
   name: ask
-  repo: https://github.com/oh-my-omp/omp-ask-more
+  repo: https://github.com/oh-my-omp/omp-ask-ng
   layer: agent
   seam: intent
   line:
@@ -43,8 +43,8 @@ ask-tool:
     zh: 每次提问都写明现状、要决定的事和每个选项的取舍。
 
 ask-readability:
-  name: omp-ask-more · readability
-  repo: https://github.com/oh-my-omp/omp-ask-more#readme
+  name: omp-ask-ng · readability
+  repo: https://github.com/oh-my-omp/omp-ask-ng#readme
   layer: silent
   seam: intent
   line:
@@ -138,8 +138,8 @@ repo-rules:
     zh: 项目规则以追加消息送达，按路径的规则等碰到匹配文件才来。
 
 todo-panel:
-  name: omp-todo-more
-  repo: https://github.com/oh-my-omp/omp-todo-more
+  name: omp-todo-ng
+  repo: https://github.com/oh-my-omp/omp-todo-ng
   layer: human
   seam: memory
   line:
@@ -152,11 +152,11 @@ todo-panel:
     policy:
       en: "Whether stop reminders fire, how often, and whether a plan is requested up front. Shipped: reminders on, capped per stop, no plan required at the first prompt."
       zh: 是否发出停止提醒、发几次，以及开场是否要求列计划。默认配置：提醒开启、每次停下有上限，开场不强制列计划。
-    customize: https://github.com/oh-my-omp/omp-todo-more#readme
+    customize: https://github.com/oh-my-omp/omp-todo-ng#readme
 
 todo-tool:
   name: todo
-  repo: https://github.com/oh-my-omp/omp-todo-more
+  repo: https://github.com/oh-my-omp/omp-todo-ng
   layer: agent
   seam: memory
   line:
@@ -173,8 +173,8 @@ fork-task:
     zh: 分出的子代理从整段对话起步，复用已缓存的前缀。
 
 todo-reminders:
-  name: omp-todo-more · reminders
-  repo: https://github.com/oh-my-omp/omp-todo-more
+  name: omp-todo-ng · reminders
+  repo: https://github.com/oh-my-omp/omp-todo-ng
   layer: silent
   seam: memory
   line:

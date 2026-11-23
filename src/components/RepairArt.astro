@@ -32,7 +32,7 @@ const a = repairArt;
     )
   }
   {
-    name === "omp-ask-more" && (
+    name === "omp-ask-ng" && (
       <ul class="opts">
         {a.ask.options.map((o, i) => (
           <li class:list={{ sel: i === 0 }}>
@@ -50,7 +50,7 @@ const a = repairArt;
     )
   }
   {
-    name === "omp-todo-more" && (
+    name === "omp-todo-ng" && (
       <ul class="todo">
         {a.todo.items.map((item, i) => (
           <li class:list={{ done: i < 2, active: i === 2 }}>

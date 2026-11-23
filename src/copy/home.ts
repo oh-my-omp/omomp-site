@@ -125,11 +125,11 @@ export const home = {
         label: { en: "With the Tern terminal", zh: "搭配 Tern 图形终端" },
         uses: ["config", "plugins", "products", "omp", "tern"],
         window: { en: "Tern · omp", zh: "Tern · omp" },
-        install: ["omp install https://github.com/oh-my-omp/omp-todo-more"],
+        install: ["omp install https://github.com/oh-my-omp/omp-todo-ng"],
         start: ["tern -e omp"],
         text: {
-          en: "Run omp in a Tern tab and the plugins draw their panels there. omp-todo-more installs its Tern stylesheet itself once it finds Tern on the machine.",
-          zh: "在 Tern 的标签页里运行 omp，插件就在其中绘制面板。omp-todo-more 发现本机装有 Tern 时，会自己装好它的 Tern 样式。",
+          en: "Run omp in a Tern tab and the plugins draw their panels there. omp-todo-ng installs its Tern stylesheet itself once it finds Tern on the machine.",
+          zh: "在 Tern 的标签页里运行 omp，插件就在其中绘制面板。omp-todo-ng 发现本机装有 Tern 时，会自己装好它的 Tern 样式。",
         },
         after: [
           { en: "The todo panel beside the conversation", zh: "对话旁边的待办面板" },

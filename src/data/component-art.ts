@@ -3,7 +3,7 @@ import type { Art } from "../slices/Art";
 import type { Hook } from "../slices/HookMessage";
 
 export type ComponentId =
-  | "ask-more-panel"
+  | "ask-ng-panel"
   | "input-polish"
   | "ask-tool"
   | "ask-readability"
@@ -163,10 +163,10 @@ const todoReminder = (lang: Lang): string => {
 
 export const todoStopReminder = (lang: Lang): Hook =>
   lang === "en"
-    ? { kind: "reminder", source: "omp-todo-more", at: "turn end", label: "appended", body: todoReminder("en") }
+    ? { kind: "reminder", source: "omp-todo-ng", at: "turn end", label: "appended", body: todoReminder("en") }
     : {
         kind: "reminder",
-        source: "omp-todo-more",
+        source: "omp-todo-ng",
         at: "回合结束",
         label: "追加",
         body: todoReminder("zh"),
@@ -178,7 +178,7 @@ export const todoStopReminder = (lang: Lang): Hook =>
 
 const overtimeWarning = (lang: Lang): string =>
   [
-    '<system-reminder source="todo-more" kind="overtime">',
+    '<system-reminder source="todo-ng" kind="overtime">',
     `Todo item "${items[lang].tests.title}" has exceeded its estimated time: estimate ${items[lang].tests.estimate} min; elapsed 31.40 min of in_progress wall time.`,
     "The estimate is a forecast, not a deadline or permission to reduce scope. Do not lower the expected outcome, acceptance criteria, or quality, and do not stop because of this warning.",
     "…",
@@ -412,7 +412,7 @@ const pastTimeline = (lang: Lang) => {
 };
 
 export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
-  "ask-more-panel": {
+  "ask-ng-panel": {
     en: { kind: "panel", panel: askPanel("en") },
     zh: { kind: "panel", panel: askPanel("zh") },
   },
@@ -457,7 +457,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
       kind: "hook",
       hook: {
         kind: "block",
-        source: "omp-ask-more · readability",
+        source: "omp-ask-ng · readability",
         at: "ask result",
         label: "sent back",
         body: askRejected.en,
@@ -467,7 +467,7 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
       kind: "hook",
       hook: {
         kind: "block",
-        source: "omp-ask-more · readability",
+        source: "omp-ask-ng · readability",
         at: "ask 返回",
         label: "退回",
         body: askRejected.zh,
@@ -661,13 +661,13 @@ export const componentArt: Record<ComponentId, Record<Lang, Art>> = {
   "todo-reminders": {
     en: {
       kind: "hook",
-      hook: { kind: "reminder", source: "omp-todo-more", at: "past an estimate", label: "appended", body: overtimeWarning("en") },
+      hook: { kind: "reminder", source: "omp-todo-ng", at: "past an estimate", label: "appended", body: overtimeWarning("en") },
     },
     zh: {
       kind: "hook",
       hook: {
         kind: "reminder",
-        source: "omp-todo-more",
+        source: "omp-todo-ng",
         at: "超出估时",
         label: "追加",
         body: overtimeWarning("zh"),

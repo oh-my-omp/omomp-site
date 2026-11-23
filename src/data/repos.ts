@@ -34,17 +34,17 @@ export const repos: readonly Repo[] = [
     },
   },
   {
-    name: "omp-ask-more",
+    name: "omp-ask-ng",
     kind: "plugin",
     seams: ["intent"],
-    art: { from: "component", id: "ask-more-panel" },
+    art: { from: "component", id: "ask-ng-panel" },
     line: {
       en: "A decision the agent needs opens as a full page, with a tradeoff per option.",
       zh: "代理要你拍板时，问题整页打开，每个选项写明取舍。",
     },
   },
   {
-    name: "omp-todo-more",
+    name: "omp-todo-ng",
     kind: "plugin",
     seams: ["memory"],
     art: { from: "component", id: "todo-panel" },

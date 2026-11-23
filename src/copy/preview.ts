@@ -73,8 +73,8 @@ export const repairClose = {
 
 export type RepairCard =
   | "omp-config"
-  | "omp-ask-more"
-  | "omp-todo-more"
+  | "omp-ask-ng"
+  | "omp-todo-ng"
   | "omp-sessions"
   | "omp-playbooks"
   | "omp-dispatch"
@@ -87,11 +87,11 @@ export const repairLines: Readonly<Record<RepairCard, Text>> = {
     en: "**Adds rules to the prompt, blocks unsafe calls**, checks results before stopping.",
     zh: "往提示里补规则，**拦下危险调用**，代理停下前再检查结果。",
   },
-  "omp-ask-more": {
+  "omp-ask-ng": {
     en: "**Decisions open full-page**, with the tradeoff written on each option.",
     zh: "代理要你拍板时，**问题整页打开**，每个选项写明取舍。",
   },
-  "omp-todo-more": {
+  "omp-todo-ng": {
     en: "Goal, phases and estimates; **each finished item is committed**.",
     zh: "目标、阶段和估时写清楚，**做完一项提交一次**。",
   },
