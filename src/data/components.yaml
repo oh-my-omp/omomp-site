@@ -286,8 +286,8 @@ task-split-check:
     customize: https://github.com/oh-my-omp/omp-config/blob/main/docs/extensions.md#task-split-check
 
 terminals-hud:
-  name: omp-unified-exec
-  repo: https://github.com/oh-my-omp/omp-unified-exec
+  name: omp-actual-terminal
+  repo: https://github.com/oh-my-omp/omp-actual-terminal
   layer: human
   seam: execution
   line:
@@ -304,8 +304,8 @@ watchdog-cmd:
     zh: 列出、启停和起草本机的看门狗配置。
 
 exec-tools:
-  name: exec_command · write_stdin · monitor
-  repo: https://github.com/oh-my-omp/omp-unified-exec
+  name: bash (pty) · write_stdin · monitor
+  repo: https://github.com/oh-my-omp/omp-actual-terminal
   layer: agent
   seam: execution
   line:

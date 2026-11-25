@@ -54,7 +54,7 @@ export const repos: readonly Repo[] = [
     },
   },
   {
-    name: "omp-unified-exec",
+    name: "omp-actual-terminal",
     kind: "plugin",
     seams: ["execution"],
     art: { from: "exec" },

@@ -80,7 +80,7 @@ export type RepairCard =
   | "omp-dispatch"
   | "omp-remote-build";
 
-export type RepairListed = "omp-unified-exec" | "omp-peers";
+export type RepairListed = "omp-actual-terminal" | "omp-peers";
 
 export const repairLines: Readonly<Record<RepairCard, Text>> = {
   "omp-config": {
@@ -114,7 +114,7 @@ export const repairLines: Readonly<Record<RepairCard, Text>> = {
 };
 
 export const repairListLines: Readonly<Record<RepairListed, Text>> = {
-  "omp-unified-exec": {
+  "omp-actual-terminal": {
     en: "Long commands run in a terminal you and the agent both type into.",
     zh: "长命令跑在终端里，你和代理都能输入。",
   },

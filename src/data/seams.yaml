@@ -156,22 +156,22 @@ execution:
         en: Long-running terminals stay on screen
         zh: 长驻终端留在屏幕上
       lede:
-        en: omp-unified-exec lists the agent's long-running terminals in Tern; open one to watch it or type into the same process. /watchdog turns periodic reviews on and off.
-        zh: omp-unified-exec 在 Tern 里列出代理的长驻终端，打开就能旁观或向同一个进程输入。/watchdog 启停定期复查。
+        en: omp-actual-terminal lists the agent's long-running terminals on omp's jobs page in Tern; open one to watch it or type into the same process. /watchdog turns periodic reviews on and off.
+        zh: omp-actual-terminal 把代理的长驻终端列在 Tern 里 omp 的任务页上，打开就能旁观或向同一个进程输入。/watchdog 启停定期复查。
     agent:
       title:
         en: Long commands and deletion have their own tools
         zh: 长命令和删除另有工具
       lede:
-        en: exec_command keeps servers and REPLs in PTY sessions that outlive the turn. delete takes literal paths and uses the trash. wt moves the session into its own worktree.
-        zh: exec_command 把服务器和 REPL 放进跨回合存活的 PTY 会话；delete 只接受字面路径并移进回收站；wt 把会话搬进独立的工作树。
+        en: bash in PTY mode keeps servers and REPLs in PTY sessions that outlive the turn. delete takes literal paths and uses the trash. wt moves the session into its own worktree.
+        zh: PTY 模式的 bash 把服务器和 REPL 放进跨回合存活的 PTY 会话；delete 只接受字面路径并移进回收站；wt 把会话搬进独立的工作树。
     silent:
       title:
         en: Shell and eval calls are checked first
         zh: 执行前检查每次调用
       lede:
-        en: Deletions and unnamed commands are refused, and interactive commands in the one-shot shell are sent to exec_command. A watched session is reviewed at intervals.
-        zh: 删除操作和没写明名字的命令被拒绝，一次性 shell 里的交互命令被指向 exec_command，受监视的会话定期复查。
+        en: Deletions and unnamed commands are refused, and interactive commands in the one-shot shell are sent to a PTY terminal. A watched session is reviewed at intervals.
+        zh: 删除操作和没写明名字的命令被拒绝，一次性 shell 里的交互命令被指向 PTY 终端，受监视的会话定期复查。
 
 delivery:
   order: 6

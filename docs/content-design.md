@@ -118,7 +118,7 @@ flowchart TB
 | ② 提示词加载与防漂移 | `omp` 完整模式与 `omp-light` 轻量模式两个入口 | 统一原生 `help://` 按需读取工具专题，恢复类专题出错自动注入 | `SYSTEM_TEMPLATE.md` 去重、`tool-topics` 压缩工具说明、`system-prompt-replace` 修补冲突措辞、`repo-rules` 按路径投递规则 |
 | ③ 长任务规划与记忆 | `omp-todo-ng` 的 Tern 待办面板 | 结构化 `todo`（目标、阶段、时间预算、完成即提交、`todo({})` 读取实时状态）、`fork_task` 复制完整对话前缀 | 未完成项的停止提醒；`model-compaction` 按模型推迟有损压缩 |
 | ④ 子代理派发与顾问 | `/subagent-usage` 授权本机用量校准 | 按成本与可信度分档的 `task:*`、保守的 `discuss:steady`、发散的 `discuss:divergent`、无工具的 `mentor:default`、剩余派发次数估算 | `user-prompt-inject` 把用户原话注入顾问；`isolation-nudge` 退回会让多个改文件的子代理共用工作区、又没写明是否隔离的派发；`task-split-check` 拦截多主题混派和限制报告长度 |
-| ⑤ 命令执行与过程监督 | `omp-unified-exec` 的 Tern 终端视图，人可旁观并向同一终端输入；`/watchdog` 管理命令 | 长驻 PTY 会话（`exec_command`、`write_stdin`、`monitor`）、只收字面路径并默认进回收站的 `delete`、`wt` 会话工作树、`harness_restart` | `delete-guard` 拦截 shell 与 eval 中的删除和非字面执行；`tool-policy-nag` 阻断交互和长驻命令走 `bash`，其他误用照常执行并在结果末尾追加提醒；`watchdog-agent` 按动作数定期审查用户定义的会话 |
+| ⑤ 命令执行与过程监督 | `omp-actual-terminal` 在 Tern 里从 omp 任务页打开的终端 Console，人可旁观并向同一终端输入；`/watchdog` 管理命令 | 长驻 PTY 会话（带 `pty: true` 的 `bash`、`write_stdin`、`monitor`）、只收字面路径并默认进回收站的 `delete`、`wt` 会话工作树、`harness_restart` | `delete-guard` 拦截 shell 与 eval 中的删除和非字面执行；`tool-policy-nag` 阻断交互和长驻命令走不带 `pty: true` 的 `bash`，其他误用照常执行并在结果末尾追加提醒；`watchdog-agent` 按动作数定期审查用户定义的会话 |
 | ⑥ 交付验收与跨会话协作 | `omomp-lang` 统一界面语言 | `omp-sessions`（`session://` 与 `session_query` SQL）、`omp-peers`（跨进程发现、旁路询问、IRC 消息） | `task-completion-judge` 在子代理交付时核对范围、验证和 Todo；`turn-judge` 在主代理只说不做就收工时要求继续；`lang-nag` 在下一轮纠正用错的回复语言 |
 
 每个组件在接缝页的网格里只出现一次：名字、一句写清触发时机、动作和结果的话、指向仓库的链接，以及它工作时的切片。人机交互面的切片是它的面板或命令，代理原语层是一次调用和返回或这次调用送到另一端的消息，静默治理层是模型收到的那条消息。
